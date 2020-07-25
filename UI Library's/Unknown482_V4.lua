@@ -270,16 +270,289 @@ function library:CreateWindow(...)
 		}
 	end
 	
+	function window:Slider(...)
+		local Args = {...}
+		local Name = Args[1] or "Slider"
+		local callback = Args[3] or function()end
+		local flag = Args[2].flag or ""
+		local Min = Args[2].min or 0
+		local Max = Args[2].max or 100
+		local Default = Args[2].default or 50
+		local step = Args[2].step or 1
+		local Location = Args[2].location and Args[2].location or window.flags
+		
+        if flag ~= "" then
+            Location[flag] = Default
+		end
+		local Slider = Instance.new("Frame")
+		local Background = Instance.new("ImageLabel")
+		local Fill = Instance.new("ImageLabel")
+		local Handle = Instance.new("ImageButton")
+		local Title = Instance.new("TextLabel")
+		local Amount = Instance.new("TextBox")
+		local Image = Instance.new("ImageLabel")
+
+		Slider.Name = "Slider"
+		Slider.Parent = self.parent
+		Slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Slider.BackgroundTransparency = 1.000
+		Slider.BorderSizePixel = 0
+		Slider.Size = UDim2.new(1, 0, 0, 30)
+		
+		Background.Name = "Background"
+		Background.Parent = Slider
+		Background.AnchorPoint = Vector2.new(0.5, 0.5)
+		Background.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Background.BackgroundTransparency = 1.000
+		Background.Position = UDim2.new(0.5, 0, 1, -6)
+		Background.Size = UDim2.new(1, -23, 0, 5)
+		Background.Image = "rbxassetid://3570695787"
+		Background.ImageColor3 = Color3.fromRGB(57, 57, 57)
+		Background.ScaleType = Enum.ScaleType.Slice
+		Background.SliceCenter = Rect.new(100, 100, 100, 100)
+		Background.SliceScale = 0.040
+		
+		Fill.Name = "Fill"
+		Fill.Parent = Background
+		Fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Fill.BackgroundTransparency = 1.000
+		Fill.Size = UDim2.new((1 - ((Max - Default) / (Max - Min))), 0, 1, 0)
+		Fill.Image = "rbxassetid://3570695787"
+		Fill.ImageColor3 = Color3.fromRGB(120, 120, 120)
+		Fill.ScaleType = Enum.ScaleType.Slice
+		Fill.SliceCenter = Rect.new(100, 100, 100, 100)
+		Fill.SliceScale = 0.040
+		
+		Handle.Name = "Handle"
+		Handle.Parent = Fill
+		Handle.Active = false
+		Handle.AnchorPoint = Vector2.new(0.5, 0.5)
+		Handle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Handle.BackgroundTransparency = 1.000
+		Handle.Position = UDim2.new(1, 0, 0.5, 0)
+		Handle.Selectable = false
+		Handle.Size = UDim2.new(0, 10, 0, 10)
+		Handle.Image = "rbxassetid://3570695787"
+		Handle.SliceCenter = Rect.new(100, 100, 100, 100)
+		Handle.SliceScale = 0.000
+		
+		Title.Name = "Title"
+		Title.Parent = Slider
+		Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Title.BackgroundTransparency = 1.000
+		Title.BorderColor3 = Color3.fromRGB(27, 42, 53)
+		Title.Position = UDim2.new(0, 7, 0, 3)
+		Title.Size = UDim2.new(0, 112, 0, 17)
+		Title.Font = Enum.Font.SourceSans
+		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Title.TextSize = 14.000
+		Title.TextXAlignment = Enum.TextXAlignment.Left
+		Title.Text = Name
+		
+		Amount.Name = "Amount"
+		Amount.Parent = Slider
+		Amount.AnchorPoint = Vector2.new(1,0)
+		Amount.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+		Amount.BackgroundTransparency = 1.000
+		Amount.BorderSizePixel = 0
+		Amount.Position = UDim2.new(1, -5, 0, 2)
+		Amount.Size = UDim2.new(0, 38, 0, 15)
+		Amount.ZIndex = 2
+		Amount.Font = Enum.Font.SourceSans
+		Amount.Text = tostring(Default)
+		Amount.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Amount.TextSize = 14.000
+		
+		Image.Name = "Image"
+		Image.Parent = Amount
+		Image.Active = true
+		Image.AnchorPoint = Vector2.new(0.5, 0.5)
+		Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Image.BackgroundTransparency = 1.000
+		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Image.Selectable = true
+		Image.Size = UDim2.new(1, 0, 1, 0)
+		Image.Image = "rbxassetid://3570695787"
+		Image.ImageColor3 = Color3.fromRGB(80, 80, 80)
+		Image.ScaleType = Enum.ScaleType.Slice
+		Image.SliceCenter = Rect.new(100, 100, 100, 100)
+		Image.SliceScale = 0.040
+		local Dragging = false
+		local old = tonumber(Amount.Text)
+        local function Snap(num, snap)
+            if snap == 0 then
+                return num
+            else
+                return math.floor(num / snap + 0.5) * snap
+            end
+        end
+        local function GetDecimalPlacesCount(num)
+            num = tostring(num)
+            if string.match(num, ".") then
+                local dec = string.split(num, ".")
+                return #tostring(tonumber(dec[2]))
+            else
+                return 0
+            end
+        end
+        Handle.MouseButton1Down:Connect(
+            function()
+                Dragging = true
+            end
+        )
+        Background.InputBegan:Connect(
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    coroutine.resume(
+                        coroutine.create(
+                            function()
+                                Dragging = true
+                                local Mouse = game.Players.LocalPlayer:GetMouse()
+                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                                local precentage = Relpos.x / Background.AbsoluteSize.x
+ 
+                                Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
+                                if step >= 1 then
+                                    Amount.Text =
+                                        string.format(
+                                        "%.0f",
+                                        math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
+                                    )
+                                else
+                                    local deccount = GetDecimalPlacesCount(step)
+                                    local decsize = (step >= 1 and 10 or 100)
+                                    Amount.Text =
+                                        string.format(
+                                        "%." .. (decsize == 10 and "1" or "2") .. "f",
+                                        math.floor(
+                                            ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
+                                                (decsize / (step * decsize))
+                                        ) /
+                                            (decsize / (step * decsize))
+                                    )
+								 end
+						         if flag ~= "" then
+					                 Location[flag] = tonumber(Amount.Text)
+					             end
+						         pcall(callback, tonumber(Amount.Text))
+								 old = tonumber(Amount.Text)
+                            end
+                        )
+                    )
+                end
+            end
+        )
+        game:GetService("UserInputService").InputEnded:Connect(
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    Dragging = false
+                end
+            end
+        )
+        game:GetService("UserInputService").InputChanged:Connect(
+            function(input, gameProcessed)
+                if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
+                    coroutine.resume(coroutine.create(function()
+                                local Mouse = game.Players.LocalPlayer:GetMouse()
+                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                                local precentage = Relpos.x / Background.AbsoluteSize.x
+                                Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
+                                if step >= 1 then
+                                    Amount.Text =
+                                        string.format(
+                                        "%.0f",
+                                        math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
+						                                    )
+						            if flag ~= "" then
+					                    Location[flag] = tonumber(Amount.Text)
+					                end
+					                pcall(callback, tonumber(Amount.Text))
+                                else
+                                    local deccount = GetDecimalPlacesCount(step)
+                                    local decsize = (step >= 1 and 10 or 100)
+                                    Amount.Text =
+                                        string.format(
+                                        "%." .. (decsize == 10 and "1" or "2") .. "f",
+                                        math.floor(
+                                            ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
+                                                (decsize / (step * decsize))
+                                        ) /
+                                            (decsize / (step * decsize))
+						                                    )
+					             end
+						         if flag ~= "" then
+					                 Location[flag] = tonumber(Amount.Text)
+					             end
+						         pcall(callback, tonumber(Amount.Text))
+								 old = tonumber(Amount.Text)
+                            end
+                        )
+                    )
+                end
+            end
+        )
+        game:GetService("UserInputService").WindowFocusReleased:Connect(function()
+            Dragging = false
+        end)
+		
+        function PositiveIntegerMask(text)
+            return text:gsub("[^%-%d]", "")
+        end
+        Amount:GetPropertyChangedSignal("Text"):Connect(function()
+            if (type == "number") then
+                Amount.Text = PositiveIntegerMask(Amount.Text)
+            end
+        end)
+		
+		Amount.FocusLost:Connect(function()
+			if tonumber(Amount.Text) then
+				Amount.Text = math.clamp(tonumber(Amount.Text), Min, Max)
+			else
+				Amount.Text = tostring(old)
+			end
+			Fill.Size = UDim2.new((1 - ((Max - tonumber(Amount.Text)) / (Max - Min))), 0, 1, 0)
+	        if flag ~= "" then
+	            Location[flag] = tonumber(Amount.Text)
+	        end
+			pcall(callback, tonumber(Amount.Text))
+			old = tonumber(Amount.Text)
+        end)
+        return {
+            Set = function(self, value)
+                if step >= 1 then
+                    value = math.floor(value)
+                else
+                    value = math.floor(value * 100) / 100
+                end
+                if step >= 1 then
+                    Amount.Text = string.format("%.0f", value)
+                else
+                    local deccount = GetDecimalPlacesCount(step)
+                    local decsize = (step >= 1 and 10 or 100)
+                    Amount.Text = string.format("%." .. (decsize == 10 and "1" or "2") .. "f", value)
+                end
+                value = math.clamp(value, Min, Max)
+                local precentage = value < Min and 0 or value > Max and 1 or (1 - ((Max - value) / (Max - Min)))
+                Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
+                if flag ~= "" then
+                    Location[flag] = tonumber(value)
+                end
+                pcall(callback, value)
+            end
+        }
+	end
+	
 	function window:Dropdown(...)
 		local args = {...}
 		local Name = args[1] or "DropDown"
 		local callback = args[3] or function()end
         local List = args[2].list or {}
-        local flag = args[2].flag or ""
+		local flag = args[2].flag or ""
+		local Location = args[2].location and args[2].location or window.flags
         local old = ""
         local Toggled = false
         if flag ~= "" then
-            window.flags[flag] = tostring(List[1])
+            Location[flag] = tostring(List[1])
 		end
 		
 		local Dropdown = Instance.new("Frame")
@@ -429,7 +702,7 @@ function library:CreateWindow(...)
 					up:Play()
 					Background.SliceCenter = Rect.new(100, 100, 100, 100)
 			        if flag ~= "" then
-			            window.flags[flag] = TextButton.Text
+			            Location[flag] = TextButton.Text
 					end
 					TextLabel.TextColor3 = Color3.fromRGB(255,255,255)
 					Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
@@ -499,6 +772,7 @@ function library:CreateWindow(...)
 		local Args = {...}
 		local Name = Args[1] or "Toggle"
 		local Options = Args[2] or {}
+		local Location = Options.location and Options.location or window.flags
 		local Toggled = Options.Default and true or false
 		local Callback = Args[3] or function() end
 		local Time = 0.3
@@ -598,8 +872,8 @@ function library:CreateWindow(...)
                 Circle:Destroy()			
 			end))
 			Toggled = not Toggled
-			if Options.flag and window.flags[Options.flag] ~= "" then
-				window.flags[Options.flag] = Toggled
+			if Options.flag and Options.flag ~= "" then
+				Location[Options.flag] = Toggled
 			end
 			ToggleImage.ImageColor3 = Toggled and Color3.fromRGB(140, 140, 140) or Background.ImageColor3
 			pcall(Callback, Toggled)
@@ -608,8 +882,8 @@ function library:CreateWindow(...)
 		return {
 			Set = function(self, val)
 				Toggled = val
-				if Options.flag and window.flags[Options.flag] ~= "" then
-					window.flags[Options.flag] = Toggled
+				if Options.flag and Options.flag ~= "" then
+					Location[Options.flag] = Toggled
 				end
 				ToggleImage.ImageColor3 = Toggled and Color3.fromRGB(140, 140, 140) or Background.ImageColor3
 				pcall(Callback, Toggled)
