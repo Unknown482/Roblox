@@ -44,7 +44,7 @@ local function deepcopy(orig)
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = game:GetService("CoreGui") and game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
 game:GetService("UserInputService").InputBegan:Connect(function(input)
