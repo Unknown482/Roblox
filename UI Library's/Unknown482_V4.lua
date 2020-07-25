@@ -225,7 +225,7 @@ function library:CreateWindow(...)
 		Background.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Background.Selectable = true
 		Background.Size = UDim2.new(1, 0, 1, 0)
-		Background.Image = "rbxassetid://3570695787"
+		Background.Image = Rounded
 		Background.ImageColor3 = Color3.fromRGB(53, 53, 53)
 		Background.ScaleType = Enum.ScaleType.Slice
 		Background.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -307,7 +307,7 @@ function library:CreateWindow(...)
 		Background.BackgroundTransparency = 1.000
 		Background.Position = UDim2.new(0.5, 0, 1, -6)
 		Background.Size = UDim2.new(1, -23, 0, 5)
-		Background.Image = "rbxassetid://3570695787"
+		Background.Image = Rounded
 		Background.ImageColor3 = Color3.fromRGB(57, 57, 57)
 		Background.ScaleType = Enum.ScaleType.Slice
 		Background.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -318,7 +318,7 @@ function library:CreateWindow(...)
 		Fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Fill.BackgroundTransparency = 1.000
 		Fill.Size = UDim2.new((1 - ((Max - Default) / (Max - Min))), 0, 1, 0)
-		Fill.Image = "rbxassetid://3570695787"
+		Fill.Image = Rounded
 		Fill.ImageColor3 = Color3.fromRGB(120, 120, 120)
 		Fill.ScaleType = Enum.ScaleType.Slice
 		Fill.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -333,7 +333,7 @@ function library:CreateWindow(...)
 		Handle.Position = UDim2.new(1, 0, 0.5, 0)
 		Handle.Selectable = false
 		Handle.Size = UDim2.new(0, 10, 0, 10)
-		Handle.Image = "rbxassetid://3570695787"
+		Handle.Image = Rounded
 		Handle.SliceCenter = Rect.new(100, 100, 100, 100)
 		Handle.SliceScale = 0.000
 		
@@ -374,7 +374,7 @@ function library:CreateWindow(...)
 		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Image.Selectable = true
 		Image.Size = UDim2.new(1, 0, 1, 0)
-		Image.Image = "rbxassetid://3570695787"
+		Image.Image = Rounded
 		Image.ImageColor3 = Color3.fromRGB(80, 80, 80)
 		Image.ScaleType = Enum.ScaleType.Slice
 		Image.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -549,10 +549,10 @@ function library:CreateWindow(...)
 		local Name = args[1] or "DropDown"
 		local callback = args[3] or function()end
         local List = args[2].list or {}
-		local flag = args[2].flag or ""
-		local Location = args[2].location and args[2].location or window.flags
         local old = ""
-        local Toggled = false
+		local Toggled = false
+		local Location = args[2].location and args[2].location or window.flags
+		local flag = args[2].flag or ""
         if flag ~= "" then
             Location[flag] = tostring(List[1])
 		end
@@ -596,7 +596,7 @@ function library:CreateWindow(...)
 		Background.Selectable = true
 		Background.Size = UDim2.new(1, 0, 1, 0)
 		Background.ZIndex = 3
-		Background.Image = "rbxassetid://3570695787"
+		Background.Image = Rounded
 		Background.ImageColor3 = Color3.fromRGB(57, 57, 57)
 		Background.ScaleType = Enum.ScaleType.Slice
 		Background.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -625,7 +625,7 @@ function library:CreateWindow(...)
 		ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
 		ImageLabel.Size = UDim2.new(0.5, 0, 0.5, 0)
 		ImageLabel.ZIndex = 3
-		ImageLabel.Image = "rbxassetid://538059577"
+		ImageLabel.Image = ToggleImage
 		
         old = TextLabel.Text
 
@@ -646,7 +646,7 @@ function library:CreateWindow(...)
 			Dropdown1.BackgroundTransparency = 1.000
 			Dropdown1.Position = UDim2.new(0.5, 0, 0, 0)
 			Dropdown1.Size = UDim2.new(1, 0, 0, 0)
-			Dropdown1.Image = "rbxassetid://3570695787"
+			Dropdown1.Image = Rounded
 			Dropdown1.ImageColor3 = Color3.fromRGB(70, 70, 70)
 			Dropdown1.ScaleType = Enum.ScaleType.Slice
 			Dropdown1.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -690,7 +690,7 @@ function library:CreateWindow(...)
 				Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 				Image.Selectable = true
 				Image.Size = UDim2.new(1, 0, 1, 0)
-				Image.Image = "rbxassetid://3570695787"
+				Image.Image = Rounded
 				Image.ImageColor3 = Color3.fromRGB(60, 60, 60)
 				Image.ScaleType = Enum.ScaleType.Slice
 				Image.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -720,7 +720,7 @@ function library:CreateWindow(...)
 			Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true)
 		end
 		
-		function CloseDropdown(v)
+		local function CloseDropdown(v)
             if TextLabel:FindFirstChild("Dropdown") then
 				up:Play()
 				Background.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -769,6 +769,385 @@ function library:CreateWindow(...)
 			end
 		end)
     end
+	
+	function window:Colorpicker(...)
+		local Args = {...}
+		local Name = Args[1] or "ColorPicker"
+		local Options = Args[2] or {}
+		local Default = Options.default or Color3.fromHSV(0,1,1)
+		local Callback = Args[3] or function() end
+		local Toggled = false
+		local HueDragging, SaterationDragging, BrightnessDragging = false, false, false
+		local Color = Default
+		local Location = Args[2].location and Args[2].location or window.flags
+		local flag = Args[2].flag or ""
+        if flag ~= "" then
+            Location[flag] = Color
+		end
+		
+		local H, S, V = Color3.toHSV(Color)
+		local ColorPicker = Instance.new("Frame")
+		local TextLabel = Instance.new("TextLabel")
+		local Button = Instance.new("TextButton")
+		local ColorBackground = Instance.new("ImageLabel")
+		local Toggle = Instance.new("ImageLabel")
+
+		ColorPicker.Name = "ColorPicker"
+		ColorPicker.Parent = self.parent
+		ColorPicker.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ColorPicker.BackgroundTransparency = 1.000
+		ColorPicker.BorderSizePixel = 0
+		ColorPicker.Position = UDim2.new(0, 0, 0.618618608, 0)
+		ColorPicker.Selectable = true
+		ColorPicker.Size = UDim2.new(1, 0, 0, 30)
+		
+		TextLabel.Parent = ColorPicker
+		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.BackgroundTransparency = 1.000
+		TextLabel.Position = UDim2.new(0, 5, 0, 0)
+		TextLabel.Size = UDim2.new(1, -35, 0, 30)
+		TextLabel.Font = Enum.Font.SourceSans
+		TextLabel.Text = "Color Picker"
+		TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.TextSize = 18.000
+		TextLabel.TextWrapped = true
+		TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+		
+		Button.Name = "Button"
+		Button.Parent = ColorPicker
+		Button.AnchorPoint = Vector2.new(1, 0)
+		Button.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+		Button.BackgroundTransparency = 1.000
+		Button.BorderSizePixel = 0
+		Button.Position = UDim2.new(1, -5, 0, 3)
+		Button.Size = UDim2.new(0, 24, 0, 24)
+		Button.AutoButtonColor = false
+		Button.Font = Enum.Font.SourceSans
+		Button.Text = ""
+		Button.TextColor3 = Color3.fromRGB(0, 0, 0)
+		Button.TextSize = 14.000
+		
+		ColorBackground.Name = "Background"
+		ColorBackground.Parent = Button
+		ColorBackground.Active = true
+		ColorBackground.AnchorPoint = Vector2.new(0.5, 0.5)
+		ColorBackground.BackgroundTransparency = 1.000
+		ColorBackground.Position = UDim2.new(0.5, 0, 0.5, 0)
+		ColorBackground.Selectable = true
+		ColorBackground.Size = UDim2.new(1, 0, 1, 0)
+		ColorBackground.Image = Rounded
+		ColorBackground.ImageColor3 = Color
+		ColorBackground.ScaleType = Enum.ScaleType.Slice
+		ColorBackground.SliceCenter = Rect.new(100, 100, 100, 100)
+		ColorBackground.SliceScale = 0.040
+		
+		Toggle.Name = "Toggle"
+		Toggle.Parent = Button
+		Toggle.AnchorPoint = Vector2.new(0.5, 0.5)
+		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Toggle.BackgroundTransparency = 1.000
+		Toggle.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Toggle.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+		Toggle.Visible = false
+		Toggle.Image = "rbxassetid://5424726217"
+
+		local ColorDropDown = Instance.new("Frame")
+		local Background = Instance.new("ImageLabel")
+		local Sateration = Instance.new("Frame")
+		local UIGradient = Instance.new("UIGradient")
+		local SaterationDragger = Instance.new("TextButton")
+		local ImageLabel = Instance.new("ImageLabel")
+		local Hue = Instance.new("Frame")
+		local HueDragger = Instance.new("TextButton")
+		local ImageLabel_2 = Instance.new("ImageLabel")
+		local Brightness = Instance.new("Frame")
+		local UIGradient_2 = Instance.new("UIGradient")
+		local UIGradient_3 = Instance.new("UIGradient")
+		local BrightnessDragger = Instance.new("TextButton")
+		local ImageLabel_3 = Instance.new("ImageLabel")
+		local UICornerHue = Instance.new("UICorner")
+		local UICornerBrightness = Instance.new("UICorner")
+		local UICornerSateration = Instance.new("UICorner")
+
+		ColorDropDown.Name = "ColorDropDown"
+		ColorDropDown.Parent = self.parent
+		ColorDropDown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ColorDropDown.BackgroundTransparency = 1.000
+		ColorDropDown.BorderSizePixel = 0
+		ColorDropDown.ClipsDescendants = true
+		ColorDropDown.Position = UDim2.new(0, 0, 0.618618608, 0)
+		ColorDropDown.Selectable = true
+		ColorDropDown.Size = UDim2.new(1, 0, 0, 0)
+		
+		Background.Name = "Background"
+		Background.Parent = ColorDropDown
+		Background.AnchorPoint = Vector2.new(0.5, 0)
+		Background.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Background.BackgroundTransparency = 1.000
+		Background.Position = UDim2.new(0.5, 0, 0, 0)
+		Background.Selectable = true
+		Background.Size = UDim2.new(1, -10, 0, 70)
+		Background.Image = Rounded
+		Background.ImageColor3 = Color3.fromRGB(57, 57, 57)
+		Background.ScaleType = Enum.ScaleType.Slice
+		Background.SliceCenter = Rect.new(100, 100, 100, 100)
+		Background.SliceScale = 0.040
+		
+		Sateration.Name = "Sateration"
+		Sateration.Parent = Background
+		Sateration.Active = true
+		Sateration.AnchorPoint = Vector2.new(0.5, 0)
+		Sateration.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Sateration.BorderSizePixel = 0
+		Sateration.Position = UDim2.new(0.5, 0, 0, 30)
+		Sateration.Size = UDim2.new(1, -16, 0, 10)
+		
+		UIGradient.Color = ColorSequence.new(Color, Color3.fromRGB(255, 255, 255))
+		UIGradient.Parent = Sateration
+		
+		SaterationDragger.Name = "Dragger"
+		SaterationDragger.Parent = Sateration
+		SaterationDragger.AnchorPoint = Vector2.new(0.5, 0.5)
+		SaterationDragger.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SaterationDragger.BackgroundTransparency = 1.000
+		SaterationDragger.Position = UDim2.new((S -1) * -1, 0, 0.275000006, 0)
+		SaterationDragger.Size = UDim2.new(0, 14, 0, 14)
+		SaterationDragger.Font = Enum.Font.SourceSans
+		SaterationDragger.Text = ""
+		SaterationDragger.TextColor3 = Color3.fromRGB(0, 0, 0)
+		SaterationDragger.TextSize = 14.000
+		
+		ImageLabel.Parent = SaterationDragger
+		ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ImageLabel.BackgroundTransparency = 1.000
+		ImageLabel.Rotation = 180.000
+		ImageLabel.Size = UDim2.new(1, 0, 1, -4)
+		ImageLabel.Image = "rbxassetid://4292970642"
+		
+		Hue.Name = "Hue"
+		Hue.Parent = Background
+		Hue.Active = true
+		Hue.AnchorPoint = Vector2.new(0.5, 0)
+		Hue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Hue.BorderSizePixel = 0
+		Hue.Position = UDim2.new(0.5, 0, 0, 10)
+		Hue.Size = UDim2.new(1, -16, 0, 10)
+		
+		UIGradient_3.Color = ColorSequence.new{
+			ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), 
+			ColorSequenceKeypoint.new(0.15, Color3.fromRGB(255, 255, 0)), 
+			ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)), 
+			ColorSequenceKeypoint.new(0.49, Color3.fromRGB(0, 255, 255)), 
+			ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)), 
+			ColorSequenceKeypoint.new(0.84, Color3.fromRGB(255, 0, 255)), 
+			ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))
+		}
+		UIGradient_3.Parent = Hue
+		
+		HueDragger.Name = "Dragger"
+		HueDragger.Parent = Hue
+		HueDragger.AnchorPoint = Vector2.new(0.5, 0.5)
+		HueDragger.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		HueDragger.BackgroundTransparency = 1.000
+		HueDragger.Position = UDim2.new(H, 0, 0.275000006, 0)
+		HueDragger.Size = UDim2.new(0, 14, 0, 14)
+		HueDragger.Font = Enum.Font.SourceSans
+		HueDragger.Text = ""
+		HueDragger.TextColor3 = Color3.fromRGB(0, 0, 0)
+		HueDragger.TextSize = 14.000
+		
+		ImageLabel_2.Parent = HueDragger
+		ImageLabel_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ImageLabel_2.BackgroundTransparency = 1.000
+		ImageLabel_2.Rotation = 180.000
+		ImageLabel_2.Size = UDim2.new(1, 0, 1, -4)
+		ImageLabel_2.Image = "rbxassetid://4292970642"
+		
+		Brightness.Name = "Brightness"
+		Brightness.Parent = Background
+		Brightness.Active = true
+		Brightness.AnchorPoint = Vector2.new(0.5, 0)
+		Brightness.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Brightness.BorderSizePixel = 0
+		Brightness.Position = UDim2.new(0.5, 0, 0, 50)
+		Brightness.Size = UDim2.new(1, -16, 0, 10)
+		
+		UIGradient_2.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(0, 0, 0))
+		UIGradient_2.Parent = Brightness
+		
+		BrightnessDragger.Name = "Dragger"
+		BrightnessDragger.Parent = Brightness
+		BrightnessDragger.AnchorPoint = Vector2.new(0.5, 0.5)
+		BrightnessDragger.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		BrightnessDragger.BackgroundTransparency = 1.000
+		BrightnessDragger.Position = UDim2.new((V - 1) * -1, 0, 0.27, 0)
+		BrightnessDragger.Size = UDim2.new(0, 14, 0, 14)
+		BrightnessDragger.Font = Enum.Font.SourceSans
+		BrightnessDragger.Text = ""
+		BrightnessDragger.TextColor3 = Color3.fromRGB(0, 0, 0)
+		BrightnessDragger.TextSize = 14.000
+		
+		ImageLabel_3.Parent = BrightnessDragger
+		ImageLabel_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ImageLabel_3.BackgroundTransparency = 1.000
+		ImageLabel_3.Rotation = 180.000
+		ImageLabel_3.Size = UDim2.new(1, 0, 1, -4)
+		ImageLabel_3.Image = "rbxassetid://4292970642"
+		
+		UICornerHue.CornerRadius = UDim.new(0,4)
+		UICornerHue.Parent = Hue
+		
+		UICornerBrightness.CornerRadius = UDim.new(0,4)
+		UICornerBrightness.Parent = Brightness
+		
+		UICornerSateration.CornerRadius = UDim.new(0,4)
+		UICornerSateration.Parent = Sateration
+		
+		Button.MouseButton1Click:Connect(function()
+			Toggled = not Toggled
+			ColorDropDown:TweenSize(UDim2.new(1,0,0,(Toggled and 75 or 0)),nil,nil,0.2,true)
+		end)
+		
+		SaterationDragger.MouseButton1Down:Connect(function()
+			SaterationDragging = true
+		end)
+		
+		BrightnessDragger.MouseButton1Down:Connect(function()
+			BrightnessDragging = true
+		end)
+		
+		HueDragger.MouseButton1Down:Connect(function()
+			HueDragging = true
+		end)
+		
+		Hue.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				HueDragging = true
+				local Mouse = game.Players.LocalPlayer:GetMouse()
+                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Hue.AbsolutePosition
+				local H = Relpos.x / Hue.AbsoluteSize.x
+				local S = (SaterationDragger.Position.X.Scale - 1) * -1
+				local V = (BrightnessDragger.Position.X.Scale - 1) * -1
+				HueDragger.Position = UDim2.new(math.clamp(H, 0, 1), 0, 0.27, 0)
+				Color = Color3.fromHSV(math.clamp(H, 0, 1), math.clamp(S, 0, 1), math.clamp(V, 0, 1))
+				ColorBackground.ImageColor3 = Color
+				UIGradient.Color = ColorSequence.new(Color3.fromHSV(math.clamp(H, 0, 1),1,1), Color3.fromRGB(255, 255, 255))
+				if flag ~= "" then
+			    	Location[flag] = Color
+				end
+				pcall(Callback, Color)
+			end
+		end)
+		
+		Sateration.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				SaterationDragging = true
+				local Mouse = game.Players.LocalPlayer:GetMouse()
+				local Relpos = Vector2.new(Mouse.x, Mouse.y) - Sateration.AbsolutePosition
+				local Precentage = Relpos.x / Sateration.AbsoluteSize.x
+				local H = HueDragger.Position.X.Scale
+				local S = (Precentage - 1) * -1
+				local V = (BrightnessDragger.Position.X.Scale - 1) * -1
+				SaterationDragger.Position = UDim2.new(math.clamp(Precentage, 0, 1), 0, 0.27, 0)
+				Color = Color3.fromHSV(math.clamp(H, 0, 1), math.clamp(S, 0, 1), math.clamp(V, 0, 1))
+				ColorBackground.ImageColor3 = Color
+			    if flag ~= "" then
+			        Location[flag] = Color
+				end
+				pcall(Callback, Color)
+			end
+		end)
+		
+		Brightness.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				BrightnessDragging = true
+				local Mouse = game.Players.LocalPlayer:GetMouse()
+				local Relpos = Vector2.new(Mouse.x, Mouse.y) - Sateration.AbsolutePosition
+				local Precentage = Relpos.x / Sateration.AbsoluteSize.x
+				local H = HueDragger.Position.X.Scale
+				local S = (SaterationDragger.Position.X.Scale - 1) * -1
+				local V = (Precentage - 1) * -1
+				BrightnessDragger.Position = UDim2.new(math.clamp(Precentage, 0, 1), 0, 0.27, 0)
+				Color = Color3.fromHSV(math.clamp(H, 0, 1), math.clamp(S, 0, 1), math.clamp(V, 0, 1))
+				ColorBackground.ImageColor3 = Color
+			    if flag ~= "" then
+			        Location[flag] = Color
+				end
+				pcall(Callback, Color)
+			end
+		end)
+		
+        game:GetService("UserInputService").InputChanged:Connect(function(input, gameProcessed)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+				if HueDragging then
+					local Mouse = game.Players.LocalPlayer:GetMouse()
+                	local Relpos = Vector2.new(Mouse.x, Mouse.y) - Hue.AbsolutePosition
+					local H = Relpos.x / Hue.AbsoluteSize.x
+					local S = (SaterationDragger.Position.X.Scale - 1) * -1
+					local V = (BrightnessDragger.Position.X.Scale - 1) * -1
+					HueDragger.Position = UDim2.new(math.clamp(H, 0, 1), 0, 0.27, 0)
+					Color = Color3.fromHSV(math.clamp(H, 0, 1), math.clamp(S, 0, 1), math.clamp(V, 0, 1))
+					ColorBackground.ImageColor3 = Color
+					UIGradient.Color = ColorSequence.new(Color3.fromHSV(math.clamp(H, 0, 1),1,1), Color3.fromRGB(255, 255, 255))
+					if flag ~= "" then
+			            Location[flag] = Color
+					end
+					pcall(Callback, Color)
+				end
+				if SaterationDragging then
+					local Mouse = game.Players.LocalPlayer:GetMouse()
+					local Relpos = Vector2.new(Mouse.x, Mouse.y) - Sateration.AbsolutePosition
+					local Precentage = Relpos.x / Sateration.AbsoluteSize.x
+					local H = HueDragger.Position.X.Scale
+					local S = (Precentage - 1) * -1
+					local V = (BrightnessDragger.Position.X.Scale - 1) * -1
+					SaterationDragger.Position = UDim2.new(math.clamp(Precentage, 0, 1), 0, 0.27, 0)
+					Color = Color3.fromHSV(math.clamp(H, 0, 1), math.clamp(S, 0, 1), math.clamp(V, 0, 1))
+					ColorBackground.ImageColor3 = Color
+			        if flag ~= "" then
+			            Location[flag] = Color
+					end
+					pcall(Callback, Color)
+				end
+				if BrightnessDragging then
+					local Mouse = game.Players.LocalPlayer:GetMouse()
+					local Relpos = Vector2.new(Mouse.x, Mouse.y) - Sateration.AbsolutePosition
+					local Precentage = Relpos.x / Sateration.AbsoluteSize.x
+					local H = HueDragger.Position.X.Scale
+					local S = (SaterationDragger.Position.X.Scale - 1) * -1
+					local V = (Precentage - 1) * -1
+					BrightnessDragger.Position = UDim2.new(math.clamp(Precentage, 0, 1), 0, 0.27, 0)
+					Color = Color3.fromHSV(math.clamp(H, 0, 1), math.clamp(S, 0, 1), math.clamp(V, 0, 1))
+					ColorBackground.ImageColor3 = Color
+			        if flag ~= "" then
+			            Location[flag] = Color
+					end
+					pcall(Callback, Color)
+				end
+			end
+		end)
+		
+		game:GetService("UserInputService").InputEnded:Connect(function(input)
+			if input.UserInputType==Enum.UserInputType.MouseButton1 then
+				HueDragging, SaterationDragging, BrightnessDragging = false, false, false
+			end
+		end)
+		
+		return {
+			Set = function(self, value)
+				Color = value
+				local H, S, V = Color3.toHSV(Color)
+				SaterationDragger.Position = UDim2.new(math.clamp((S -1) * -1, 0, 1), 0, 0.275000006, 0)
+				BrightnessDragger.Position = UDim2.new(math.clamp((V -1) * -1, 0, 1), 0, 0.27, 0)
+				HueDragger.Position = UDim2.new(math.clamp(H, 0, 1), 0, 0.275000006, 0)
+				UIGradient.Color = ColorSequence.new(Color3.fromHSV(math.clamp(H, 0, 1),1,1), Color3.fromRGB(255, 255, 255))
+				ColorBackground.ImageColor3 = Color
+				if flag ~= "" then
+			    	Location[flag] = Color
+				end
+			end
+		}
+	end
 	
 	function window:Toggle(...)
 		local Args = {...}
@@ -897,6 +1276,7 @@ function library:CreateWindow(...)
 		local Args = {...}
 		local Name = Args[1] or "Folder"
 		local Folder = deepcopy(window)
+		Folder.toggled = false
 		local Title = Instance.new("ImageLabel")
 		local Text = Instance.new("TextLabel")
 		local Toggle = Instance.new("TextButton")
@@ -909,7 +1289,7 @@ function library:CreateWindow(...)
 		Title.Position = UDim2.new(0, 0, 0.287581712, 0)
 		Title.Size = UDim2.new(1.00000012, 0, 0, 28)
 		Title.ZIndex = 2
-		Title.Image = "rbxassetid://3570695787"
+		Title.Image = Rounded
 		Title.ImageColor3 = Color3.fromRGB(57, 57, 57)
 		Title.ScaleType = Enum.ScaleType.Slice
 		Title.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -951,7 +1331,7 @@ function library:CreateWindow(...)
 		ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
 		ImageLabel.Size = UDim2.new(0.5, 0, 0.5, 0)
 		ImageLabel.ZIndex = 3
-		ImageLabel.Image = "http://www.roblox.com/asset/?id=538059577"
+		ImageLabel.Image = ToggleImage
 		
 		local FolderContainer = Instance.new("ImageLabel")
 		local UIListLayout = Instance.new("UIListLayout")
@@ -963,7 +1343,7 @@ function library:CreateWindow(...)
 		FolderContainer.BackgroundTransparency = 1.000
 		FolderContainer.Position = UDim2.new(0, 0, 0.994350255, 0)
 		FolderContainer.Size = UDim2.new(1, 0, 0, 0)
-		FolderContainer.Image = "rbxassetid://3570695787"
+		FolderContainer.Image = Rounded
 		FolderContainer.ImageColor3 = Color3.fromRGB(65, 65, 65)
 		FolderContainer.ScaleType = Enum.ScaleType.Slice
 		FolderContainer.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -972,6 +1352,12 @@ function library:CreateWindow(...)
 		
 		UIListLayout.Parent = FolderContainer
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+		
+		UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			if Folder.toggled then
+				FolderContainer.Size = UDim2.new(1,0,0, UIListLayout.AbsoluteContentSize.Y)
+			end
+		end)
 		
 		local down =
 	 	    TweenService:Create(
@@ -1006,6 +1392,7 @@ function library:CreateWindow(...)
 				FolderContainer:TweenSize(UDim2.new(1,0,0,0), "Out", "Quad", 0.2, true)
 			end
 		end)
+		
 		return Folder
 	end
 	
