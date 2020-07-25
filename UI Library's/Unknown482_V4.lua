@@ -362,7 +362,7 @@ function library:CreateWindow(...)
 		Amount.Font = Enum.Font.SourceSans
 		Amount.Text = tostring(Default)
 		Amount.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Amount.TextSize = 14.000
+		Amount.TextSize = 16.000
 		
 		Image.Name = "Image"
 		Image.Parent = Amount
