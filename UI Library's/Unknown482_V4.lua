@@ -357,7 +357,7 @@ function library:CreateWindow(...)
         local down = TweenService:Create(Toggle,TweenInfo.new(0.2),{Rotation = 180})
         local up = TweenService:Create(Toggle,TweenInfo.new(0.2),{Rotation = 270})
 		
-		function CreateDropDown(Array)
+		local function CreateDropDown(Array)
 			self.parent.ClipsDescendants = false
 			Container.ClipsDescendants = false
 			local Dropdown1 = Instance.new("ImageLabel")
