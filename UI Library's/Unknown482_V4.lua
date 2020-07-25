@@ -46,6 +46,7 @@ end
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game:GetService("CoreGui") and game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 2147483647
 
 game:GetService("UserInputService").InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.RightControl then
