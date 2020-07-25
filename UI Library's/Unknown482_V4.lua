@@ -346,7 +346,7 @@ function library:CreateWindow(...)
 		Title.Size = UDim2.new(0, 112, 0, 17)
 		Title.Font = Enum.Font.SourceSans
 		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Title.TextSize = 14.000
+		Title.TextSize = 16.000
 		Title.TextXAlignment = Enum.TextXAlignment.Left
 		Title.Text = Name
 		
@@ -362,7 +362,8 @@ function library:CreateWindow(...)
 		Amount.Font = Enum.Font.SourceSans
 		Amount.Text = tostring(Default)
 		Amount.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Amount.TextSize = 16.000
+		Amount.TextSize = 14.000
+		Amount.TextScaled = true
 		
 		Image.Name = "Image"
 		Image.Parent = Amount
