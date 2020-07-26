@@ -226,7 +226,7 @@ function library:CreateWindow(...)
 		Background.Selectable = true
 		Background.Size = UDim2.new(1, 0, 1, 0)
 		Background.Image = Rounded
-		Background.ImageColor3 = Color3.fromRGB(53, 53, 53)
+		Background.ImageColor3 = Color3.fromRGB(57, 57, 57)
 		Background.ScaleType = Enum.ScaleType.Slice
 		Background.SliceCenter = Rect.new(100, 100, 100, 100)
 		Background.SliceScale = 0.040
@@ -267,6 +267,251 @@ function library:CreateWindow(...)
 		return {
 			Fire = function(self)
 				pcall(Callback)
+			end
+		}
+	end
+	
+	function window:Bind(...)
+		local Args = {...}
+		local Name = Args[1] or "Keybind"
+		local Options = Args[2] or {}
+		local Default = Options.default or Enum.KeyCode.P
+		local AllowMouse = Options.mouse or true
+		local Callback = Args[3] or function() end
+		local flag = Options.flag or ""
+		local Location = Options.location or window.flags
+		local Key = Default
+		
+		if flag ~= "" then
+			Location[flag] = Default
+		end
+		
+        local BannedKeys = {
+        	Return = true;
+            Space = true;
+            Tab = true;
+            Unknown = true;
+        }
+		
+		local ShortNames = {
+            RightControl = 'RCtrl';
+            LeftControl = 'LCtrl';
+            LeftShift = 'LShift';
+            RightShift = 'RShift';
+            MouseButton1 = "Mouse1";
+			MouseButton2 = "Mouse2";
+			Backquote = "`";
+			LeftBracket = "[";
+			RightBracket = "]";
+			BackSlash = "\\";
+			Slash = "/";
+			Period = ".";
+			Semicolon = ";";
+			Quote = "\""
+		}
+		
+        local allowed = {
+        	MouseButton1 = true;
+            MouseButton2 = true;
+        }     
+		
+		local Keybind = Instance.new("Frame")
+		local TextLabel = Instance.new("TextLabel")
+		local Button = Instance.new("TextButton")
+		local Background = Instance.new("ImageLabel")
+
+		Keybind.Name = "Keybind"
+		Keybind.Parent = self.parent
+		Keybind.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Keybind.BackgroundTransparency = 1.000
+		Keybind.BorderSizePixel = 0
+		Keybind.Size = UDim2.new(1, 0, 0, 30)
+		
+		TextLabel.Parent = Keybind
+		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.BackgroundTransparency = 1.000
+		TextLabel.Position = UDim2.new(0, 5, 0, 0)
+		TextLabel.Size = UDim2.new(1, -35, 1, 0)
+		TextLabel.Font = Enum.Font.SourceSans
+		TextLabel.Text = Name
+		TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.TextSize = 18.000
+		TextLabel.TextWrapped = true
+		TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+		
+		Button.Name = "Button"
+		Button.Parent = Keybind
+		Button.AnchorPoint = Vector2.new(1, 0.5)
+		Button.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+		Button.BackgroundTransparency = 1.000
+		Button.BorderSizePixel = 0
+		Button.Position = UDim2.new(1, -5, 0.5, 0)
+		Button.Size = UDim2.new(0, 50, 0, 24)
+		Button.AutoButtonColor = false
+		Button.TextColor3 = Color3.new(255,255,255)
+		Button.Font = Enum.Font.SourceSans
+		Button.Text = Key.Name 
+		Button.TextSize = 16.000
+		Button.ZIndex = 2
+		
+		Background.Name = "Background"
+		Background.Parent = Button
+		Background.Active = true
+		Background.AnchorPoint = Vector2.new(0.5, 0.5)
+		Background.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Background.BackgroundTransparency = 1.000
+		Background.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Background.Selectable = true
+		Background.Size = UDim2.new(1, 0, 1, 0)
+		Background.Image = "rbxassetid://3570695787"
+		Background.ImageColor3 = Color3.fromRGB(80, 80, 80)
+		Background.ScaleType = Enum.ScaleType.Slice
+		Background.SliceCenter = Rect.new(100, 100, 100, 100)
+		Background.SliceScale = 0.040
+		
+		game:GetService('UserInputService').InputBegan:Connect(function(input, stuff)
+			if Key == input.UserInputType or Key == input.KeyCode and not stuff then
+				pcall(Callback, Key)
+			end
+		end)		
+		
+		Button.MouseButton1Click:Connect(function()
+			Button.Text = "..."
+			local input, othershit = game:GetService('UserInputService').InputBegan:wait();
+            if input.UserInputType ~= Enum.UserInputType.Keyboard and (allowed[input.UserInputType.Name] and AllowMouse) or (input.KeyCode and (not BannedKeys[input.KeyCode.Name])) then
+                local name = (input.UserInputType ~= Enum.UserInputType.Keyboard and input.UserInputType.Name or input.KeyCode.Name)
+				Button.Text = ShortNames[name] or name
+				wait(0.1)
+				Key = input.UserInputType ~= Enum.UserInputType.Keyboard and input.UserInputType or input.KeyCode
+				if flag ~= "" then
+					Location[flag] = Key
+				end
+			end
+		end)
+		
+		return {
+			Set = function(self, val)
+				Button.Text = ShortNames[val.Name] or val.Name
+				Key = val
+				if flag ~= "" then
+					Location[flag] = Key
+				end
+			end
+		}
+	end
+	
+	function window:Box(...)
+		Args = {...}
+		local Name = Args[1] or "TextBox"
+		local Options = Args[2] or {}
+		local Type = Options.type or "string"
+		Type = string.lower(Type)
+		local Min = Options.min or 0
+		local Max = Options.max or 9e9
+		local flag = Options.flag or ""
+		local Location = Options.location or window.flags
+		local Callback = Args[3] or function() end
+		local Placeholder = Options.placeholder or ""
+		local Default = Options.default or (Type == "number" and 0 or "")
+		if flag ~= "" then
+			Location[flag] = Default
+		end
+		
+		local Box = Instance.new("Frame")
+		local TextLabel = Instance.new("TextLabel")
+		local TextBox = Instance.new("TextBox")
+		local Background = Instance.new("ImageLabel")
+
+		Box.Name = "Box"
+		Box.Parent = self.parent
+		Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Box.BackgroundTransparency = 1.000
+		Box.BorderSizePixel = 0
+		Box.Size = UDim2.new(1, 0, 0, 30)
+		
+		TextLabel.Parent = Box
+		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.BackgroundTransparency = 1.000
+		TextLabel.Position = UDim2.new(0, 5, 0, 0)
+		TextLabel.Size = UDim2.new(1, -65, 1, 0)
+		TextLabel.Font = Enum.Font.SourceSans
+		TextLabel.Text = Name
+		TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.TextSize = 18.000
+		TextLabel.TextWrapped = true
+		TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+		
+		TextBox.Parent = Box
+		TextBox.AnchorPoint = Vector2.new(1, 0.5)
+		TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TextBox.BackgroundTransparency = 1.000
+		TextBox.Position = UDim2.new(1, -5, 0.5, 0)
+		TextBox.Size = UDim2.new(0, 65, 0, 24)
+		TextBox.Font = Enum.Font.SourceSans
+		TextBox.Text = (string.lower(Type) == "number" and (tonumber(Default) and tostring(Default) or tostring(Min)) or Default)
+		TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+		TextBox.TextSize = 14.000
+		TextBox.ZIndex = 2
+		TextBox.TextColor3 = Color3.fromRGB(255,255,255)
+		TextBox.TextSize = 16
+		TextBox.ClipsDescendants = false
+		TextBox.PlaceholderText = Placeholder
+		
+		Background.Name = "Background"
+		Background.Parent = TextBox
+		Background.Active = true
+		Background.AnchorPoint = Vector2.new(0.5, 0.5)
+		Background.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Background.BackgroundTransparency = 1.000
+		Background.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Background.Selectable = true
+		Background.Size = UDim2.new(1, 0, 1, 0)
+		Background.Image = "rbxassetid://3570695787"
+		Background.ImageColor3 = Color3.fromRGB(80, 80, 80)
+		Background.ScaleType = Enum.ScaleType.Slice
+		Background.SliceCenter = Rect.new(100, 100, 100, 100)
+		Background.SliceScale = 0.040
+		
+		local old = Default
+		
+        function PositiveIntegerMask(text)
+            return text:gsub("[^%-%d]", "")
+        end
+        TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+            if Type == "number" then
+                TextBox.Text = PositiveIntegerMask(TextBox.Text)
+            end
+		end)
+		
+		TextBox.FocusLost:Connect(function(EnterPressed)
+			if Type == "number" then
+				TextBox.Text = math.clamp(tonumber(TextBox.Text), Min, Max)
+				if flag ~= "" then
+					Location[flag] = tonumber(TextBox.Text)
+				end
+				pcall(Callback, tonumber(TextBox.Text), tonumber(old), EnterPressed, TextBox)
+			else
+				if flag ~= "" then
+					Location[flag] = TextBox.Text
+				end
+				pcall(Callback, TextBox.Text, old, EnterPressed, TextBox)
+			end
+			old = TextBox.Text
+		end)
+		
+		return {
+			Set = function(self, val)
+				old = TextBox.Text
+				if Type == "number" then
+					TextBox.Text = math.clamp(tonumber(val), Min, Max)
+					if flag ~= "" then
+						Location[flag] = tonumber(TextBox.Text)
+					end
+				else
+					if flag ~= "" then
+						Location[flag] = TextBox.Text
+					end
+				end
 			end
 		}
 	end
@@ -720,7 +965,7 @@ function library:CreateWindow(...)
 			Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true)
 		end
 		
-		local function CloseDropdown(v)
+		local function CloseDropdown()
             if TextLabel:FindFirstChild("Dropdown") then
 				up:Play()
 				Background.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -768,6 +1013,15 @@ function library:CreateWindow(...)
 				end
 			end
 		end)
+		
+		return {
+			Refresh = function(self, val)
+				CloseDropdown()
+				TextLabel.Text = val[1]
+				old = val[1]
+				List = val
+			end
+		}
     end
 	
 	function window:Colorpicker(...)
