@@ -881,8 +881,6 @@ function library:CreateWindow(...)
 			self.parent.ClipsDescendants = false
 			Container.ClipsDescendants = false
 			local Dropdown1 = Instance.new("ImageLabel")
-			local UIGridLayout = Instance.new("UIGridLayout")
-			local UIPadding = Instance.new("UIPadding")
 			
 			Dropdown1.Name = "Dropdown"
  			Dropdown1.Parent = TextLabel
@@ -897,72 +895,155 @@ function library:CreateWindow(...)
 			Dropdown1.SliceCenter = Rect.new(100, 100, 100, 100)
 			Dropdown1.SliceScale = 0.040
 			Dropdown1.ClipsDescendants = true
-			Dropdown1.ZIndex = 5
-			
-			UIGridLayout.Parent = Dropdown1
-			UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-			UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 1)
-			UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
-			
-			UIPadding.Parent = Dropdown1
-			UIPadding.PaddingTop = UDim.new(0, 25)
-			
-			TextLabel.Text = Name
-			TextLabel.TextColor3 = Color3.fromRGB(120,120,120)
-			
-			for	i,v in pairs(Array) do
-				local TextButton = Instance.new("TextButton")
-				local Image = Instance.new("ImageLabel")
+			Dropdown1.ZIndex = 5	
+			if #Array <= 5 then
+				local UIGridLayout = Instance.new("UIGridLayout")
+				local UIPadding = Instance.new("UIPadding")
+				UIGridLayout.Parent = Dropdown1
+				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 1)
+				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
 				
-				TextButton.Parent = Dropdown1
-				TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-				TextButton.BackgroundTransparency = 1.000
-				TextButton.BorderSizePixel = 0
-				TextButton.Size = UDim2.new(0, 200, 0, 50)
-				TextButton.ZIndex = 2
-				TextButton.Text = tostring(v)
-				TextButton.Font = Enum.Font.SourceSans
-				TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-				TextButton.TextSize = 18.000
-				TextButton.ZIndex = 7
+				UIPadding.Parent = Dropdown1
+				UIPadding.PaddingTop = UDim.new(0, 25)
 				
-				Image.Name = "Image"
-				Image.Parent = TextButton
-				Image.Active = true
-				Image.AnchorPoint = Vector2.new(0.5, 0.5)
-				Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				Image.BackgroundTransparency = 1.000
-				Image.Position = UDim2.new(0.5, 0, 0.5, 0)
-				Image.Selectable = true
-				Image.Size = UDim2.new(1, 0, 1, 0)
-				Image.Image = Rounded
-				Image.ImageColor3 = Color3.fromRGB(60, 60, 60)
-				Image.ScaleType = Enum.ScaleType.Slice
-				Image.SliceCenter = Rect.new(100, 100, 100, 100)
-				Image.SliceScale = i == #Array and 0.040 or 0.01
-				Image.ZIndex = 6
+				TextLabel.Text = Name
+				TextLabel.TextColor3 = Color3.fromRGB(120,120,120)
 				
-				TextButton.MouseButton1Click:Connect(function()
-					TextLabel.Text = TextButton.Text
-					old = TextButton.Text
-					Toggled = false
-					up:Play()
-					Background.SliceCenter = Rect.new(100, 100, 100, 100)
-			        if flag ~= "" then
-			            Location[flag] = TextButton.Text
-					end
-					TextLabel.TextColor3 = Color3.fromRGB(255,255,255)
-					Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
-						Background.ZIndex = 3
-						Toggle.ZIndex = 4
-						ImageLabel.ZIndex = 4
-						TextLabel.ZIndex = 4
-						Dropdown1:Destroy()
+				for	i,v in pairs(Array) do
+					local TextButton = Instance.new("TextButton")
+					local Image = Instance.new("ImageLabel")
+					
+					TextButton.Parent = Dropdown1
+					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+					TextButton.BackgroundTransparency = 1.000
+					TextButton.BorderSizePixel = 0
+					TextButton.Size = UDim2.new(0, 200, 0, 50)
+					TextButton.ZIndex = 2
+					TextButton.Text = tostring(v)
+					TextButton.Font = Enum.Font.SourceSans
+					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					TextButton.TextSize = 18.000
+					TextButton.ZIndex = 7
+					
+					Image.Name = "Image"
+					Image.Parent = TextButton
+					Image.Active = true
+					Image.AnchorPoint = Vector2.new(0.5, 0.5)
+					Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					Image.BackgroundTransparency = 1.000
+					Image.Position = UDim2.new(0.5, 0, 0.5, 0)
+					Image.Selectable = true
+					Image.Size = UDim2.new(1, 0, 1, 0)
+					Image.Image = Rounded
+					Image.ImageColor3 = Color3.fromRGB(60, 60, 60)
+					Image.ScaleType = Enum.ScaleType.Slice
+					Image.SliceCenter = Rect.new(100, 100, 100, 100)
+					Image.SliceScale = i == #Array and 0.040 or 0.01
+					Image.ZIndex = 6
+					
+					TextButton.MouseButton1Click:Connect(function()
+						TextLabel.Text = TextButton.Text
+						old = TextButton.Text
+						Toggled = false
+						up:Play()
+						Background.SliceCenter = Rect.new(100, 100, 100, 100)
+				        if flag ~= "" then
+				            Location[flag] = TextButton.Text
+						end
+						TextLabel.TextColor3 = Color3.fromRGB(255,255,255)
+						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
+							Background.ZIndex = 3
+							Toggle.ZIndex = 4
+							ImageLabel.ZIndex = 4
+							TextLabel.ZIndex = 4
+							Dropdown1:Destroy()
+						end)
+						pcall(callback, TextButton.Text)
 					end)
-					pcall(callback, TextButton.Text)
-				end)
+				end
+				print(UIGridLayout.AbsoluteContentSize.Y + 25)
+				Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true)
+			else
+				local UIGridLayout = Instance.new("UIGridLayout")
+				local UIPadding = Instance.new("UIPadding")
+				local ScrollingFrame = Instance.new("ScrollingFrame")
+
+				ScrollingFrame.Parent = Dropdown1
+				ScrollingFrame.Active = true
+				ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				ScrollingFrame.BackgroundTransparency = 1.000
+				ScrollingFrame.BorderSizePixel = 0
+				ScrollingFrame.Position = UDim2.new(0, 0, 0, 25)
+				ScrollingFrame.Size = UDim2.new(1, 0, 1, -25)
+				ScrollingFrame.ZIndex = 5
+				ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+				ScrollingFrame.HorizontalScrollBarInset = Enum.ScrollBarInset.None
+				ScrollingFrame.ScrollBarThickness = 5
+				
+				UIGridLayout.Parent = ScrollingFrame
+				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 1)
+				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
+				
+				TextLabel.Text = Name
+				TextLabel.TextColor3 = Color3.fromRGB(120,120,120)
+				
+				for	i,v in pairs(Array) do
+					local TextButton = Instance.new("TextButton")
+					local Image = Instance.new("ImageLabel")
+					
+					TextButton.Parent = ScrollingFrame
+					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+					TextButton.BackgroundTransparency = 1.000
+					TextButton.BorderSizePixel = 0
+					TextButton.Size = UDim2.new(0, 200, 0, 50)
+					TextButton.ZIndex = 2
+					TextButton.Text = tostring(v)
+					TextButton.Font = Enum.Font.SourceSans
+					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					TextButton.TextSize = 18.000
+					TextButton.ZIndex = 7
+					
+					Image.Name = "Image"
+					Image.Parent = TextButton
+					Image.Active = true
+					Image.AnchorPoint = Vector2.new(0.5, 0.5)
+					Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					Image.BackgroundTransparency = 1.000
+					Image.Position = UDim2.new(0.5, 0, 0.5, 0)
+					Image.Selectable = true
+					Image.Size = UDim2.new(1, 0, 1, 0)
+					Image.Image = Rounded
+					Image.ImageColor3 = Color3.fromRGB(60, 60, 60)
+					Image.ScaleType = Enum.ScaleType.Slice
+					Image.SliceCenter = Rect.new(100, 100, 100, 100)
+					Image.SliceScale = i == #Array and 0.040 or 0.01
+					Image.ZIndex = 6
+					
+					TextButton.MouseButton1Click:Connect(function()
+						TextLabel.Text = TextButton.Text
+						old = TextButton.Text
+						Toggled = false
+						up:Play()
+						Background.SliceCenter = Rect.new(100, 100, 100, 100)
+				        if flag ~= "" then
+				            Location[flag] = TextButton.Text
+						end
+						TextLabel.TextColor3 = Color3.fromRGB(255,255,255)
+						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
+							Background.ZIndex = 3
+							Toggle.ZIndex = 4
+							ImageLabel.ZIndex = 4
+							TextLabel.ZIndex = 4
+							Dropdown1:Destroy()
+						end)
+						pcall(callback, TextButton.Text)
+					end)
+				end
+				Dropdown1:TweenSize(UDim2.new(1,0,0,149),nil,nil,0.2,true)
+				ScrollingFrame.CanvasSize = UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y)
 			end
-			Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true)
 		end
 		
 		local function CloseDropdown()
