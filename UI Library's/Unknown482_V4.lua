@@ -396,6 +396,9 @@ function library:CreateWindow(...)
 				if flag ~= "" then
 					Location[flag] = Key
 				end
+			end;
+			ChangeCallBack = function(self, val)
+				Callback = val
 			end
 		}
 	end
@@ -512,6 +515,9 @@ function library:CreateWindow(...)
 						Location[flag] = TextBox.Text
 					end
 				end
+			end;
+			ChangeCallBack = function(self, val)
+				Callback = val
 			end
 		}
 	end
@@ -784,8 +790,10 @@ function library:CreateWindow(...)
                 if flag ~= "" then
                     Location[flag] = tonumber(value)
                 end
-                pcall(callback, value)
-            end
+			end;
+			ChangeCallBack = function(self, val)
+				callback = val
+			end
         }
 	end
 	
@@ -1101,6 +1109,9 @@ function library:CreateWindow(...)
 				TextLabel.Text = val[1]
 				old = val[1]
 				List = val
+			end;
+			ChangeCallBack = function(self, val)
+				callback = val
 			end
 		}
     end
@@ -1480,6 +1491,9 @@ function library:CreateWindow(...)
 				if flag ~= "" then
 			    	Location[flag] = Color
 				end
+			end;
+			ChangeCallBack = function(self, val)
+				Callback = val
 			end
 		}
 	end
@@ -1602,7 +1616,9 @@ function library:CreateWindow(...)
 					Location[Options.flag] = Toggled
 				end
 				ToggleImage.ImageColor3 = Toggled and Color3.fromRGB(140, 140, 140) or Background.ImageColor3
-				pcall(Callback, Toggled)
+			end;
+			ChangeCallBack = function(self, val)
+				Callback = val
 			end
 		}
 	end
