@@ -44,6 +44,9 @@ local function deepcopy(orig)
 end
 
 local ScreenGui = Instance.new("ScreenGui")
+if syn then
+    syn.protect_gui(ScreenGui)
+end
 ScreenGui.Parent = game:GetService("CoreGui") and game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 2147483647
