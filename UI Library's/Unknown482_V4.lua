@@ -262,12 +262,18 @@ function library:CreateWindow(...)
                 end
                 Circle:Destroy()			
 			end)
-			pcall(Callback)
+			local Success, Err = pcall(Callback)
+			if not Success then
+				error(Err)
+			end
 		end)
 		
 		return {
 			Fire = function(self)
-				pcall(Callback)
+				local Success, Err = pcall(Callback)
+				if not Success then
+					error(Err)
+				end
 			end
 		}
 	end
@@ -372,7 +378,7 @@ function library:CreateWindow(...)
 		
 		game:GetService('UserInputService').InputBegan:Connect(function(input, stuff)
 			if Key == input.UserInputType or Key == input.KeyCode and not stuff then
-				pcall(Callback, Key)
+				local Success, Err = pcall(Callback, Key)
 			end
 		end)		
 		
@@ -398,7 +404,7 @@ function library:CreateWindow(...)
 					Location[flag] = Key
 				end
 			end;
-			ChangeCallback = function(self, val)
+			ChangeCallBack = function(self, val)
 				Callback = val
 			end
 		}
@@ -493,12 +499,12 @@ function library:CreateWindow(...)
 				if flag ~= "" then
 					Location[flag] = tonumber(TextBox.Text)
 				end
-				pcall(Callback, tonumber(TextBox.Text), tonumber(old), EnterPressed, TextBox)
+				local Success, Err = pcall(Callback, tonumber(TextBox.Text), tonumber(old), EnterPressed, TextBox)
 			else
 				if flag ~= "" then
 					Location[flag] = TextBox.Text
 				end
-				pcall(Callback, TextBox.Text, old, EnterPressed, TextBox)
+				local Success, Err = pcall(Callback, TextBox.Text, old, EnterPressed, TextBox)
 			end
 			old = TextBox.Text
 		end)
@@ -517,7 +523,7 @@ function library:CreateWindow(...)
 					end
 				end
 			end;
-			ChangeCallback = function(self, val)
+			ChangeCallBack = function(self, val)
 				Callback = val
 			end
 		}
@@ -657,37 +663,45 @@ function library:CreateWindow(...)
         Background.InputBegan:Connect(
             function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    spawn(function()
-                        Dragging = true
-                        local Mouse = game.Players.LocalPlayer:GetMouse()
-                        local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
-                        local precentage = Relpos.x / Background.AbsoluteSize.x
-                        Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
-                        if step >= 1 then
-                            Amount.Text =
-                                string.format(
-                                "%.0f",
-                                math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
-                            )
-                        else
-                            local deccount = GetDecimalPlacesCount(step)
-                            local decsize = (step >= 1 and 10 or 100)
-                            Amount.Text =
-                                string.format(
-                                "%." .. (decsize == 10 and "1" or "2") .. "f",
-                                math.floor(
-                                    ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
-                                        (decsize / (step * decsize))
-                                ) /
-                                    (decsize / (step * decsize))
-                            )
-						 end
-					     if flag ~= "" then
-					         Location[flag] = tonumber(Amount.Text)
-					     end
-					     pcall(callback, tonumber(Amount.Text))
-						 old = tonumber(Amount.Text)
-                    end)
+                    coroutine.resume(
+                        coroutine.create(
+                            function()
+                                Dragging = true
+                                local Mouse = game.Players.LocalPlayer:GetMouse()
+                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                                local precentage = Relpos.x / Background.AbsoluteSize.x
+ 
+                                Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
+                                if step >= 1 then
+                                    Amount.Text =
+                                        string.format(
+                                        "%.0f",
+                                        math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
+                                    )
+                                else
+                                    local deccount = GetDecimalPlacesCount(step)
+                                    local decsize = (step >= 1 and 10 or 100)
+                                    Amount.Text =
+                                        string.format(
+                                        "%." .. (decsize == 10 and "1" or "2") .. "f",
+                                        math.floor(
+                                            ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
+                                                (decsize / (step * decsize))
+                                        ) /
+                                            (decsize / (step * decsize))
+                                    )
+								 end
+						         if flag ~= "" then
+					                 Location[flag] = tonumber(Amount.Text)
+					             end
+								local Success, Err = pcall(callback, tonumber(Amount.Text))
+								if not Success then
+									error(Err)
+								end
+								old = tonumber(Amount.Text)
+                            end
+                        )
+                    )
                 end
             end
         )
@@ -702,39 +716,46 @@ function library:CreateWindow(...)
             function(input, gameProcessed)
                 if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
                     spawn(function()
-                        local Mouse = game.Players.LocalPlayer:GetMouse()
-                        local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
-                        local precentage = Relpos.x / Background.AbsoluteSize.x
-                        Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
-                        if step >= 1 then
-                            Amount.Text =
-                                string.format(
-                                "%.0f",
-                                math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
-					                                )
-					        if flag ~= "" then
-					            Location[flag] = tonumber(Amount.Text)
-					        end
-					        pcall(callback, tonumber(Amount.Text))
-                        else
-                            local deccount = GetDecimalPlacesCount(step)
-                            local decsize = (step >= 1 and 10 or 100)
-                            Amount.Text =
-                                string.format(
-                                "%." .. (decsize == 10 and "1" or "2") .. "f",
-                                math.floor(
-                                    ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
-                                        (decsize / (step * decsize))
-                                ) /
-                                    (decsize / (step * decsize))
-					                                )
-					     end
-					     if flag ~= "" then
-					         Location[flag] = tonumber(Amount.Text)
-					     end
-					     pcall(callback, tonumber(Amount.Text))
-						 old = tonumber(Amount.Text)
-                    end)
+                                local Mouse = game.Players.LocalPlayer:GetMouse()
+                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                                local precentage = Relpos.x / Background.AbsoluteSize.x
+                                Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
+                                if step >= 1 then
+                                    Amount.Text =
+                                        string.format(
+                                        "%.0f",
+                                        math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
+						                                    )
+						            if flag ~= "" then
+					                    Location[flag] = tonumber(Amount.Text)
+					                end
+						            local Success, Err = pcall(callback, tonumber(Amount.Text))
+									if not Success then
+										error(Err)
+									end
+                                else
+                                    local deccount = GetDecimalPlacesCount(step)
+                                    local decsize = (step >= 1 and 10 or 100)
+                                    Amount.Text =
+                                        string.format(
+                                        "%." .. (decsize == 10 and "1" or "2") .. "f",
+                                        math.floor(
+                                            ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
+                                                (decsize / (step * decsize))
+                                        ) /
+                                            (decsize / (step * decsize))
+						                                    )
+					             end
+						         if flag ~= "" then
+					                 Location[flag] = tonumber(Amount.Text)
+					             end
+						        local Success, Err = pcall(callback, tonumber(Amount.Text))
+								if not Success then
+									error(Err)
+								end
+								old = tonumber(Amount.Text)
+                            end
+                        )
                 end
             end
         )
@@ -761,7 +782,10 @@ function library:CreateWindow(...)
 	        if flag ~= "" then
 	            Location[flag] = tonumber(Amount.Text)
 	        end
-			pcall(callback, tonumber(Amount.Text))
+			local Success, Err = pcall(callback, tonumber(Amount.Text))
+			if not Success then
+				error(Err)
+			end
 			old = tonumber(Amount.Text)
         end)
         return {
@@ -785,7 +809,7 @@ function library:CreateWindow(...)
                     Location[flag] = tonumber(value)
                 end
 			end;
-			ChangeCallback = function(self, val)
+			ChangeCallBack = function(self, val)
 				callback = val
 			end
         }
@@ -961,10 +985,12 @@ function library:CreateWindow(...)
 							TextLabel.ZIndex = 4
 							Dropdown1:Destroy()
 						end)
-						pcall(callback, TextButton.Text)
+						local Success, Err = pcall(callback, TextButton.Text)
+						if not Success then
+							error(Err)
+						end
 					end)
 				end
-				print(UIGridLayout.AbsoluteContentSize.Y + 25)
 				Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true)
 			else
 				local UIGridLayout = Instance.new("UIGridLayout")
@@ -1040,7 +1066,10 @@ function library:CreateWindow(...)
 							TextLabel.ZIndex = 4
 							Dropdown1:Destroy()
 						end)
-						pcall(callback, TextButton.Text)
+						local Success, Err = pcall(callback, TextButton.Text)
+						if not Success then
+							error(Err)
+						end
 					end)
 				end
 				Dropdown1:TweenSize(UDim2.new(1,0,0,149),nil,nil,0.2,true)
@@ -1104,7 +1133,7 @@ function library:CreateWindow(...)
 				old = val[1]
 				List = val
 			end;
-			ChangeCallback = function(self, val)
+			ChangeCallBack = function(self, val)
 				callback = val
 			end
 		}
@@ -1375,7 +1404,10 @@ function library:CreateWindow(...)
 				if flag ~= "" then
 			    	Location[flag] = Color
 				end
-				pcall(Callback, Color)
+				local Success, Err = pcall(Callback, Color)
+				if not Success then
+					error(Err)
+				end
 			end
 		end)
 		
@@ -1394,7 +1426,10 @@ function library:CreateWindow(...)
 			    if flag ~= "" then
 			        Location[flag] = Color
 				end
-				pcall(Callback, Color)
+				local Success, Err = pcall(Callback, Color)
+				if not Success then
+					error(Err)
+				end
 			end
 		end)
 		
@@ -1413,7 +1448,10 @@ function library:CreateWindow(...)
 			    if flag ~= "" then
 			        Location[flag] = Color
 				end
-				pcall(Callback, Color)
+				local Success, Err = pcall(Callback, Color)
+				if not Success then
+					error(Err)
+				end
 			end
 		end)
 		
@@ -1432,7 +1470,10 @@ function library:CreateWindow(...)
 					if flag ~= "" then
 			            Location[flag] = Color
 					end
-					pcall(Callback, Color)
+					local Success, Err = pcall(Callback, Color)
+					if not Success then
+						error(Err)
+					end
 				end
 				if SaterationDragging then
 					local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -1447,7 +1488,10 @@ function library:CreateWindow(...)
 			        if flag ~= "" then
 			            Location[flag] = Color
 					end
-					pcall(Callback, Color)
+					local Success, Err = pcall(Callback, Color)
+					if not Success then
+						error(Err)
+					end
 				end
 				if BrightnessDragging then
 					local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -1462,7 +1506,10 @@ function library:CreateWindow(...)
 			        if flag ~= "" then
 			            Location[flag] = Color
 					end
-					pcall(Callback, Color)
+					local Success, Err = pcall(Callback, Color)
+					if not Success then
+						error(Err)
+					end
 				end
 			end
 		end)
@@ -1486,7 +1533,7 @@ function library:CreateWindow(...)
 			    	Location[flag] = Color
 				end
 			end;
-			ChangeCallback = function(self, val)
+			ChangeCallBack = function(self, val)
 				Callback = val
 			end
 		}
@@ -1600,7 +1647,10 @@ function library:CreateWindow(...)
 				Location[Options.flag] = Toggled
 			end
 			ToggleImage.ImageColor3 = Toggled and Color3.fromRGB(140, 140, 140) or Background.ImageColor3
-			pcall(Callback, Toggled)
+			local Success, Err = pcall(Callback, Toggled)
+			if not Success then
+				error(Err)
+			end
 		end)
 		
 		return {
@@ -1611,7 +1661,7 @@ function library:CreateWindow(...)
 				end
 				ToggleImage.ImageColor3 = Toggled and Color3.fromRGB(140, 140, 140) or Background.ImageColor3
 			end;
-			ChangeCallback = function(self, val)
+			ChangeCallBack = function(self, val)
 				Callback = val
 			end
 		}
