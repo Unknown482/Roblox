@@ -263,7 +263,7 @@ function library:CreateWindow(...)
                 Circle:Destroy()			
 			end)
 			local Success, Err = pcall(Callback)
-			if not Success then
+			if not Success and error then
 				error(Err)
 			end
 		end)
@@ -271,7 +271,7 @@ function library:CreateWindow(...)
 		return {
 			Fire = function(self)
 				local Success, Err = pcall(Callback)
-				if not Success then
+				if not Success and error then
 					error(Err)
 				end
 			end
@@ -695,7 +695,7 @@ function library:CreateWindow(...)
 					                 Location[flag] = tonumber(Amount.Text)
 					             end
 								local Success, Err = pcall(Callback, tonumber(Amount.Text))
-								if not Success then
+								if not Success and error then
 									error(Err)
 								end
 								old = tonumber(Amount.Text)
@@ -730,7 +730,7 @@ function library:CreateWindow(...)
 					                    Location[flag] = tonumber(Amount.Text)
 					                end
 						            local Success, Err = pcall(Callback, tonumber(Amount.Text))
-									if not Success then
+									if not Success and error then
 										error(Err)
 									end
                                 else
@@ -750,7 +750,7 @@ function library:CreateWindow(...)
 					                 Location[flag] = tonumber(Amount.Text)
 					             end
 						        local Success, Err = pcall(Callback, tonumber(Amount.Text))
-								if not Success then
+								if not Success and error then
 									error(Err)
 								end
 								old = tonumber(Amount.Text)
@@ -783,7 +783,7 @@ function library:CreateWindow(...)
 	            Location[flag] = tonumber(Amount.Text)
 	        end
 			local Success, Err = pcall(Callback, tonumber(Amount.Text))
-			if not Success then
+			if not Success and error then
 				error(Err)
 			end
 			old = tonumber(Amount.Text)
@@ -986,7 +986,7 @@ function library:CreateWindow(...)
 							Dropdown1:Destroy()
 						end)
 						local Success, Err = pcall(Callback, TextButton.Text)
-						if not Success then
+						if not Success and error then
 							error(Err)
 						end
 					end)
@@ -1067,7 +1067,7 @@ function library:CreateWindow(...)
 							Dropdown1:Destroy()
 						end)
 						local Success, Err = pcall(Callback, TextButton.Text)
-						if not Success then
+						if not Success and error then
 							error(Err)
 						end
 					end)
@@ -1405,7 +1405,7 @@ function library:CreateWindow(...)
 			    	Location[flag] = Color
 				end
 				local Success, Err = pcall(Callback, Color)
-				if not Success then
+				if not Success and error then
 					error(Err)
 				end
 			end
@@ -1427,7 +1427,7 @@ function library:CreateWindow(...)
 			        Location[flag] = Color
 				end
 				local Success, Err = pcall(Callback, Color)
-				if not Success then
+				if not Success and error then
 					error(Err)
 				end
 			end
@@ -1449,7 +1449,7 @@ function library:CreateWindow(...)
 			        Location[flag] = Color
 				end
 				local Success, Err = pcall(Callback, Color)
-				if not Success then
+				if not Success and error then
 					error(Err)
 				end
 			end
@@ -1471,7 +1471,7 @@ function library:CreateWindow(...)
 			            Location[flag] = Color
 					end
 					local Success, Err = pcall(Callback, Color)
-					if not Success then
+					if not Success and error then
 						error(Err)
 					end
 				end
@@ -1489,7 +1489,7 @@ function library:CreateWindow(...)
 			            Location[flag] = Color
 					end
 					local Success, Err = pcall(Callback, Color)
-					if not Success then
+					if not Success and error then
 						error(Err)
 					end
 				end
@@ -1507,7 +1507,7 @@ function library:CreateWindow(...)
 			            Location[flag] = Color
 					end
 					local Success, Err = pcall(Callback, Color)
-					if not Success then
+					if not Success and error then
 						error(Err)
 					end
 				end
@@ -1648,7 +1648,7 @@ function library:CreateWindow(...)
 			end
 			ToggleImage.ImageColor3 = Toggled and Color3.fromRGB(140, 140, 140) or Background.ImageColor3
 			local Success, Err = pcall(Callback, Toggled)
-			if not Success then
+			if not Success and error then
 				error(Err)
 			end
 		end)
