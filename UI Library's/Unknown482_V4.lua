@@ -404,7 +404,7 @@ function library:CreateWindow(...)
 					Location[flag] = Key
 				end
 			end;
-			ChangeCallBack = function(self, val)
+			ChangeCallback = function(self, val)
 				Callback = val
 			end
 		}
@@ -523,7 +523,7 @@ function library:CreateWindow(...)
 					end
 				end
 			end;
-			ChangeCallBack = function(self, val)
+			ChangeCallback = function(self, val)
 				Callback = val
 			end
 		}
@@ -809,7 +809,7 @@ function library:CreateWindow(...)
                     Location[flag] = tonumber(value)
                 end
 			end;
-			ChangeCallBack = function(self, val)
+			ChangeCallback = function(self, val)
 				callback = val
 			end
         }
@@ -1133,7 +1133,7 @@ function library:CreateWindow(...)
 				old = val[1]
 				List = val
 			end;
-			ChangeCallBack = function(self, val)
+			ChangeCallback = function(self, val)
 				callback = val
 			end
 		}
@@ -1533,7 +1533,7 @@ function library:CreateWindow(...)
 			    	Location[flag] = Color
 				end
 			end;
-			ChangeCallBack = function(self, val)
+			ChangeCallback = function(self, val)
 				Callback = val
 			end
 		}
@@ -1661,7 +1661,7 @@ function library:CreateWindow(...)
 				end
 				ToggleImage.ImageColor3 = Toggled and Color3.fromRGB(140, 140, 140) or Background.ImageColor3
 			end;
-			ChangeCallBack = function(self, val)
+			ChangeCallback = function(self, val)
 				Callback = val
 			end
 		}
