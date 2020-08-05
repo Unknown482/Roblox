@@ -532,7 +532,7 @@ function library:CreateWindow(...)
 	function window:Slider(...)
 		local Args = {...}
 		local Name = Args[1] or "Slider"
-		local callback = Args[3] or function()end
+		local Callback = Args[3] or function()end
 		local flag = Args[2].flag or ""
 		local Min = Args[2].min or 0
 		local Max = Args[2].max or 100
@@ -694,7 +694,7 @@ function library:CreateWindow(...)
 						         if flag ~= "" then
 					                 Location[flag] = tonumber(Amount.Text)
 					             end
-								local Success, Err = pcall(callback, tonumber(Amount.Text))
+								local Success, Err = pcall(Callback, tonumber(Amount.Text))
 								if not Success then
 									error(Err)
 								end
@@ -729,7 +729,7 @@ function library:CreateWindow(...)
 						            if flag ~= "" then
 					                    Location[flag] = tonumber(Amount.Text)
 					                end
-						            local Success, Err = pcall(callback, tonumber(Amount.Text))
+						            local Success, Err = pcall(Callback, tonumber(Amount.Text))
 									if not Success then
 										error(Err)
 									end
@@ -749,7 +749,7 @@ function library:CreateWindow(...)
 						         if flag ~= "" then
 					                 Location[flag] = tonumber(Amount.Text)
 					             end
-						        local Success, Err = pcall(callback, tonumber(Amount.Text))
+						        local Success, Err = pcall(Callback, tonumber(Amount.Text))
 								if not Success then
 									error(Err)
 								end
@@ -782,7 +782,7 @@ function library:CreateWindow(...)
 	        if flag ~= "" then
 	            Location[flag] = tonumber(Amount.Text)
 	        end
-			local Success, Err = pcall(callback, tonumber(Amount.Text))
+			local Success, Err = pcall(Callback, tonumber(Amount.Text))
 			if not Success then
 				error(Err)
 			end
@@ -810,7 +810,7 @@ function library:CreateWindow(...)
                 end
 			end;
 			ChangeCallback = function(self, val)
-				callback = val
+				Callback = val
 			end
         }
 	end
@@ -818,7 +818,7 @@ function library:CreateWindow(...)
 	function window:Dropdown(...)
 		local args = {...}
 		local Name = args[1] or "DropDown"
-		local callback = args[3] or function()end
+		local Callback = args[3] or function()end
         local List = args[2].list or {}
         local old = ""
 		local Toggled = false
@@ -985,7 +985,7 @@ function library:CreateWindow(...)
 							TextLabel.ZIndex = 4
 							Dropdown1:Destroy()
 						end)
-						local Success, Err = pcall(callback, TextButton.Text)
+						local Success, Err = pcall(Callback, TextButton.Text)
 						if not Success then
 							error(Err)
 						end
@@ -1066,7 +1066,7 @@ function library:CreateWindow(...)
 							TextLabel.ZIndex = 4
 							Dropdown1:Destroy()
 						end)
-						local Success, Err = pcall(callback, TextButton.Text)
+						local Success, Err = pcall(Callback, TextButton.Text)
 						if not Success then
 							error(Err)
 						end
@@ -1134,7 +1134,7 @@ function library:CreateWindow(...)
 				List = val
 			end;
 			ChangeCallback = function(self, val)
-				callback = val
+				Callback = val
 			end
 		}
     end
