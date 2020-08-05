@@ -167,9 +167,7 @@ function library:CreateWindow(...)
 		Container.ClipsDescendants = true
 		window.toggled = not window.toggled
 		for i,v in pairs(window.ToggleEvent) do
-			coroutine.resume(coroutine.create(function() 
-				pcall(v, window.toggled)	
-			end))
+			spawn(v, window.toggled)	
 		end
 		if window.toggled then
 			down:Play()
@@ -235,7 +233,7 @@ function library:CreateWindow(...)
 		Background.SliceScale = 0.040
 		
 		Button_2.MouseButton1Click:Connect(function()
-			coroutine.resume(coroutine.create(function()
+			spawn(function()
             	local Circle = Instance.new("ImageLabel")
                 Circle.Name = "Circle"
                 Circle.Parent = Button_2
@@ -263,7 +261,7 @@ function library:CreateWindow(...)
                     wait(Time / 10)
                 end
                 Circle:Destroy()			
-			end))
+			end)
 			pcall(Callback)
 		end)
 		
@@ -659,42 +657,37 @@ function library:CreateWindow(...)
         Background.InputBegan:Connect(
             function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    coroutine.resume(
-                        coroutine.create(
-                            function()
-                                Dragging = true
-                                local Mouse = game.Players.LocalPlayer:GetMouse()
-                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
-                                local precentage = Relpos.x / Background.AbsoluteSize.x
- 
-                                Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
-                                if step >= 1 then
-                                    Amount.Text =
-                                        string.format(
-                                        "%.0f",
-                                        math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
-                                    )
-                                else
-                                    local deccount = GetDecimalPlacesCount(step)
-                                    local decsize = (step >= 1 and 10 or 100)
-                                    Amount.Text =
-                                        string.format(
-                                        "%." .. (decsize == 10 and "1" or "2") .. "f",
-                                        math.floor(
-                                            ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
-                                                (decsize / (step * decsize))
-                                        ) /
-                                            (decsize / (step * decsize))
-                                    )
-								 end
-						         if flag ~= "" then
-					                 Location[flag] = tonumber(Amount.Text)
-					             end
-						         pcall(callback, tonumber(Amount.Text))
-								 old = tonumber(Amount.Text)
-                            end
-                        )
-                    )
+                    spawn(function()
+                        Dragging = true
+                        local Mouse = game.Players.LocalPlayer:GetMouse()
+                        local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                        local precentage = Relpos.x / Background.AbsoluteSize.x
+                        Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
+                        if step >= 1 then
+                            Amount.Text =
+                                string.format(
+                                "%.0f",
+                                math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
+                            )
+                        else
+                            local deccount = GetDecimalPlacesCount(step)
+                            local decsize = (step >= 1 and 10 or 100)
+                            Amount.Text =
+                                string.format(
+                                "%." .. (decsize == 10 and "1" or "2") .. "f",
+                                math.floor(
+                                    ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
+                                        (decsize / (step * decsize))
+                                ) /
+                                    (decsize / (step * decsize))
+                            )
+						 end
+					     if flag ~= "" then
+					         Location[flag] = tonumber(Amount.Text)
+					     end
+					     pcall(callback, tonumber(Amount.Text))
+						 old = tonumber(Amount.Text)
+                    end)
                 end
             end
         )
@@ -708,42 +701,40 @@ function library:CreateWindow(...)
         game:GetService("UserInputService").InputChanged:Connect(
             function(input, gameProcessed)
                 if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
-                    coroutine.resume(coroutine.create(function()
-                                local Mouse = game.Players.LocalPlayer:GetMouse()
-                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
-                                local precentage = Relpos.x / Background.AbsoluteSize.x
-                                Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
-                                if step >= 1 then
-                                    Amount.Text =
-                                        string.format(
-                                        "%.0f",
-                                        math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
-						                                    )
-						            if flag ~= "" then
-					                    Location[flag] = tonumber(Amount.Text)
-					                end
-					                pcall(callback, tonumber(Amount.Text))
-                                else
-                                    local deccount = GetDecimalPlacesCount(step)
-                                    local decsize = (step >= 1 and 10 or 100)
-                                    Amount.Text =
-                                        string.format(
-                                        "%." .. (decsize == 10 and "1" or "2") .. "f",
-                                        math.floor(
-                                            ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
-                                                (decsize / (step * decsize))
-                                        ) /
-                                            (decsize / (step * decsize))
-						                                    )
-					             end
-						         if flag ~= "" then
-					                 Location[flag] = tonumber(Amount.Text)
-					             end
-						         pcall(callback, tonumber(Amount.Text))
-								 old = tonumber(Amount.Text)
-                            end
-                        )
-                    )
+                    spawn(function()
+                        local Mouse = game.Players.LocalPlayer:GetMouse()
+                        local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                        local precentage = Relpos.x / Background.AbsoluteSize.x
+                        Fill.Size = UDim2.new(Snap(math.clamp(precentage, 0, 1), step / (Max - Min)), 0, 1, 0)
+                        if step >= 1 then
+                            Amount.Text =
+                                string.format(
+                                "%.0f",
+                                math.floor((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min)
+					                                )
+					        if flag ~= "" then
+					            Location[flag] = tonumber(Amount.Text)
+					        end
+					        pcall(callback, tonumber(Amount.Text))
+                        else
+                            local deccount = GetDecimalPlacesCount(step)
+                            local decsize = (step >= 1 and 10 or 100)
+                            Amount.Text =
+                                string.format(
+                                "%." .. (decsize == 10 and "1" or "2") .. "f",
+                                math.floor(
+                                    ((Fill.AbsoluteSize.x / Background.AbsoluteSize.x) * (Max - Min) + Min) *
+                                        (decsize / (step * decsize))
+                                ) /
+                                    (decsize / (step * decsize))
+					                                )
+					     end
+					     if flag ~= "" then
+					         Location[flag] = tonumber(Amount.Text)
+					     end
+					     pcall(callback, tonumber(Amount.Text))
+						 old = tonumber(Amount.Text)
+                    end)
                 end
             end
         )
@@ -1575,7 +1566,7 @@ function library:CreateWindow(...)
 		ToggleImage.SliceScale = 0.040
 	
 		Button.MouseButton1Click:Connect(function()
-			coroutine.resume(coroutine.create(function()
+			spawn(function()
             	local Circle = Instance.new("ImageLabel")
                 Circle.Name = "Circle"
                 Circle.Parent = Button
@@ -1603,7 +1594,7 @@ function library:CreateWindow(...)
                     wait(Time / 10)
                 end
                 Circle:Destroy()			
-			end))
+			end)
 			Toggled = not Toggled
 			if Options.flag and Options.flag ~= "" then
 				Location[Options.flag] = Toggled
@@ -1734,9 +1725,7 @@ function library:CreateWindow(...)
 			FolderContainer.ClipsDescendants = true
 			Folder.toggled = not Folder.toggled
 			for i,v in pairs(Folder.ToggleEvent) do
-				coroutine.resume(coroutine.create(function() 
-					pcall(v, Folder.toggled)
-				end))
+				spawn(v, Folder.toggled)
 			end
 			if Folder.toggled then
 				down:Play()
