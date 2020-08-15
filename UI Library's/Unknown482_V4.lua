@@ -1129,8 +1129,8 @@ function library:CreateWindow(...)
 		return {
 			Refresh = function(self, val)
 				CloseDropdown()
-				TextLabel.Text = val[1]
-				old = val[1]
+				TextLabel.Text = tostring(val[1])
+				old = tostring(val[1])
 				List = val
 			end;
 			ChangeCallback = function(self, val)
