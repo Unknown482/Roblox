@@ -482,7 +482,6 @@ function Library:CreateWindow(...)
 					TextButton.TextSize = 18
 					TextButton.ZIndex = 7
 					
-					Image_3.Name = "Image"
 					Image_3.Parent = TextButton
 					Image_3.Active = true
 					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -576,7 +575,6 @@ function Library:CreateWindow(...)
 					TextButton.TextSize = 18
 					TextButton.ZIndex = 7
 					
-					Image_3.Name = "Image"
 					Image_3.Parent = TextButton
 					Image_3.Active = true
 					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -756,8 +754,7 @@ function Library:CreateWindow(...)
 		Center.ScaleType = Enum.ScaleType.Slice
 		Center.SliceCenter = Rect.new(100, 100, 100, 100)
 		Center.SliceScale = 0.040
-				
-		Checkmark.Name = "Checkmark"
+		
 		Checkmark.Parent = Toggle
 		Checkmark.AnchorPoint = Vector2.new(1, 0.5)
 		Checkmark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -787,6 +784,13 @@ function Library:CreateWindow(...)
 					wait(0.15)
 					ToggledOff1:Play()
 					ToggledOff2:Play()
+				end
+				if Options.flag and Options.flag ~= "" then
+					Location[Options.flag] = Toggled
+				end
+				local Success, Err = pcall(Callback, Toggled)
+				if not Success then
+					error(Err)
 				end
 			end
 		end)
@@ -818,29 +822,27 @@ function Library:CreateWindow(...)
 		local Toggle = Instance.new("TextButton")
 		local Image = Instance.new("ImageLabel")
 
-		Title.Name = "Title"
 		Title.Parent = self.parent
 		Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Title.BackgroundTransparency = 1
 		Title.Position = UDim2.new(0, 20, 0, 20)
 		Title.Size = UDim2.new(1, 0, 0, 30)
 		Title.Image = "rbxassetid://3570695787"
-		Title.ImageColor3 = Color3.fromRGB(20, 20, 20)
+		Title.ImageColor3 = Color3.fromRGB(25,25,25)
 		Title.ScaleType = Enum.ScaleType.Slice
 		Title.SliceCenter = Rect.new(100, 100, 100, 100)
 		Title.SliceScale = 0.040
 		
-		Title_2.Name = "Title"
 		Title_2.Parent = Title
 		Title_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Title_2.BackgroundTransparency = 1
 		Title_2.Size = UDim2.new(1, 0, 1, 0)
 		Title_2.Font = Enum.Font.Gotham
+		Title_2.Text = Name
 		Title_2.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Title_2.TextSize = 18
 		Title_2.TextWrapped = true
 		
-		Toggle.Name = "Toggle"
 		Toggle.Parent = Title
 		Toggle.AnchorPoint = Vector2.new(1, 0.5)
 		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -852,14 +854,13 @@ function Library:CreateWindow(...)
 		Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.TextSize = 14
 		
-		Image.Name = "Image"
 		Image.Parent = Toggle
 		Image.AnchorPoint = Vector2.new(0.5, 0.5)
 		Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Image.BackgroundTransparency = 1
 		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Image.Rotation = 180
-		Image.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
+		Image.Size = UDim2.new(0.4, 0, 0.4, 0)
 		Image.Image = "rbxassetid://4918373417"
 		Image.ImageColor3 = Color3.fromRGB(80, 80, 80)
 		
@@ -867,7 +868,6 @@ function Library:CreateWindow(...)
 		local UIListLayout = Instance.new("UIListLayout")
 		Folder.parent = FolderContainer
 
-		FolderContainer.Name = "FolderContainer"
 		FolderContainer.Parent = self.parent
 		FolderContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		FolderContainer.BackgroundTransparency = 1
@@ -890,17 +890,13 @@ function Library:CreateWindow(...)
 		
 		local down = TweenService:Create( Image, TweenInfo.new(0.2),{ Rotation = 90 })
 		local up = TweenService:Create( Image, TweenInfo.new(0.2),{ Rotation = 180 })
-		local colordown = TweenService:Create( Title, TweenInfo.new(0.2),{ ImageColor3 = Color3.fromRGB(25,25,25) })
-		local colorup = TweenService:Create( Title, TweenInfo.new(0.2),{ ImageColor3 = Color3.fromRGB(20,20,20) })
 		Toggle.MouseButton1Click:Connect(function()
 			Folder.toggled = not Folder.toggled
 			FolderContainer.ClipsDescendants = true
 			FolderContainer:TweenSize((Folder.toggled and UDim2.new(1,0,0, UIListLayout.AbsoluteContentSize.Y) or UDim2.new(1,0,0, 0)), nil, nil, 0.2, true)
 			if Folder.toggled then
-				colordown:Play()
 				down:Play()
 			else
-				colorup:Play()
 				up:Play()
 			end
 		end)
