@@ -362,6 +362,7 @@ function Library:CreateWindow(...)
 	
 	function Window:Dropdown(...)
 		local Args = {...}
+		local selfDropdown = {}
 		local Name = Args[1] or "DropDown"
 		local callback = Args[3] or function()end
         local List = Args[2] and Args[2].list or {}
@@ -432,7 +433,6 @@ function Library:CreateWindow(...)
 
         local down = TweenService:Create(Image_2,TweenInfo.new(0.2),{Rotation = 90})
         local up = TweenService:Create(Image_2,TweenInfo.new(0.2),{Rotation = 180})
-		
 		local function CreateDropDown(Array)
 			self.parent.ClipsDescendants = false
 			Main.ClipsDescendants = false
@@ -650,6 +650,17 @@ function Library:CreateWindow(...)
    	        	end)
         	end
         end
+		
+		function selfDropdown:Refresh(val)
+			CloseDropdown()
+			Button.Text = val[1]
+			old = val[1]
+			List = val
+		end
+		
+		function selfDropdown:ChangeCallBack(val)
+			callback = val
+		end
 		
 		game:GetService("UserInputService").WindowFocusReleased:Connect(CloseDropdown)
 		
