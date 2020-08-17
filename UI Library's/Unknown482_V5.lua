@@ -1,4 +1,4 @@
-local Library = {toggled = false}
+local Library = {toggled = true; count = 0;}
 local TweenService = game:GetService("TweenService")
 local ScreenGui = Instance.new("ScreenGui")
 function Drag(GuiObject)
@@ -53,8 +53,19 @@ ScreenGui.Parent = game:GetService("RunService"):IsStudio() and game.Players.Loc
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 2147483647
 
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.RightControl then
+        Library.toggled = not Library.toggled
+        for i, v in ipairs(ScreenGui:GetChildren()) do
+			v:TweenPosition(Library.toggled and UDim2.new(0,20+((i - 1)*(v.AbsoluteSize.X + 10)),0,20) 
+				or UDim2.new(-0.5, 0, -0.5, 0),"InOut","Quad",0.2,true)
+        end
+    end
+end)
+
 function Library:CreateWindow(...)
 	local Window = {toggled = true, flags = {}, parent = nil}
+	Library.count = Library.count + 1
 	local Args = {...}
 	local Name = Args[1] or "Window"
 	local Main = Instance.new("ImageLabel")
@@ -66,7 +77,6 @@ function Library:CreateWindow(...)
 	Main.Parent = ScreenGui
 	Main.Active = true
 	Main.BackgroundTransparency = 1
-	Main.Position = UDim2.new(0, 20, 0, 20)
 	Main.Selectable = true
 	Main.Size = UDim2.new(0, 200, 0, 224)
 	Main.Image = "rbxassetid://3570695787"
@@ -74,6 +84,7 @@ function Library:CreateWindow(...)
 	Main.ScaleType = Enum.ScaleType.Slice
 	Main.SliceCenter = Rect.new(100, 100, 100, 100)
 	Main.SliceScale = 0.040
+	Main.Position = UDim2.new(0,20+((Library.count - 1)*(Main.AbsoluteSize.X + 10)),0,20)
 	Window.parent = Main
 
 	UIListLayout.Parent = Main
