@@ -697,6 +697,8 @@ function Library:CreateWindow(...)
 		Button.MouseLeave:Connect(function()
 			Normal:Play()
 		end)
+		
+		return selfDropdown
 	end
 	
 	function Window:Toggle(...)
