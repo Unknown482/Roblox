@@ -658,7 +658,7 @@ function Library:CreateWindow(...)
 			List = val
 		end
 		
-		function selfDropdown:ChangeCallBack(val)
+		function selfDropdown:ChangeCallback(val)
 			callback = val
 		end
 		
