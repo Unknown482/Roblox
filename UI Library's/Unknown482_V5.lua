@@ -44,12 +44,7 @@ local Parent
 if syn then
     syn.protect_gui(ScreenGui)
 end
-if get_hidden_gui then
-	Parent = get_hidden_gui()
-else
-	Parent = game:GetService("CoreGui")
-end
-ScreenGui.Parent = game:GetService("RunService"):IsStudio() and game.Players.LocalPlayer:WaitForChild("PlayerGui") or Parent
+ScreenGui.Parent = get_hidden_gui and get_hidden_gui() or game:GetService("CoreGui")
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 2147483647
 
@@ -118,7 +113,7 @@ function Library:CreateWindow(...)
 	Toggle.BackgroundTransparency = 1
 	Toggle.Position = UDim2.new(1, -5, 0.5, 0)
 	Toggle.Size = UDim2.new(0, 25, 0, 25)
-	Toggle.Font = Enum.Font.SourceSans
+	Toggle.Font = Enum.Font.Gotham
 	Toggle.Text = ""
 	Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 	
@@ -404,7 +399,7 @@ function Library:CreateWindow(...)
 		Button.Font = Enum.Font.Gotham
 		Button.Text = tostring(List[1])
 		Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Button.TextSize = 16
+		Button.TextSize = 18
 
 		Image.Parent = Button
 		Image.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -426,7 +421,7 @@ function Library:CreateWindow(...)
 		Toggle.Selectable = true
 		Toggle.Size = UDim2.new(0, 25, 0, 25)
 		Toggle.ZIndex = -1
-		Toggle.Font = Enum.Font.SourceSans
+		Toggle.Font = Enum.Font.Gotham
 		Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 		
 		Image_2.Parent = Toggle
@@ -488,7 +483,7 @@ function Library:CreateWindow(...)
 					TextButton.Size = UDim2.new(0, 200, 0, 50)
 					TextButton.ZIndex = 2
 					TextButton.Text = tostring(v)
-					TextButton.Font = Enum.Font.SourceSans
+					TextButton.Font = Enum.Font.Gotham
 					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 					TextButton.TextSize = 18
 					TextButton.ZIndex = 7
@@ -581,7 +576,7 @@ function Library:CreateWindow(...)
 					TextButton.Size = UDim2.new(0, 200, 0, 50)
 					TextButton.ZIndex = 2
 					TextButton.Text = tostring(v)
-					TextButton.Font = Enum.Font.SourceSans
+					TextButton.Font = Enum.Font.Gotham
 					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 					TextButton.TextSize = 18
 					TextButton.ZIndex = 7
@@ -737,7 +732,7 @@ function Library:CreateWindow(...)
 		Title.Font = Enum.Font.Gotham
 		Title.Text = Name
 		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Title.TextSize = 14
+		Title.TextSize = 16
 		Title.TextWrapped = true
 		Title.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -860,7 +855,7 @@ function Library:CreateWindow(...)
 		Toggle.BackgroundTransparency = 1
 		Toggle.Position = UDim2.new(1, -5, 0.5, 0)
 		Toggle.Size = UDim2.new(0, 25, 0, 25)
-		Toggle.Font = Enum.Font.SourceSans
+		Toggle.Font = Enum.Font.Gotham
 		Toggle.Text = ""
 		Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.TextSize = 14
