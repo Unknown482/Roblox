@@ -1,4 +1,4 @@
-local Library = {toggled = true; count = 0;}
+local Library = {toggled = true; count = 0; MousePos = game:GetService("UserInputService"):GetMouseLocation() - Vector2.new(0, 36);}
 local TweenService = game:GetService("TweenService")
 local ScreenGui = Instance.new("ScreenGui")
 function Drag(GuiObject)
@@ -7,16 +7,14 @@ GuiObject.Active=true
 GuiObject.Selectable=true
 local RelitivePos=Vector2.new(0,0)
 GuiObject.InputBegan:Connect(function(input)
-local Mouse=game.Players.LocalPlayer:GetMouse()
 if input.UserInputType==Enum.UserInputType.MouseButton1 then
-RelitivePos=Vector2.new(Mouse.X,Mouse.Y)-GuiObject.AbsolutePosition
+RelitivePos=Vector2.new(Library.MousePos.X,Library.MousePos.Y)-GuiObject.AbsolutePosition
 Dragging=true
 end
 end)
 game:GetService("UserInputService").InputChanged:Connect(function(input,gameProcessed)
 if input.UserInputType==Enum.UserInputType.MouseMovement and Dragging then
-local Mouse=game.Players.LocalPlayer:GetMouse()
-GuiObject.Parent:TweenPosition(UDim2.new(0,Mouse.X-RelitivePos.X,0,Mouse.Y-RelitivePos.Y),"Out","Quad",0.2,true)
+GuiObject.Parent:TweenPosition(UDim2.new(0,Library.MousePos.X-RelitivePos.X,0,Library.MousePos.Y-RelitivePos.Y),"Out","Quad",0.2,true)
 end
 end)
 game:GetService("UserInputService").InputEnded:Connect(function(input)
@@ -938,10 +936,9 @@ function Library:CreateWindow(...)
 		local selfslider = {}
 		local old = tonumber(Amount.Text)
 		local function MouseOver(GuiObject)
-			local MousePos = game:GetService("UserInputService"):GetMouseLocation() - Vector2.new(0, 36);
 			local Size = GuiObject.AbsoluteSize
 			local Pos = GuiObject.AbsolutePosition
-			return (MousePos.X >= Pos.X) and (MousePos.Y >= Pos.Y) and (MousePos.X <= (Pos.X + Size.X)) and (MousePos.Y <= (Pos.Y + Size.Y))
+			return (Library.MousePos.X >= Pos.X) and (Library.MousePos.Y >= Pos.Y) and (Library.MousePos.X <= (Pos.X + Size.X)) and (Library.MousePos.Y <= (Pos.Y + Size.Y))
 		end
         local function Snap(num, snap)
             if snap == 0 then
@@ -998,8 +995,7 @@ function Library:CreateWindow(...)
 								Dragging = true
 								Dragging1:Play()
 								Dragging2:Play()
-                                local Mouse = game.Players.LocalPlayer:GetMouse()
-                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                                local Relpos = Library.MousePos - Fill.AbsolutePosition
                                 local precentage = Relpos.x / Background.AbsoluteSize.x
 								Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), step / (Max - Min)), 0, 0, 6)
 								if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
@@ -1054,8 +1050,7 @@ function Library:CreateWindow(...)
 		game:GetService("UserInputService").InputChanged:Connect(function(input, gameProcessed)
 		    if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
 		        spawn(function()
-		            local Mouse = game.Players.LocalPlayer:GetMouse()
-		            local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+		            local Relpos = Library.MousePos - Fill.AbsolutePosition
 		            local precentage = Relpos.x / Background.AbsoluteSize.x
 					Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), step / (Max - Min)), 0, 0, 6)
 					if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
@@ -1243,4 +1238,9 @@ function Library:CreateWindow(...)
 	
 	return Window
 end
+game:GetService("UserInputService").InputChanged:Connect(function(input, gameProcessed)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		Library.MousePos = game:GetService("UserInputService"):GetMouseLocation() - Vector2.new(0, 36)
+	end
+end)
 return Library
