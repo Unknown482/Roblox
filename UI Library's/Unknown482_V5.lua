@@ -73,7 +73,7 @@ function Library:CreateWindow(...)
 	Main.Active = true
 	Main.BackgroundTransparency = 1
 	Main.Selectable = true
-	Main.Size = UDim2.new(0, 200, 0, 224)
+	Main.Size = UDim2.new(0, 220, 0, 224)
 	Main.Image = "rbxassetid://3570695787"
 	Main.ImageColor3 = Color3.fromRGB(30, 30, 30)
 	Main.ScaleType = Enum.ScaleType.Slice
@@ -815,6 +815,337 @@ function Library:CreateWindow(...)
 				Center.Size = UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset)
 			end
 		end)
+	end
+	
+	function Window:Slider(...)
+		local Args = {...}
+		local Name = Args[1] or "Slider"
+		local callback = Args[3] or function()end
+		local flag = Args[2] and Args[2].flag or ""
+		local Min = Args[2] and Args[2].min or 0
+		local Max = Args[2] and Args[2].max or 100
+		local Default = Args[2] and Args[2].default or Min
+		local step = Args[2] and Args[2].step or 1
+		local Location = Args[2] and Args[2].location or Window.flags
+        if flag ~= "" then
+            Location[flag] = Default
+		end
+		
+		local Box = Instance.new("Frame")
+		local Title = Instance.new("TextLabel")
+		local Amount = Instance.new("TextBox")
+		local Image = Instance.new("ImageLabel")
+		local Background = Instance.new("Frame")
+		local BackgroundImage = Instance.new("ImageLabel")
+		local Fill = Instance.new("ImageLabel")
+		local Handle = Instance.new("ImageButton")
+
+		Box.Parent = self.parent
+		Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Box.BackgroundTransparency = 1.000
+		Box.ClipsDescendants = true
+		Box.Size = UDim2.new(1, 0, 0, 40)
+		
+		Title.Parent = Box
+		Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		Title.BorderSizePixel = 0
+		Title.Position = UDim2.new(0, 7, 0, 4)
+		Title.Size = UDim2.new(0, 213, 0, 15)
+		Title.Font = Enum.Font.Gotham
+		Title.Text = Name
+		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Title.TextSize = 16.000
+		Title.TextXAlignment = Enum.TextXAlignment.Left
+		
+		Amount.Parent = Box
+		Amount.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+		Amount.BackgroundTransparency = 1.000
+		Amount.BorderSizePixel = 0
+		Amount.Position = UDim2.new(0.7409091, 0, 0.075000003, 0)
+		Amount.Size = UDim2.new(0, 50, 0, 18)
+		Amount.ZIndex = 2
+		Amount.Font = Enum.Font.Gotham
+		Amount.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
+		Amount.Text = tostring(Default)
+		Amount.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Amount.TextSize = 14.000
+		
+		Image.Parent = Amount
+		Image.Active = true
+		Image.AnchorPoint = Vector2.new(0.5, 0.5)
+		Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Image.BackgroundTransparency = 1.000
+		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Image.Selectable = true
+		Image.Size = UDim2.new(1, 0, 1, 0)
+		Image.Image = "rbxassetid://3570695787"
+		Image.ImageColor3 = Color3.fromRGB(45, 45, 45)
+		Image.ScaleType = Enum.ScaleType.Slice
+		Image.SliceCenter = Rect.new(100, 100, 100, 100)
+		Image.SliceScale = 0.040
+		
+		Background.Parent = Box
+		Background.AnchorPoint = Vector2.new(0.5, 1)
+		Background.BackgroundTransparency = 1.000
+		Background.Position = UDim2.new(0.5, 0, 1, -2)
+		Background.Size = UDim2.new(1, -20, 0, 17)
+		
+		BackgroundImage.Parent = Background
+		BackgroundImage.AnchorPoint = Vector2.new(0.5, 0.5)
+		BackgroundImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		BackgroundImage.BackgroundTransparency = 1.000
+		BackgroundImage.Position = UDim2.new(0.5, 0, 0.5, 0)
+		BackgroundImage.Size = UDim2.new(1, 0, 0, 6)
+		BackgroundImage.Image = "rbxassetid://3570695787"
+		BackgroundImage.ImageColor3 = Color3.fromRGB(60, 60, 60)
+		BackgroundImage.ScaleType = Enum.ScaleType.Slice
+		BackgroundImage.SliceCenter = Rect.new(100, 100, 100, 100)
+		BackgroundImage.SliceScale = 0.040
+		
+		Fill.Parent = Background
+		Fill.AnchorPoint = Vector2.new(0, 0.5)
+		Fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Fill.BackgroundTransparency = 1.000
+		Fill.Position = UDim2.new(math.clamp((((Max - 0) / (Max - Min))-1)*-1, 0, 1),0,0.5,0)
+		Fill.Size = UDim2.new((1 - (((Max - Default) / (Max - Min))+Fill.Position.X.Scale)), 0, 0, 6)
+		Fill.Image = "rbxassetid://3570695787"
+		Fill.ImageColor3 = Color3.fromRGB(100, 100, 100)
+		Fill.ScaleType = Enum.ScaleType.Slice
+		Fill.SliceCenter = Rect.new(100, 100, 100, 100)
+		Fill.SliceScale = 0.040
+		
+		Handle.Parent = Fill
+		Handle.AnchorPoint = Vector2.new(0.5, 0.5)
+		Handle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Handle.BackgroundTransparency = 1.000
+		Handle.Position = UDim2.new(1, 0, 0.5, 0)
+		Handle.Size = UDim2.new(0, 0, 0, 0)
+		Handle.Image = "rbxassetid://3570695787"
+		Handle.ImageColor3 = Color3.fromRGB(100, 100, 100)
+		Handle.ScaleType = Enum.ScaleType.Fit
+		Handle.SliceCenter = Rect.new(100, 100, 100, 100)
+		Handle.SliceScale = 0.040
+		if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale < 0 then
+			Handle.Position = UDim2.new(0,0,0.5,0)
+		else
+			Handle.Position = UDim2.new(1,0,0.5,0)
+		end
+		local Normal1 = TweenService:Create(Fill, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(100,100,100)})
+		local Normal2 = TweenService:Create(Handle, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(100,100,100)})
+		local Dragging1 = TweenService:Create(Fill, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(255,75,75)})
+		local Dragging2 = TweenService:Create(Handle, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(255,75,75)})
+		local Dragging = false
+		local selfslider = {}
+		local old = tonumber(Amount.Text)
+		local function MouseOver(GuiObject)
+			local MousePos = game:GetService("UserInputService"):GetMouseLocation() - Vector2.new(0, 36);
+			local Size = GuiObject.AbsoluteSize
+			local Pos = GuiObject.AbsolutePosition
+			return (MousePos.X >= Pos.X) and (MousePos.Y >= Pos.Y) and (MousePos.X <= (Pos.X + Size.X)) and (MousePos.Y <= (Pos.Y + Size.Y))
+		end
+        local function Snap(num, snap)
+            if snap == 0 then
+                return num
+            else
+                return math.floor(num / snap + 0.5) * snap
+            end
+		end
+		local function round(n)
+			return math.floor(n + 0.5)
+		end
+        local function GetDecimalPlacesCount(num)
+            num = tostring(num)
+            if string.match(num, ".") then
+                local dec = string.split(num, ".")
+                return #tostring(tonumber(dec[2]))
+            else
+                return 0
+            end
+        end
+        Handle.MouseButton1Down:Connect(function()
+			Dragging = true
+			Dragging1:Play()
+			Dragging2:Play()
+		end)
+		function selfslider:Set(value)
+			if tonumber(value) then
+				Amount.Text = math.clamp(tonumber(value), Min, Max)
+				value = math.clamp(tonumber(value), Min, Max)
+			else
+				Amount.Text = tostring(old)
+				value = old
+			end
+			Fill.Size = UDim2.new((1 - (((Max - value) / (Max - Min))+Fill.Position.X.Scale)), 0, 0, 6)
+			if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
+				Handle.Position = UDim2.new(0,0,0.5,0)
+			elseif Fill.Position.X.Scale > 0 then
+				Handle.Position = UDim2.new(1,0,0.5,0)
+			end
+	        if flag ~= "" then
+	            Location[flag] = value
+	        end
+			old = value
+		end
+		function selfslider:ChangeCallback(value)
+			callback = value
+		end
+        Background.InputBegan:Connect(
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    coroutine.resume(
+                        coroutine.create(
+                            function()
+								Dragging = true
+								Dragging1:Play()
+								Dragging2:Play()
+                                local Mouse = game.Players.LocalPlayer:GetMouse()
+                                local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+                                local precentage = Relpos.x / Background.AbsoluteSize.x
+								Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), step / (Max - Min)), 0, 0, 6)
+								if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
+									Handle.Position = UDim2.new(0,0,0.5,0)
+								elseif Fill.Position.X.Scale > 0 then
+									Handle.Position = UDim2.new(1,0,0.5,0)
+								end
+                                if step >= 1 then
+                                    Amount.Text =
+                                        string.format(
+                                        "%.0f",
+                                        round(((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min))
+                                else
+                                    local deccount = GetDecimalPlacesCount(step)
+                                    local decsize = (step >= 1 and 10 or 100)
+					                Amount.Text =
+					                    string.format(
+					                    "%." .. (decsize == 10 and "1" or "2") .. "f",
+					                    round(
+					                        (((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min) *
+					                            (decsize / (step * decsize))
+					                    ) /
+					                        (decsize / (step * decsize))
+					                                        )
+								 end
+						         if flag ~= "" then
+					                 Location[flag] = tonumber(Amount.Text)
+					             end
+								local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
+								if not Success then
+									error(Err)
+								end
+								old = tonumber(Amount.Text)
+                            end
+                        )
+                    )
+                end
+            end
+        )
+        game:GetService("UserInputService").InputEnded:Connect(
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				    Dragging = false
+					Normal1:Play()
+					Normal2:Play()
+					if not MouseOver(Background) then
+						Handle:TweenSize(UDim2.new(0, 0, 0, 0), nil, nil, 0.1, true)
+					end
+                end
+            end
+        )
+		game:GetService("UserInputService").InputChanged:Connect(function(input, gameProcessed)
+		    if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
+		        spawn(function()
+		            local Mouse = game.Players.LocalPlayer:GetMouse()
+		            local Relpos = Vector2.new(Mouse.x, Mouse.y) - Fill.AbsolutePosition
+		            local precentage = Relpos.x / Background.AbsoluteSize.x
+					Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), step / (Max - Min)), 0, 0, 6)
+					if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
+						Handle.Position = UDim2.new(0,0,0.5,0)
+					elseif Fill.Position.X.Scale > 0 then
+						Handle.Position = UDim2.new(1,0,0.5,0)
+					end
+		            if step >= 1 then
+		                Amount.Text =
+		                    string.format(
+		                    "%.0f",
+		                    round(((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min))
+		                if flag ~= "" then
+		                    Location[flag] = tonumber(Amount.Text)
+		                end
+		                local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
+		                if not Success then
+		                    error(Err)
+		                end
+		            else
+		                local deccount = GetDecimalPlacesCount(step)
+		                local decsize = (step >= 1 and 10 or 100)
+		                Amount.Text =
+		                    string.format(
+		                    "%." .. (decsize == 10 and "1" or "2") .. "f",
+		                    round(
+		                        (((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min) *
+		                            (decsize / (step * decsize))
+		                    ) /
+		                        (decsize / (step * decsize))
+		                                        )
+		            end
+		            if flag ~= "" then
+		                Location[flag] = tonumber(Amount.Text)
+		            end
+		            local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
+		            if not Success then
+		                error(Err)
+		            end
+		            old = tonumber(Amount.Text)
+		        end)
+		    end
+		end)
+		game:GetService("UserInputService").WindowFocusReleased:Connect(function()
+			Dragging = false
+			Normal1:Play()
+			Normal2:Play()
+			Handle:TweenSize(UDim2.new(0, 0, 0, 0), nil, nil, 0.1, true)
+        end)
+		
+        function PositiveIntegerMask(text)
+            return text:gsub("[^%-%d]", "")
+        end
+        Amount:GetPropertyChangedSignal("Text"):Connect(function()
+            if (type == "number") then
+                Amount.Text = PositiveIntegerMask(Amount.Text)
+            end
+        end)
+		
+		Background.MouseLeave:Connect(function()
+			if not Dragging then
+				Handle:TweenSize(UDim2.new(0, 0, 0, 0), nil, nil, 0.1, true)
+			end
+		end)
+		
+		Background.MouseEnter:Connect(function()
+			Handle:TweenSize(UDim2.new(0, 13, 0, 13), nil, nil, 0.1, true)
+		end)
+		
+		Amount.FocusLost:Connect(function()
+			if tonumber(Amount.Text) then
+				Amount.Text = math.clamp(tonumber(Amount.Text), Min, Max)
+			else
+				Amount.Text = tostring(old)
+			end
+			Fill.Size = UDim2.new((1 - (((Max - tonumber(Amount.Text)) / (Max - Min))+Fill.Position.X.Scale)), 0, 0, 6)
+			if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
+				Handle.Position = UDim2.new(0,0,0.5,0)
+			elseif Fill.Position.X.Scale > 0 then
+				Handle.Position = UDim2.new(1,0,0.5,0)
+			end
+	        if flag ~= "" then
+	            Location[flag] = tonumber(Amount.Text)
+	        end
+			local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
+			if not Success then
+				error(Err)
+			end
+			old = tonumber(Amount.Text)
+        end)
 	end
 	
 	function Window:Folder(...)
