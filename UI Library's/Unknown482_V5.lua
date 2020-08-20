@@ -710,6 +710,7 @@ function Library:CreateWindow(...)
 		local Location = Options.location and Options.location or Window.flags
 		local Toggled = Options.Default and true or false
 		local Callback = Args[3] or function() end
+		local SelfToggle = {}
 		
 		local Toggle = Instance.new("Frame")
 		local Title = Instance.new("TextLabel")
@@ -774,6 +775,30 @@ function Library:CreateWindow(...)
 		local ToggledOn2 = TweenService:Create(Center, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(255,75,75)})
 		local ToggledOff1 = TweenService:Create(Outline, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(60,60,60)})
 		local ToggledOff2 = TweenService:Create(Center, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(30,30,30)})
+		
+		function SelfToggle:Set(value)
+			Toggled = value
+			if Toggled then
+				ToggledOn1:Play()
+				ToggledOn2:Play()
+				wait(0.15)
+				Center:TweenSize(UDim2.new(0,0,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
+			else
+				Center:TweenSize(UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
+				wait(0.15)
+				ToggledOff1:Play()
+				ToggledOff2:Play()
+			end
+			if Options.flag and Options.flag ~= "" then
+				Location[Options.flag] = Toggled
+			end
+		end
+		
+		function SelfToggle:ChangeCallback(value)
+			if type(value) == "function" then
+				Callback = value
+			end
+		end
 		
 		Toggle.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
