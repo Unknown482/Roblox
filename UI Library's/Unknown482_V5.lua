@@ -174,7 +174,7 @@ function Library:CreateWindow(...)
 		Image.SliceScale = 0.040
 		
 		function ButtonSelf:Fire()
-			local Success, Err = pcall(Callback)
+			local Success, Err = pcall(Callback, ButtonSelf)
 			if not Success then
 				error(Err)
 			end
@@ -185,7 +185,7 @@ function Library:CreateWindow(...)
 		local Pressed = TweenService:Create(Image, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(255,75,75)})
 		
 		TextButton.MouseButton1Click:Connect(function()
-			local Success, Err = pcall(Callback)
+			local Success, Err = pcall(Callback, ButtonSelf)
 			if not Success then
 				error(Err)
 			end
@@ -436,7 +436,37 @@ function Library:CreateWindow(...)
         old = Button.Text
 
         local down = TweenService:Create(Image_2,TweenInfo.new(0.2),{Rotation = 90})
-        local up = TweenService:Create(Image_2,TweenInfo.new(0.2),{Rotation = 180})
+		local up = TweenService:Create(Image_2,TweenInfo.new(0.2),{Rotation = 180})
+		local Normal = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(45,45,45)})
+		local Hovering = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(38,38,38)})
+		
+		local function CloseDropdown()
+            if Button:FindFirstChild("Dropdown") then
+				up:Play()
+				Image.SliceCenter = Rect.new(100, 100, 100, 100)
+                Toggled = false
+				Button.Text = old
+				Button.TextColor3 = Color3.fromRGB(255,255,255)
+				Button:FindFirstChild("Dropdown"):TweenSize( UDim2.new(0, 173, 0, 0), "Out", "Quad", 0.2, true, function()
+					Image.ZIndex = 2
+					Image_2.ZIndex = 3
+					Button.ZIndex = 3
+                    Button:FindFirstChild("Dropdown"):Destroy()
+   	        	end)
+        	end
+        end
+		
+		function selfDropdown:Refresh(val)
+			CloseDropdown()
+			Button.Text = val[1]
+			old = val[1]
+			List = val
+		end
+		
+		function selfDropdown:ChangeCallback(val)
+			callback = val
+		end
+		
 		local function CreateDropDown(Array)
 			self.parent.ClipsDescendants = false
 			Main.ClipsDescendants = false
@@ -521,7 +551,7 @@ function Library:CreateWindow(...)
 							Button.ZIndex = 3
 							Dropdown1:Destroy()
 						end)
-						local Success, Err = pcall(callback, TextButton.Text)
+						local Success, Err = pcall(callback, TextButton.Text, selfDropdown)
 						if not Success then
 							error(Err)
 						end
@@ -614,7 +644,7 @@ function Library:CreateWindow(...)
 							Button.ZIndex = 3
 							Dropdown1:Destroy()
 						end)
-						local Success, Err = pcall(callback, TextButton.Text)
+						local Success, Err = pcall(callback, TextButton.Text, selfDropdown)
 						if not Success then
 							error(Err)
 						end
@@ -632,36 +662,6 @@ function Library:CreateWindow(...)
 				Dropdown1:TweenSize(UDim2.new(1,0,0,149),nil,nil,0.2,true)
 				ScrollingFrame.CanvasSize = UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y)
 			end
-		end
-		
-		local Normal = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(45,45,45)})
-		local Hovering = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(38,38,38)})
-		
-		local function CloseDropdown()
-            if Button:FindFirstChild("Dropdown") then
-				up:Play()
-				Image.SliceCenter = Rect.new(100, 100, 100, 100)
-                Toggled = false
-				Button.Text = old
-				Button.TextColor3 = Color3.fromRGB(255,255,255)
-				Button:FindFirstChild("Dropdown"):TweenSize( UDim2.new(0, 173, 0, 0), "Out", "Quad", 0.2, true, function()
-					Image.ZIndex = 2
-					Image_2.ZIndex = 3
-					Button.ZIndex = 3
-                    Button:FindFirstChild("Dropdown"):Destroy()
-   	        	end)
-        	end
-        end
-		
-		function selfDropdown:Refresh(val)
-			CloseDropdown()
-			Button.Text = val[1]
-			old = val[1]
-			List = val
-		end
-		
-		function selfDropdown:ChangeCallback(val)
-			callback = val
 		end
 		
 		game:GetService("UserInputService").WindowFocusReleased:Connect(CloseDropdown)
@@ -795,7 +795,9 @@ function Library:CreateWindow(...)
 		end
 		
 		function SelfToggle:ChangeCallback(value)
-			Callback = value
+			if type(value) == "function" then
+				Callback = value
+			end
 		end
 		
 		Toggle.InputBegan:Connect(function(input)
@@ -815,7 +817,7 @@ function Library:CreateWindow(...)
 				if Options.flag and Options.flag ~= "" then
 					Location[Options.flag] = Toggled
 				end
-				local Success, Err = pcall(Callback, Toggled)
+				local Success, Err = pcall(Callback, Toggled, SelfToggle)
 				if not Success then
 					error(Err)
 				end
