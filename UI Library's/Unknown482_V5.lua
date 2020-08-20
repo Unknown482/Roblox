@@ -795,9 +795,7 @@ function Library:CreateWindow(...)
 		end
 		
 		function SelfToggle:ChangeCallback(value)
-			if type(value) == "function" then
-				Callback = value
-			end
+			Callback = value
 		end
 		
 		Toggle.InputBegan:Connect(function(input)
