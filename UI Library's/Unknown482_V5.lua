@@ -838,6 +838,8 @@ function Library:CreateWindow(...)
 				Center.Size = UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset)
 			end
 		end)
+		
+		return SelfToggle
 	end
 	
 	function Window:Slider(...)
