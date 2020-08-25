@@ -4,7 +4,7 @@ game:GetService("Players").LocalPlayer.Idled:connect(function()
    wait(1)
    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 end)
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Unknown482/Roblox/master/UI%20Library's/Unknown482_V5.lua", true))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Unknown482/Roblox/master/UI/Unknown482_V5.lua", true))()
 local Functions = require(game:GetService("Workspace").Lib.ClickGame.ClickGame)
 local Player = game:GetService("Players").LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
