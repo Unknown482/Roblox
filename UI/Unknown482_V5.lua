@@ -56,6 +56,12 @@ game:GetService("UserInputService").InputBegan:Connect(function(input)
     end
 end)
 
+local function MouseOver(GuiObject)
+	local Size = GuiObject.AbsoluteSize
+	local Pos = GuiObject.AbsolutePosition
+	return (Library.MousePos.X >= Pos.X) and (Library.MousePos.Y >= Pos.Y) and (Library.MousePos.X <= (Pos.X + Size.X)) and (Library.MousePos.Y <= (Pos.Y + Size.Y))
+end
+
 function Library:CreateWindow(...)
 	local Window = {toggled = true, flags = {}, parent = nil}
 	Library.count = Library.count + 1
@@ -277,8 +283,9 @@ function Library:CreateWindow(...)
 		TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		TextBox.BackgroundTransparency = 1
 		TextBox.Position = UDim2.new(0, 12, 0, 13)
-		TextBox.Size = UDim2.new(0, 182, 0, 18)
+		TextBox.Size = UDim2.new(0, 200, 0, 18)
 		TextBox.ClearTextOnFocus = false
+		TextBox.ClipsDescendants = true
 		TextBox.Font = Enum.Font.Gotham
 		TextBox.Text = (string.lower(Type) == "number" and (tonumber(Default) and tostring(Default) or tostring(Min)) or Default)
 		TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -364,6 +371,339 @@ function Library:CreateWindow(...)
 		return Box
 	end
 	
+	function Window:Searchbox(...)
+		local Args = {...}
+		local selfSearchbox = {}
+		local Name = Args[1] or "Searchbox"
+		local callback = Args[3] or function()end
+        local List = Args[2] and Args[2].list or {}
+        local old = tostring(List[1])
+		local Toggled = false
+		local Location = (Args[2] and Args[2].location) and Args[2].location or Window.flags
+		local flag = Args[2] and Args[2].flag or ""
+        if flag ~= "" then
+            Location[flag] = tostring(List[1])
+		end
+
+		local Searchbox = Instance.new("Frame")
+		local Textbox = Instance.new("TextBox")
+		local Image = Instance.new("ImageLabel")
+		local Outline = Instance.new("ImageLabel")
+
+		Searchbox.Name = "Searchbox"
+		Searchbox.Parent = self.parent
+		Searchbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Searchbox.BackgroundTransparency = 1.000
+		Searchbox.Size = UDim2.new(1, 0, 0, 30)
+		
+		Textbox.Name = "Textbox"
+		Textbox.Parent = Searchbox
+		Textbox.AnchorPoint = Vector2.new(0.5, 0.5)
+		Textbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Textbox.BackgroundTransparency = 1.000
+		Textbox.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Textbox.Size = UDim2.new(1, -10, 0, 25)
+		Textbox.ZIndex = 3
+		Textbox.Font = Enum.Font.Gotham
+		Textbox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+		Textbox.PlaceholderText = Name
+		Textbox.Text = tostring(List[1])
+		Textbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Textbox.TextSize = 16.000
+		
+		Outline.Name = "Image"
+		Outline.Parent = Textbox
+		Outline.AnchorPoint = Vector2.new(0.5, 0.5)
+		Outline.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Outline.BackgroundTransparency = 1.000
+		Outline.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Outline.Size = UDim2.new(1, 0, 1, 0)
+		Outline.ZIndex = 1
+		Outline.Image = "rbxassetid://3570695787"
+		Outline.ImageColor3 = Color3.fromRGB(60, 60, 60)
+		Outline.ScaleType = Enum.ScaleType.Slice
+		Outline.SliceCenter = Rect.new(100, 100, 100, 100)
+		Outline.SliceScale = 0.040
+		
+		Image.Name = "Image"
+		Image.Parent = Textbox
+		Image.AnchorPoint = Vector2.new(0.5, 0.5)
+		Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Image.BackgroundTransparency = 1.000
+		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Image.Size = UDim2.new(1, -4, 1, -4)
+		Image.ZIndex = 2
+		Image.Image = "rbxassetid://3570695787"
+		Image.ImageColor3 = Color3.fromRGB(30, 30, 30)
+		Image.ScaleType = Enum.ScaleType.Slice
+		Image.SliceCenter = Rect.new(100, 100, 100, 100)
+		Image.SliceScale = 0.040
+		
+		local function CloseDropdown(ShouldTween)
+            if Textbox:FindFirstChild("Dropdown") then
+				Image.SliceCenter = Rect.new(100, 100, 100, 100)
+                Toggled = false
+				if ShouldTween then
+					Textbox.Text = old
+					Textbox:FindFirstChild("Dropdown"):TweenSize( UDim2.new(0, Textbox.AbsoluteSize.X, 0, 0), "Out", "Quad", 0.2, true, function()
+						Textbox.ZIndex = 3
+						Image.ZIndex = 2
+						Outline.ZIndex = 1
+	                    Textbox:FindFirstChild("Dropdown"):Destroy()
+					end)
+				else
+					Textbox:FindFirstChild("Dropdown").Size = UDim2.new(0, Textbox.AbsoluteSize.X, 0, 0)
+					Textbox.ZIndex = 3
+					Image.ZIndex = 2
+					Outline.ZIndex = 1
+	                Textbox:FindFirstChild("Dropdown"):Destroy()
+				end
+        	end
+        end
+		
+		local Normal = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(60,60,60)})
+		local Hovering = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(100,100,100)})
+		local Selected = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(255,75,75)})
+		
+		local function CreateDropDown(Array, Shouldtween)
+			Toggled = true
+			Textbox.ZIndex = 8
+			Image.ZIndex = 7
+			Outline.ZIndex = 6
+			self.parent.ClipsDescendants = false
+			Main.ClipsDescendants = false
+			local Dropdown1 = Instance.new("ImageLabel")
+			
+			Dropdown1.Name = "Dropdown"
+ 			Dropdown1.Parent = Textbox
+			Dropdown1.AnchorPoint = Vector2.new(0.5, 0)
+			Dropdown1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Dropdown1.BackgroundTransparency = 1
+			Dropdown1.Position = UDim2.new(0.5, 0, 0, 0)
+			Dropdown1.Size = UDim2.new(1, 0, 0, 0)
+			Dropdown1.Image = "rbxassetid://3570695787"
+			Dropdown1.ImageColor3 = Color3.fromRGB(42, 42, 42)
+			Dropdown1.ScaleType = Enum.ScaleType.Slice
+			Dropdown1.SliceCenter = Rect.new(100, 100, 100, 100)
+			Dropdown1.SliceScale = 0.040
+			Dropdown1.ClipsDescendants = true
+			Dropdown1.ZIndex = 5	
+			if #Array <= 5 then
+				local UIGridLayout = Instance.new("UIGridLayout")
+				local UIPadding = Instance.new("UIPadding")
+				UIGridLayout.Parent = Dropdown1
+				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
+				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
+				
+				UIPadding.Parent = Dropdown1
+				UIPadding.PaddingTop = UDim.new(0, 25)
+				
+				for	i,v in pairs(Array) do
+					local TextButton = Instance.new("TextButton")
+					local Image_3 = Instance.new("ImageLabel")
+					
+					TextButton.Parent = Dropdown1
+					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+					TextButton.BackgroundTransparency = 1
+					TextButton.BorderSizePixel = 0
+					TextButton.Size = UDim2.new(0, 200, 0, 50)
+					TextButton.ZIndex = 2
+					TextButton.Text = tostring(v)
+					TextButton.Font = Enum.Font.Gotham
+					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					TextButton.TextSize = 18
+					TextButton.ZIndex = 7
+					
+					Image_3.Parent = TextButton
+					Image_3.Active = true
+					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
+					Image_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					Image_3.BackgroundTransparency = 1
+					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
+					Image_3.Selectable = true
+					Image_3.Size = UDim2.new(1, 0, 1, 0)
+					Image_3.Image = "rbxassetid://3570695787"
+					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
+					Image_3.ScaleType = Enum.ScaleType.Slice
+					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
+					Image_3.SliceScale = i == #Array and 0.040 or 0.01
+					Image_3.ZIndex = 6
+					
+					local Normal = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(50,50,50)})
+					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
+					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
+					
+					TextButton.MouseButton1Click:Connect(function()
+						Toggled = false
+						TextButton.Text = TextButton.Text
+						old = TextButton.Text
+				        if flag ~= "" then
+				            Location[flag] = TextButton.Text
+						end
+						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
+							Textbox.ZIndex = 3
+							Image.ZIndex = 2
+							Outline.ZIndex = 1
+							Dropdown1:Destroy()
+						end)
+						local Success, Err = pcall(callback, TextButton.Text, selfSearchbox)
+						if not Success then
+							error(Err)
+						end
+					end)
+					TextButton.MouseButton1Down:Connect(function()
+						Pressed:Play()
+					end)
+					TextButton.MouseEnter:Connect(function()
+						Hovering:Play()
+					end)
+					TextButton.MouseLeave:Connect(function()
+						Normal:Play()
+					end)
+				end
+				if Shouldtween then Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true) 
+				else UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25) end
+			else
+				local UIGridLayout = Instance.new("UIGridLayout")
+				local UIPadding = Instance.new("UIPadding")
+				local ScrollingFrame = Instance.new("ScrollingFrame")
+
+				ScrollingFrame.Parent = Dropdown1
+				ScrollingFrame.Active = true
+				ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				ScrollingFrame.BackgroundTransparency = 1
+				ScrollingFrame.BorderSizePixel = 0
+				ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100,100,100)
+				ScrollingFrame.Position = UDim2.new(0, 0, 0, 25)
+				ScrollingFrame.Size = UDim2.new(1, 0, 1, -25)
+				ScrollingFrame.ZIndex = 5
+				ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+				ScrollingFrame.HorizontalScrollBarInset = Enum.ScrollBarInset.None
+				ScrollingFrame.ScrollBarThickness = 5
+				
+				UIGridLayout.Parent = ScrollingFrame
+				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
+				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
+				
+				for	i,v in pairs(Array) do
+					local TextButton = Instance.new("TextButton")
+					local Image_3 = Instance.new("ImageLabel")
+					
+					TextButton.Parent = ScrollingFrame
+					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+					TextButton.BackgroundTransparency = 1
+					TextButton.BorderSizePixel = 0
+					TextButton.Size = UDim2.new(0, 200, 0, 50)
+					TextButton.ZIndex = 2
+					TextButton.Text = tostring(v)
+					TextButton.Font = Enum.Font.Gotham
+					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					TextButton.TextSize = 18
+					TextButton.ZIndex = 7
+					
+					Image_3.Parent = TextButton
+					Image_3.Active = true
+					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
+					Image_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					Image_3.BackgroundTransparency = 1
+					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
+					Image_3.Selectable = true
+					Image_3.Size = UDim2.new(1, 0, 1, 0)
+					Image_3.Image = "rbxassetid://3570695787"
+					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
+					Image_3.ScaleType = Enum.ScaleType.Slice
+					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
+					Image_3.SliceScale = i == #Array and 0.040 or 0.01
+					Image_3.ZIndex = 6
+					
+					local Normal = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(50,50,50)})
+					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
+					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
+					
+					TextButton.MouseButton1Click:Connect(function()
+						Toggled = false
+						Textbox.Text = TextButton.Text
+						old = TextButton.Text
+						Image.SliceCenter = Rect.new(100, 100, 100, 100)
+				        if flag ~= "" then
+				            Location[flag] = TextButton.Text
+						end
+						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
+							Textbox.ZIndex = 3
+							Image.ZIndex = 2
+							Outline.ZIndex = 1
+							Dropdown1:Destroy()
+						end)
+						local Success, Err = pcall(callback, TextButton.Text, selfSearchbox)
+						if not Success then
+							error(Err)
+						end
+					end)
+					TextButton.MouseButton1Down:Connect(function()
+						Pressed:Play()
+					end)
+					TextButton.MouseEnter:Connect(function()
+						Hovering:Play()
+					end)
+					TextButton.MouseLeave:Connect(function()
+						Normal:Play()
+					end)
+				end
+				if Shouldtween then Dropdown1:TweenSize(UDim2.new(1,0,0,149),nil,nil,0.2,true) else Dropdown1.Size = UDim2.new(1,0,0,149) end
+				ScrollingFrame.CanvasSize = UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y)
+			end
+		end
+		
+		Textbox.Focused:Connect(function()
+			old = Textbox.Text
+			CreateDropDown(List, true)
+			Selected:Play()
+		end)
+		
+		Textbox.FocusLost:Connect(function()
+			Toggled = false
+			if MouseOver(Outline) then
+				Hovering:Play()
+			else
+				Normal:Play()
+			end
+			if List[Textbox.Text] then
+				old = Textbox.Text
+			else
+				Textbox.Text = old
+			end
+			CloseDropdown(true)
+		end)
+		
+		Textbox.MouseEnter:Connect(function()
+			if not Textbox:IsFocused() then
+				Hovering:Play()
+			end
+		end)
+		
+		Textbox.MouseLeave:Connect(function()
+			if not Textbox:IsFocused() then
+				Normal:Play()
+			end
+		end)
+		
+		Textbox:GetPropertyChangedSignal("Text"):Connect(function()
+			if Toggled then
+				local Newlist = {}
+				for i,v in pairs(List) do
+					if string.find(string.lower(tostring(v)), string.lower(Textbox.Text)) then
+						table.insert(Newlist, #Newlist+1, v)
+					end
+				end
+				CloseDropdown(false)
+				CreateDropDown(Textbox.Text == "" and List or Newlist, false)
+			end
+		end)
+		
+	end
+	
 	function Window:Dropdown(...)
 		local Args = {...}
 		local selfDropdown = {}
@@ -435,14 +775,11 @@ function Library:CreateWindow(...)
 		
         old = Button.Text
 
-        local down = TweenService:Create(Image_2,TweenInfo.new(0.2),{Rotation = 90})
-		local up = TweenService:Create(Image_2,TweenInfo.new(0.2),{Rotation = 180})
 		local Normal = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(45,45,45)})
 		local Hovering = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(38,38,38)})
 		
 		local function CloseDropdown()
             if Button:FindFirstChild("Dropdown") then
-				up:Play()
 				Image.SliceCenter = Rect.new(100, 100, 100, 100)
                 Toggled = false
 				Button.Text = old
@@ -458,9 +795,12 @@ function Library:CreateWindow(...)
 		
 		function selfDropdown:Refresh(val)
 			CloseDropdown()
-			Button.Text = val[1]
-			old = val[1]
+			Button.Text = tostring(val[1])
+			old = tostring(val[1])
 			List = val
+			if flag ~= "" then
+				Location[flag] = tostring(val[1])
+			end
 		end
 		
 		function selfDropdown:ChangeCallback(val)
@@ -539,7 +879,6 @@ function Library:CreateWindow(...)
 						Button.Text = TextButton.Text
 						old = TextButton.Text
 						Toggled = false
-						up:Play()
 						Image.SliceCenter = Rect.new(100, 100, 100, 100)
 				        if flag ~= "" then
 				            Location[flag] = TextButton.Text
@@ -632,7 +971,6 @@ function Library:CreateWindow(...)
 						Button.Text = TextButton.Text
 						old = TextButton.Text
 						Toggled = false
-						up:Play()
 						Image.SliceCenter = Rect.new(100, 100, 100, 100)
 				        if flag ~= "" then
 				            Location[flag] = TextButton.Text
@@ -666,6 +1004,13 @@ function Library:CreateWindow(...)
 		
 		game:GetService("UserInputService").WindowFocusReleased:Connect(CloseDropdown)
 		
+		Button.MouseButton2Click:Connect(function()
+			local Success, Err = pcall(callback, Button.Text, selfDropdown)
+			if not Success then
+				error(Err)
+			end
+		end)
+		
 		Button.MouseButton1Click:Connect(function()
 			Toggled = not Toggled
 			if Toggled then 
@@ -673,10 +1018,8 @@ function Library:CreateWindow(...)
 				Image_2.ZIndex = 9
 				Button.ZIndex = 9
 				Image.SliceCenter = Rect.new(100, 100, 100, 200)
-				down:Play()
 				CreateDropDown(List)
 			else
-				up:Play()
 				Button.Text = old
 				Image.SliceCenter = Rect.new(100, 100, 100, 100)
 				for i,v in pairs(Button:GetChildren()) do
@@ -962,11 +1305,7 @@ function Library:CreateWindow(...)
 		local Dragging = false
 		local selfslider = {}
 		local old = tonumber(Amount.Text)
-		local function MouseOver(GuiObject)
-			local Size = GuiObject.AbsoluteSize
-			local Pos = GuiObject.AbsolutePosition
-			return (Library.MousePos.X >= Pos.X) and (Library.MousePos.Y >= Pos.Y) and (Library.MousePos.X <= (Pos.X + Size.X)) and (Library.MousePos.Y <= (Pos.Y + Size.Y))
-		end
+
         local function Snap(num, snap)
             if snap == 0 then
                 return num
