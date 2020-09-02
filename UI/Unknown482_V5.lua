@@ -1,4 +1,4 @@
-local Library = {toggled = true; count = 0; MousePos = game:GetService('UserInputService'):GetMouseLocation() - Vector2.new(0, 36);}
+local Library = {toggled = true; count = 0; MousePos = game:GetService('UserInputService'):GetMouseLocation() - Vector2.new(0, 36); Windows = {}}
 local TweenService = game:GetService('TweenService')
 local ScreenGui = Instance.new('ScreenGui')
 function Drag(GuiObject)
@@ -12,12 +12,20 @@ RelitivePos=Vector2.new(Library.MousePos.X,Library.MousePos.Y)-GuiObject.Absolut
 Dragging=true
 end
 end)
-game:GetService('UserInputService').InputChanged:Connect(function(input,gameProcessed)
+local a
+a = game:GetService('UserInputService').InputChanged:Connect(function(input,gameProcessed)
+if GuiObject == nil then
+a:Disconnect()
+end
 if input.UserInputType==Enum.UserInputType.MouseMovement and Dragging then
 GuiObject.Parent:TweenPosition(UDim2.new(0,Library.MousePos.X-RelitivePos.X,0,Library.MousePos.Y-RelitivePos.Y),'Out','Quad',0.2,true)
 end
 end)
-game:GetService('UserInputService').InputEnded:Connect(function(input)
+local b
+b = game:GetService('UserInputService').InputEnded:Connect(function(input)
+if GuiObject == nil then
+b:Disconnect()
+end
 if input.UserInputType==Enum.UserInputType.MouseButton1 then
 Dragging=false
 end
@@ -64,11 +72,10 @@ end
 -- Done
 function Library:CreateWindow(...)
 	local Args = {...}
-	local Window = {toggled = true, flags = {}, parent = nil}
+	local Window = {toggled = true, flags = {}, parent = nil, Objects={}}
 	local data = {
 		name = Args[1] or 'Window';
 	}
-	table.insert(Library,#Library+1,Window)
 	Library.count = Library.count + 1
 	local Main = Instance.new('ImageLabel')
 	local UIListLayout = Instance.new('UIListLayout')
@@ -146,12 +153,10 @@ function Library:CreateWindow(...)
 			up:Play()
 		end
 	end)
-
-	
 	-- Done
 	function Window:Button(...)
 		local Args = {...}
-		local ButtonSelf = {}
+		local selfButton = {}
 		local Name = Args[1] or 'Button'
 		local callback = Args[2] or function() end
 		local Button = Instance.new('Frame')
@@ -184,43 +189,34 @@ function Library:CreateWindow(...)
 		Image.SliceCenter = Rect.new(100, 100, 100, 100)
 		Image.SliceScale = 0.040
 		
-		function ButtonSelf:Fire()
+		local Normal = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(45,45,45)})
+		local Hovering = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(38,38,38)})
+		local Pressed = TweenService:Create(Image, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(255,75,75)})
+		
+		function selfButton:Fire()
 			if type(callback) == 'function' then
-				local Success, Err = pcall(callback, ButtonSelf)
+				local Success, Err = pcall(callback, selfButton)
 				if not Success then
 					error(Err)
 				end
 			end
 		end
 		
-		setmetatable(ButtonSelf, {
-			__newindex = function(Table, index, value)
-				if rawequal(Table, ButtonSelf) then
-					if rawequal(index,'name') then
-						if type(value)=='string' then
-							TextButton.Text = value
-							data.name = value
-						else return end
-					end
-				end
-			end;
-			__index = function(Table, index)
-				if data[index] ~= nil then
-					return data[index]
-				end
-			end;
-			__tostring = function(Table)
-				return data.name
-			end;
-		})
-		
-		local Normal = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(45,45,45)})
-		local Hovering = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(38,38,38)})
-		local Pressed = TweenService:Create(Image, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(255,75,75)})
+		function selfButton:Destroy()
+			Normal:Destroy()
+			Hovering:Destroy()
+			Pressed:Destroy()
+			Button:Destroy()
+			for i,v in pairs(selfButton) do
+				v = nil
+			end
+			setmetatable(selfButton,nil)
+			selfButton = nil
+		end
 		
 		TextButton.MouseButton1Click:Connect(function()
 			if type(callback) == 'function' then
-				local Success, Err = pcall(callback, ButtonSelf)
+				local Success, Err = pcall(callback, selfButton)
 				if not Success then
 					error(Err)
 				end
@@ -241,8 +237,29 @@ function Library:CreateWindow(...)
 		TextButton.MouseLeave:Connect(function()
 			Normal:Play()
 		end)
-		table.insert(Window,#Window+1,ButtonSelf)
-		return ButtonSelf
+		
+		setmetatable(selfButton, {
+			__newindex = function(Table, index, value)
+				if rawequal(Table, selfButton) then
+					if rawequal(index,'name') then
+						if type(value)=='string' then
+							TextButton.Text = value
+							data.name = value
+						else return end
+					end
+				end
+			end;
+			__index = function(Table, index)
+				if data[index] ~= nil then
+					return data[index]
+				end
+			end;
+			__tostring = function(Table)
+				return data.name
+			end;
+		})
+		table.insert(self.Objects,#self.Objects+1,selfButton)
+		return selfButton
 	end
 	-- Done
 	function Window:Box(...)
@@ -331,6 +348,27 @@ function Library:CreateWindow(...)
 		local Selected = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(255,75,75)})
 		local MouseOverB = false
 		local old = data.default
+		function PositiveIntegerMask(text)
+			return text:gsub('[^%-%d]', '')
+		end
+		
+		function SelfBox:Destroy()
+			data.location[data.flag] = nil
+			Box:Destroy()
+			Normal:Destroy()
+			Hovering:Destroy()
+			Selected:Destroy()
+			PositiveIntegerMask=nil
+			old=nil
+			MouseOverB=nil
+			for i,v in pairs(SelfBox) do
+				v=nil
+			end
+			setmetatable(SelfBox,nil)
+			data=nil
+			Options=nil
+			SelfBox=nil
+		end
 		
 		setmetatable(SelfBox, {
 			__newindex = function(Table, index, value)
@@ -416,13 +454,6 @@ function Library:CreateWindow(...)
 				return data.name
 			end;
 		})
-		function SelfBox:Changecallback(val)
-			data.callback = val
-		end
-		
-        function PositiveIntegerMask(text)
-            return text:gsub('[^%-%d]', '')
-        end
         TextBox:GetPropertyChangedSignal('Text'):Connect(function()
             if data.type == 'number' then
                 TextBox.Text = PositiveIntegerMask(TextBox.Text)
@@ -487,7 +518,7 @@ function Library:CreateWindow(...)
 				Normal:Play()
 			end
 		end)
-		table.insert(Window,#Window+1,SelfBox)
+		table.insert(self.Objects,#self.Objects+1,SelfBox)
 		return SelfBox
 	end
 	-- Done
@@ -583,6 +614,8 @@ function Library:CreateWindow(...)
         	end
 		end
 		
+		local ToBeDeleted = {}
+		
 		local function CreateDropDown(Array)
 			self.parent.ClipsDescendants = false
 			Main.ClipsDescendants = false
@@ -651,7 +684,14 @@ function Library:CreateWindow(...)
 					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
 					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
 					
+					table.insert(ToBeDeleted,#ToBeDeleted+1,Normal)
+					table.insert(ToBeDeleted,#ToBeDeleted+1,Hovering)
+					table.insert(ToBeDeleted,#ToBeDeleted+1,Pressed)
+					
 					TextButton.MouseButton1Click:Connect(function()
+						for i,v in pairs(ToBeDeleted) do
+							v:Destroy()
+						end
 						Button.Text = TextButton.Text
 						old = TextButton.Text
 						toggled = false
@@ -745,7 +785,14 @@ function Library:CreateWindow(...)
 					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
 					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
 					
+					table.insert(ToBeDeleted,#ToBeDeleted+1,Normal)
+					table.insert(ToBeDeleted,#ToBeDeleted+1,Hovering)
+					table.insert(ToBeDeleted,#ToBeDeleted+1,Pressed)
+					
 					TextButton.MouseButton1Click:Connect(function()
+						for i,v in pairs(ToBeDeleted) do
+							v:Destroy()
+						end
 						Button.Text = TextButton.Text
 						old = TextButton.Text
 						toggled = false
@@ -825,6 +872,27 @@ function Library:CreateWindow(...)
 			Normal:Play()
 		end)
 		
+		function selfDropdown:Destroy()
+			for i,v in pairs(ToBeDeleted) do
+				local s,e = pcall(function() v:Destroy() end)
+				if not s then
+					v = nil
+				end
+			end
+			ToBeDeleted = nil
+			data.location[data.flag] = nil
+			Dropdown:Destroy()
+			Normal:Destroy()
+			Hovering:Destroy()
+			for i,v in pairs(selfDropdown) do
+				v=nil
+			end
+			setmetatable(selfDropdown,nil)
+			data=nil
+			Options=nil
+			selfDropdown=nil
+		end
+		
 		setmetatable(selfDropdown, {
 			__newindex = function(Table, index, value)
 				if rawequal(Table, selfDropdown) then
@@ -869,7 +937,7 @@ function Library:CreateWindow(...)
 				return data.name
 			end;
 		})
-		table.insert(Window,#Window+1,selfDropdown)
+		table.insert(self.Objects,#self.Objects+1,selfDropdown)
 		return selfDropdown
 	end
 	-- Done
@@ -960,6 +1028,12 @@ function Library:CreateWindow(...)
 		local toggledOff2 = TweenService:Create(Center, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(30,30,30)})
 		
 		function SelfToggle:Destroy() 
+			Normal:Destroy()
+			Hovering:Destroy()
+			toggledOn1:Destroy()
+			toggledOn2:Destroy()
+			toggledOff1:Destroy()
+			toggledOff2:Destroy()
 			if data then
 				data.location[data.flag] = nil
 				data = nil
@@ -967,11 +1041,12 @@ function Library:CreateWindow(...)
 			if Toggle then
 				Toggle:Destroy()
 			end
-			if self then
-				for i,v in pairs(self) do
+			setmetatable(SelfToggle,nil)
+			if SelfToggle then
+				for i,v in pairs(SelfToggle) do
 					v = nil
 				end
-				self = nil
+				SelfToggle = nil
 			end
 		end
 		
@@ -1060,7 +1135,7 @@ function Library:CreateWindow(...)
 				Center.Size = UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset)
 			end
 		end)
-		table.insert(Window,#Window+1,SelfToggle)
+		table.insert(self.Objects,#self.Objects+1,SelfToggle)
 		return SelfToggle
 	end
 	-- Done
@@ -1187,7 +1262,24 @@ function Library:CreateWindow(...)
 		local Dragging = false
 		local selfslider = {}
 		local old = tonumber(Amount.Text)
-
+		
+		function SelfSlider:Destroy()
+			Normal1:Destroy()
+			Normal2:Destroy()
+			Dragging1:Destroy()
+			Dragging2:Destroy()
+			Box:Destroy()
+			if data.flag ~= '' then
+				data.location[data.flag] = nil
+			end
+			data = nil
+			for i,v in pairs(SelfSlider) do
+				v = nil
+			end
+			setmetatable(SelfSlider,nil)
+			SelfSlider=nil
+		end
+		
         local function Snap(num, snap)
             if snap == 0 then
                 return num
@@ -1458,7 +1550,7 @@ function Library:CreateWindow(...)
 				return data.name
 			end;
 		})
-		
+		table.insert(self.Objects,#self.Objects+1,SelfSlider)
 		return SelfSlider
 	end
 	-- Done
@@ -1554,6 +1646,22 @@ function Library:CreateWindow(...)
 				up:Play()
 			end
 		end)
+		
+		function Folder:Destroy()
+			Title:Destroy()
+			FolderContainer:Destroy()
+			down:Destroy()
+			up:Destroy()
+			for i,v in pairs(Folder.Objects) do
+				v:Destroy()
+			end
+			for i,v in pairs(Folder) do
+				v = nil
+			end
+			setmetatable(Folder,nil)
+			Folder = nil
+		end
+		
 		setmetatable(Folder, {
 			__newindex = function(Table, index, value)
 				if rawequal(Table, Folder) then
@@ -1586,7 +1694,22 @@ function Library:CreateWindow(...)
 				return data.name
 			end;
 		})
+		table.insert(self.Objects,#self.Objects,Folder)
 		return Folder
+	end
+	
+	function Window:Destroy()
+		Main:Destroy()
+		down:Destroy()
+		up:Destroy()
+		for i,v in pairs(Window.Objects) do
+			v:Destroy()
+		end
+		for i,v in pairs(Window) do
+			v = nil
+		end
+		setmetatable(Window,nil)
+		Window = nil
 	end
 	
 	setmetatable(Window, {
@@ -1609,16 +1732,24 @@ function Library:CreateWindow(...)
 			return data.name
 		end;
 	})
+	
+	table.insert(Library.Windows,#Library.Windows+1,Window)
 	return Window
 end
-game:GetService('UserInputService').InputChanged:Connect(function(input, gameProcessed)
+local CursorConnection = game:GetService('UserInputService').InputChanged:Connect(function(input, gameProcessed)
 	if input.UserInputType == Enum.UserInputType.MouseMovement then
 		Library.MousePos = game:GetService('UserInputService'):GetMouseLocation() - Vector2.new(0, 36)
 	end
 end)
 
 function Library:Destroy()
-	
+	for i,v in pairs(Library.Windows) do
+		print(v)
+		v:Destroy()
+	end
+	CursorConnection:Disconnect()
+	ScreenGui:Destroy()
+	Library = nil
 end
 
 return Library
