@@ -701,9 +701,6 @@ function Library:CreateWindow(...)
 					table.insert(ToBeDeleted,#ToBeDeleted+1,Pressed)
 					
 					TextButton.MouseButton1Click:Connect(function()
-						for i,v in pairs(ToBeDeleted) do
-							v:Destroy()
-						end
 						Button.Text = TextButton.Text
 						old = TextButton.Text
 						toggled = false
@@ -723,6 +720,9 @@ function Library:CreateWindow(...)
 							if not Success then
 								error(Err)
 							end
+						end
+						for i,v in pairs(ToBeDeleted) do
+							v:Destroy()
 						end
 					end)
 					TextButton.MouseButton1Down:Connect(function()
@@ -802,9 +802,6 @@ function Library:CreateWindow(...)
 					table.insert(ToBeDeleted,#ToBeDeleted+1,Pressed)
 					
 					TextButton.MouseButton1Click:Connect(function()
-						for i,v in pairs(ToBeDeleted) do
-							v:Destroy()
-						end
 						Button.Text = TextButton.Text
 						old = TextButton.Text
 						toggled = false
@@ -824,6 +821,9 @@ function Library:CreateWindow(...)
 							if not Success then
 								error(Err)
 							end
+						end
+						for i,v in pairs(ToBeDeleted) do
+							v:Destroy()
 						end
 					end)
 					TextButton.MouseButton1Down:Connect(function()
