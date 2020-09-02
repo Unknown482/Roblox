@@ -247,6 +247,8 @@ function Library:CreateWindow(...)
 							data.name = value
 						else return end
 					end
+				elseif rawequal(index,'callback') then
+					data.callback = value
 				end
 			end;
 			__index = function(Table, index)
@@ -442,6 +444,8 @@ function Library:CreateWindow(...)
 									data.type = value
 								end
 							end
+						elseif rawequal(index,'callback') then
+							data.callback = value
 						elseif rawequal(index,'min') or rawequal(index,'max') then
 							if type(value)=="number" then
 								data[index] = value
@@ -933,6 +937,8 @@ function Library:CreateWindow(...)
 							data.location = value
 							data.location[data.flag] = data.toggled
 						else return end
+					elseif rawequal(index,'callback') then
+						data.callback = value
 					end
 				end
 			end;
@@ -1110,6 +1116,8 @@ function Library:CreateWindow(...)
 								data.location = value
 								data.location[data.flag] = data.toggled
 							else return end
+						elseif rawequal(index,'callback') then
+							data.callback = value
 						end
 					end
 				end)
@@ -1537,6 +1545,8 @@ function Library:CreateWindow(...)
 								data.location = value
 								data.location[data.flag] = data.toggled
 							else return end
+						elseif rawequal(index,'callback') then
+							data.callback = value
 						elseif rawequal(index,'min') or rawequal(index,'max') then
 							data[index] = value
 							if (index == 'min' and value+1 < data.max) or (index == 'max' and value-1 > data.min) then
