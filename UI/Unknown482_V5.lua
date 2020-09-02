@@ -380,12 +380,18 @@ function Library:CreateWindow(...)
 									if data.type == 'number' then
 										data.text = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
 										if type(data.callback) == 'function' then
+											if data.flag ~= '' then
+												data.location[data.flag] = tonumber(TextBox.Text)
+											end
 											local Success, Err = pcall(data.callback, tonumber(data.text), tonumber(old), false, SelfBox)
 											if not Success then
 												error(Err)
 											end
 										end
 									else
+										if data.flag ~= '' then
+											data.location[data.flag] = tonumber(TextBox.Text)
+										end
 										data.text = value[1]
 										if type(data.callback) == 'function' then
 											local Success, Err = pcall(data.callback, data.text, old, false, SelfBox)
@@ -1060,6 +1066,9 @@ function Library:CreateWindow(...)
 							if type(value)=='boolean' or type(value)=='table' then
 								if type(value)=='table' and type(value[1])=='boolean' then
 									data.toggled = value[1]
+									if data.flag ~= '' then
+										data.location[data.flag] = data.toggled
+									end
 									if type(data.callback) == 'function' then
 										local Success, Err = pcall(data.callback, data.toggled, SelfToggle)
 										if not Success then
@@ -1068,6 +1077,9 @@ function Library:CreateWindow(...)
 									end
 								else
 									data.toggled = value
+									if data.flag ~= '' then
+										data.location[data.flag] = data.toggled
+									end
 								end
 								if data.toggled then
 									toggledOn1:Play()
@@ -1079,9 +1091,6 @@ function Library:CreateWindow(...)
 									wait(0.15)
 									toggledOff1:Play()
 									toggledOff2:Play()
-								end
-								if data.flag ~= '' then
-									data.location[data.flag] = data.toggled
 								end
 							else return end
 						elseif rawequal(index,'name') then
@@ -1341,14 +1350,14 @@ function Library:CreateWindow(...)
 					                                        )
 								end
 								data.value = tonumber(Amount.Text)
-						         if data.flag ~= '' then
-					                 data.location[data.flag] = tonumber(Amount.Text)
-								end
 								if type(data.callback) == 'function' then
 									local Success, Err = pcall(data.callback, tonumber(Amount.Text), selfslider)
 									if not Success then
 										error(Err)
 									end
+								end
+								if data.flag ~= '' then
+									data.location[data.flag] = tonumber(Amount.Text)
 								end
 								old = tonumber(Amount.Text)
                             end
@@ -1480,6 +1489,9 @@ function Library:CreateWindow(...)
 						if rawequal(index,'value') then
 							if type(value)=='number' or type(value)=='table' then
 								if type(value)=='table' and type(value[1])=='number' then
+									if data.flag ~= '' then
+										data.location[data.flag] = value
+									end
 									data.value = value[1]
 									if type(data.callback) == 'function' then
 										local Success, Err = pcall(data.callback, data.value, SelfSlider)
@@ -1488,6 +1500,9 @@ function Library:CreateWindow(...)
 										end
 									end
 								else
+									if data.flag ~= '' then
+										data.location[data.flag] = value
+									end
 									data.value = value
 								end
 								if tonumber(value) then
@@ -1502,9 +1517,6 @@ function Library:CreateWindow(...)
 									Handle.Position = UDim2.new(0,0,0.5,0)
 								elseif Fill.Position.X.Scale > 0 then
 									Handle.Position = UDim2.new(1,0,0.5,0)
-								end
-								if data.flag ~= '' then
-									data.location[data.flag] = value
 								end
 								old = value
 							else return end
