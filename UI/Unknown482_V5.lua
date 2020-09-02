@@ -1,6 +1,6 @@
-local Library = {toggled = true; count = 0; MousePos = game:GetService("UserInputService"):GetMouseLocation() - Vector2.new(0, 36);}
-local TweenService = game:GetService("TweenService")
-local ScreenGui = Instance.new("ScreenGui")
+local Library = {toggled = true; count = 0; MousePos = game:GetService('UserInputService'):GetMouseLocation() - Vector2.new(0, 36);}
+local TweenService = game:GetService('TweenService')
+local ScreenGui = Instance.new('ScreenGui')
 function Drag(GuiObject)
 local Dragging=false
 GuiObject.Active=true
@@ -12,12 +12,12 @@ RelitivePos=Vector2.new(Library.MousePos.X,Library.MousePos.Y)-GuiObject.Absolut
 Dragging=true
 end
 end)
-game:GetService("UserInputService").InputChanged:Connect(function(input,gameProcessed)
+game:GetService('UserInputService').InputChanged:Connect(function(input,gameProcessed)
 if input.UserInputType==Enum.UserInputType.MouseMovement and Dragging then
-GuiObject.Parent:TweenPosition(UDim2.new(0,Library.MousePos.X-RelitivePos.X,0,Library.MousePos.Y-RelitivePos.Y),"Out","Quad",0.2,true)
+GuiObject.Parent:TweenPosition(UDim2.new(0,Library.MousePos.X-RelitivePos.X,0,Library.MousePos.Y-RelitivePos.Y),'Out','Quad',0.2,true)
 end
 end)
-game:GetService("UserInputService").InputEnded:Connect(function(input)
+game:GetService('UserInputService').InputEnded:Connect(function(input)
 if input.UserInputType==Enum.UserInputType.MouseButton1 then
 Dragging=false
 end
@@ -42,16 +42,16 @@ local Parent
 if syn then
     syn.protect_gui(ScreenGui)
 end
-ScreenGui.Parent = get_hidden_gui and get_hidden_gui() or game:GetService("CoreGui")
+ScreenGui.Parent = get_hidden_gui and get_hidden_gui() or game:GetService('CoreGui')
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 2147483647
 
-game:GetService("UserInputService").InputBegan:Connect(function(input)
+game:GetService('UserInputService').InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.RightControl then
         Library.toggled = not Library.toggled
         for i, v in ipairs(ScreenGui:GetChildren()) do
 			v:TweenPosition(Library.toggled and UDim2.new(0,20+((i - 1)*(v.AbsoluteSize.X + 10)),0,20) 
-				or UDim2.new(-0.5, 0, -0.5, 0),"InOut","Quad",0.2,true)
+				or UDim2.new(-0.5, 0, -0.5, 0),'InOut','Quad',0.2,true)
         end
     end
 end)
@@ -61,24 +61,27 @@ local function MouseOver(GuiObject)
 	local Pos = GuiObject.AbsolutePosition
 	return (Library.MousePos.X >= Pos.X) and (Library.MousePos.Y >= Pos.Y) and (Library.MousePos.X <= (Pos.X + Size.X)) and (Library.MousePos.Y <= (Pos.Y + Size.Y))
 end
-
+-- Done
 function Library:CreateWindow(...)
-	local Window = {toggled = true, flags = {}, parent = nil}
-	Library.count = Library.count + 1
 	local Args = {...}
-	local Name = Args[1] or "Window"
-	local Main = Instance.new("ImageLabel")
-	local UIListLayout = Instance.new("UIListLayout")
-	local Top = Instance.new("ImageLabel")
-	local Title = Instance.new("TextLabel")
-	local Toggle = Instance.new("TextButton")
-	local Image = Instance.new("ImageLabel")
+	local Window = {toggled = true, flags = {}, parent = nil}
+	local data = {
+		name = Args[1] or 'Window';
+	}
+	table.insert(Library,#Library+1,Window)
+	Library.count = Library.count + 1
+	local Main = Instance.new('ImageLabel')
+	local UIListLayout = Instance.new('UIListLayout')
+	local Top = Instance.new('ImageLabel')
+	local Title = Instance.new('TextLabel')
+	local Toggle = Instance.new('TextButton')
+	local Image = Instance.new('ImageLabel')
 	Main.Parent = ScreenGui
 	Main.Active = true
 	Main.BackgroundTransparency = 1
 	Main.Selectable = true
 	Main.Size = UDim2.new(0, 220, 0, 224)
-	Main.Image = "rbxassetid://3570695787"
+	Main.Image = 'rbxassetid://3570695787'
 	Main.ImageColor3 = Color3.fromRGB(30, 30, 30)
 	Main.ScaleType = Enum.ScaleType.Slice
 	Main.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -88,8 +91,8 @@ function Library:CreateWindow(...)
 
 	UIListLayout.Parent = Main
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		Main.Size = UDim2.fromOffset(UIListLayout.AbsoluteContentSize.X, UIListLayout.AbsoluteContentSize.Y + 3)
+	UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
+		Main.Size = UDim2.fromOffset(UIListLayout.AbsoluteContentSize.X, UIListLayout.AbsoluteContentSize.Y+2)
 	end)
 	
 	Drag(Top)
@@ -97,7 +100,7 @@ function Library:CreateWindow(...)
 	Top.BackgroundTransparency = 1
 	Top.Position = UDim2.new(0, 20, 0, 20)
 	Top.Size = UDim2.new(1, 0, 0, 35)
-	Top.Image = "rbxassetid://3570695787"
+	Top.Image = 'rbxassetid://3570695787'
 	Top.ImageColor3 = Color3.fromRGB(20, 20, 20)
 	Top.ScaleType = Enum.ScaleType.Slice
 	Top.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -109,7 +112,7 @@ function Library:CreateWindow(...)
 	Title.Font = Enum.Font.Gotham
 	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Title.TextSize = 18
-	Title.Text = Name
+	Title.Text = data.name
 	Title.TextWrapped = true
 	
 	Toggle.Parent = Top
@@ -118,7 +121,7 @@ function Library:CreateWindow(...)
 	Toggle.Position = UDim2.new(1, -5, 0.5, 0)
 	Toggle.Size = UDim2.new(0, 25, 0, 25)
 	Toggle.Font = Enum.Font.Gotham
-	Toggle.Text = ""
+	Toggle.Text = ''
 	Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 	
 	Image.Parent = Toggle
@@ -127,7 +130,7 @@ function Library:CreateWindow(...)
 	Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 	Image.Rotation = 90
 	Image.Size = UDim2.new(0.4, 0, 0.4, 0)
-	Image.Image = "rbxassetid://4918373417"
+	Image.Image = 'rbxassetid://4918373417'
 	Image.ImageColor3 = Color3.fromRGB(80, 80, 80)
 	
 	local down = TweenService:Create( Image, TweenInfo.new(0.2),{ Rotation = 90 })
@@ -136,22 +139,24 @@ function Library:CreateWindow(...)
 	Toggle.MouseButton1Click:Connect(function()
 		Window.toggled = not Window.toggled
 		Main.ClipsDescendants = true
-		Main:TweenSize((Window.toggled and UDim2.new(0,Main.Size.X.Offset,0, UIListLayout.AbsoluteContentSize.Y) or UDim2.new(0,Main.Size.X.Offset,0, 35)), nil, nil, 0.2, true)
+		Main:TweenSize((Window.toggled and UDim2.new(0,Main.Size.X.Offset,0, UIListLayout.AbsoluteContentSize.Y+2) or UDim2.new(0,Main.Size.X.Offset,0, 35)), nil, nil, 0.2, true)
 		if Window.toggled then
 			down:Play()
 		else
 			up:Play()
 		end
 	end)
+
 	
+	-- Done
 	function Window:Button(...)
 		local Args = {...}
 		local ButtonSelf = {}
-		local Name = Args[1] or "Button"
-		local Callback = Args[2] or function() end
-		local Button = Instance.new("Frame")
-		local TextButton = Instance.new("TextButton")
-		local Image = Instance.new("ImageLabel")
+		local Name = Args[1] or 'Button'
+		local callback = Args[2] or function() end
+		local Button = Instance.new('Frame')
+		local TextButton = Instance.new('TextButton')
+		local Image = Instance.new('ImageLabel')
 
 		Button.Parent = self.parent
 		Button.BackgroundTransparency = 1
@@ -173,27 +178,52 @@ function Library:CreateWindow(...)
 		Image.BackgroundTransparency = 1
 		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Image.Size = UDim2.new(1, 0, 1, 0)
-		Image.Image = "rbxassetid://3570695787"
+		Image.Image = 'rbxassetid://3570695787'
 		Image.ImageColor3 = Color3.fromRGB(45, 45, 45)
 		Image.ScaleType = Enum.ScaleType.Slice
 		Image.SliceCenter = Rect.new(100, 100, 100, 100)
 		Image.SliceScale = 0.040
 		
 		function ButtonSelf:Fire()
-			local Success, Err = pcall(Callback, ButtonSelf)
-			if not Success then
-				error(Err)
+			if type(callback) == 'function' then
+				local Success, Err = pcall(callback, ButtonSelf)
+				if not Success then
+					error(Err)
+				end
 			end
 		end
+		
+		setmetatable(ButtonSelf, {
+			__newindex = function(Table, index, value)
+				if rawequal(Table, ButtonSelf) then
+					if rawequal(index,'name') then
+						if type(value)=='string' then
+							TextButton.Text = value
+							data.name = value
+						else return end
+					end
+				end
+			end;
+			__index = function(Table, index)
+				if data[index] ~= nil then
+					return data[index]
+				end
+			end;
+			__tostring = function(Table)
+				return data.name
+			end;
+		})
 		
 		local Normal = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(45,45,45)})
 		local Hovering = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(38,38,38)})
 		local Pressed = TweenService:Create(Image, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(255,75,75)})
 		
 		TextButton.MouseButton1Click:Connect(function()
-			local Success, Err = pcall(Callback, ButtonSelf)
-			if not Success then
-				error(Err)
+			if type(callback) == 'function' then
+				local Success, Err = pcall(callback, ButtonSelf)
+				if not Success then
+					error(Err)
+				end
 			end
 		end)
 		
@@ -211,33 +241,36 @@ function Library:CreateWindow(...)
 		TextButton.MouseLeave:Connect(function()
 			Normal:Play()
 		end)
+		table.insert(Window,#Window+1,ButtonSelf)
 		return ButtonSelf
 	end
-	
+	-- Done
 	function Window:Box(...)
 		Args = {...}
-		local SelfBox = {}
-		local Name = Args[1] or "TextBox"
 		local Options = Args[2] or {}
-		local Type = Options.type or "string"
-		Type = string.lower(Type)
-		local Min = Options.min or 0
-		local Max = Options.max or 9e9
-		local flag = Options.flag or ""
-		local Location = Options.location or Window.flags
-		local Callback = Args[3] or function() end
-		local Placeholder = Options.placeholder or ""
-		local Default = Options.default or (Type == "number" and 0 or "")
-		if flag ~= "" then
-			Location[flag] = Default
+		local SelfBox = {}
+		local data = {
+			name = Args[1] or 'TextBox';
+			type = Options.type or 'string';
+			min = Options.min or 0;
+			max = Options.max or 9e9;
+			flag = Options.flag or '';
+			location = Options.location or Window.flags;
+			callback = Args[3] or function() end;
+			placeholder = Options.placeholder or '';
+		}
+		data.default = Options.default or (data.type == 'number' and 0 or '')
+		data.text = data.default
+		if data.flag ~= '' then
+			data.location[data.flag] = data.default
 		end
 		
-		local Name = Args[1] or "Box"
-		local Box = Instance.new("Frame")
-		local Outline = Instance.new("ImageLabel")
-		local Center = Instance.new("ImageLabel")
-		local Title = Instance.new("TextLabel")
-		local TextBox = Instance.new("TextBox")
+		local Name = Args[1] or 'Box'
+		local Box = Instance.new('Frame')
+		local Outline = Instance.new('ImageLabel')
+		local Center = Instance.new('ImageLabel')
+		local Title = Instance.new('TextLabel')
+		local TextBox = Instance.new('TextBox')
 
 		Box.Parent = self.parent
 		Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -251,7 +284,7 @@ function Library:CreateWindow(...)
 		Outline.BackgroundTransparency = 1
 		Outline.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Outline.Size = UDim2.new(1, -8, 1, -8)
-		Outline.Image = "rbxassetid://3570695787"
+		Outline.Image = 'rbxassetid://3570695787'
 		Outline.ImageColor3 = Color3.fromRGB(60, 60, 60)
 		Outline.ScaleType = Enum.ScaleType.Slice
 		Outline.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -263,7 +296,7 @@ function Library:CreateWindow(...)
 		Center.BackgroundTransparency = 1
 		Center.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Center.Size = UDim2.new(1, -12, 1, -12)
-		Center.Image = "rbxassetid://3570695787"
+		Center.Image = 'rbxassetid://3570695787'
 		Center.ImageColor3 = Color3.fromRGB(30, 30, 30)
 		Center.ScaleType = Enum.ScaleType.Slice
 		Center.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -274,7 +307,7 @@ function Library:CreateWindow(...)
 		Title.BorderSizePixel = 0
 		Title.Position = UDim2.new(0, 10, 0, 0)
 		Title.Font = Enum.Font.GothamBold
-		Title.Text = Name
+		Title.Text = data.name
 		Title.TextColor3 = Color3.fromRGB(100, 100, 100)
 		Title.TextSize = 14
 		Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
@@ -287,39 +320,111 @@ function Library:CreateWindow(...)
 		TextBox.ClearTextOnFocus = false
 		TextBox.ClipsDescendants = true
 		TextBox.Font = Enum.Font.Gotham
-		TextBox.Text = (string.lower(Type) == "number" and (tonumber(Default) and tostring(Default) or tostring(Min)) or Default)
+		TextBox.Text = (string.lower(data.type) == 'number' and (tostring(data.default) or tostring(data.min)) or data.default)
 		TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+		TextBox.PlaceholderText = data.placeholder
 		TextBox.TextSize = 16
 		TextBox.TextXAlignment = Enum.TextXAlignment.Left
 		
 		local Normal = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(60,60,60)})
 		local Hovering = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(100,100,100)})
 		local Selected = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(255,75,75)})
-		local MouseOver = false
-		local old = Default
+		local MouseOverB = false
+		local old = data.default
 		
-		function SelfBox:Set(val)
-			old = TextBox.Text
-			if Type == "number" then
-				TextBox.Text = math.clamp(tonumber(val), Min, Max)
-				if flag ~= "" then
-					Location[flag] = tonumber(TextBox.Text)
+		setmetatable(SelfBox, {
+			__newindex = function(Table, index, value)
+				if rawequal(Table, SelfBox) then
+					if rawequal(index,'text') then
+						if type(value)=='string' or type(value)=='number' or type(value)=='table' then
+							if type(value)=='table' and (type(value[1])=='string' or type(value[1])=='number') then
+								if data.type == 'number' then
+									data.text = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
+									if type(data.callback) == 'function' then
+										local Success, Err = pcall(data.callback, tonumber(data.text), tonumber(old), false, SelfBox)
+										if not Success then
+											error(Err)
+										end
+									end
+								else
+									data.text = value[1]
+									if type(data.callback) == 'function' then
+										local Success, Err = pcall(data.callback, data.text, old, false, SelfBox)
+										if not Success then
+											error(Err)
+										end
+									end
+								end
+							else
+								if type(value)=='number' then
+									data.text = tostring(value)
+								else
+									data.text = value
+								end
+								if data.type == 'number' then
+									data.text = tostring(math.clamp(tonumber(data.text), data.min, data.max))
+								end
+							end
+							TextBox.Text = tostring(data.text)
+						else return end
+					elseif rawequal(index,'name') then
+						if type(value)=='string' then
+							Title.Text = value
+							Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
+							data.name = value
+						else return end
+					elseif rawequal(index,'placeholder') then
+						if type(value)=='string' then
+							TextBox.PlaceholderText = value
+							data.placeholder = value
+						end
+					elseif rawequal(index,'flag') then
+						if type(value)=='string' then
+							data.location[data.flag] = nil
+							data.flag = value
+							data.location[data.flag] = data.toggled
+						else return end
+					elseif rawequal(index,'location') then
+						if type(value)=='table' then
+							data.location[data.flag] = nil
+							data.location = value
+							data.location[data.flag] = data.toggled
+						else return end
+					elseif rawequal(index,'type') then
+						if type(value)=="string" then
+							local temptype = string.lower(value)
+							if temptype == 'string' or temptype == 'number' then 
+								data.type = value
+							end
+						end
+					elseif rawequal(index,'min') or rawequal(index,'max') then
+						if type(value)=="number" then
+							data[index] = value
+							if data.type == 'number' then
+								data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
+							end
+						end
+					end
 				end
-			else
-				if flag ~= "" then
-					Location[flag] = TextBox.Text
+			end;
+			__index = function(Table, index)
+				if data[index] ~= nil then
+					return data[index]
 				end
-			end
-		end;
-		function SelfBox:ChangeCallback(self, val)
-			Callback = val
+			end;
+			__tostring = function(Table)
+				return data.name
+			end;
+		})
+		function SelfBox:Changecallback(val)
+			data.callback = val
 		end
 		
         function PositiveIntegerMask(text)
-            return text:gsub("[^%-%d]", "")
+            return text:gsub('[^%-%d]', '')
         end
-        TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-            if Type == "number" then
+        TextBox:GetPropertyChangedSignal('Text'):Connect(function()
+            if data.type == 'number' then
                 TextBox.Text = PositiveIntegerMask(TextBox.Text)
             end
 		end)
@@ -329,23 +434,38 @@ function Library:CreateWindow(...)
 		end)
 		
 		TextBox.FocusLost:Connect(function(EnterPressed)
-			if MouseOver then
+			if MouseOverB then
 				Hovering:Play()
 			else
 				Normal:Play()
 			end
-			if Type == "number" then
-				TextBox.Text = math.clamp(tonumber(TextBox.Text), Min, Max)
-				if flag ~= "" then
-					Location[flag] = tonumber(TextBox.Text)
+			if data.type == 'number' then
+				if tonumber(TextBox.Text) then
+					TextBox.Text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.max))
+				else
+					TextBox.Text = tostring(data.min > 0 and data.min or 0)
 				end
-				local Success, Err = pcall(Callback, tonumber(TextBox.Text), tonumber(old), EnterPressed, TextBox, SelfBox)
+				if data.flag ~= '' then
+					data.location[data.flag] = tonumber(TextBox.Text)
+				end
+				if type(data.callback) == 'function' then
+					local Success, Err = pcall(data.callback, tonumber(TextBox.Text), tonumber(old), EnterPressed, SelfBox)
+					if not Success then
+						error(Err)
+					end
+				end
 			else
-				if flag ~= "" then
-					Location[flag] = TextBox.Text
+				if data.flag ~= '' then
+					data.location[data.flag] = TextBox.Text
 				end
-				local Success, Err = pcall(Callback, TextBox.Text, old, EnterPressed, TextBox, SelfBox)
+				if type(data.callback) == 'function' then
+					local Success, Err = pcall(data.callback, TextBox.Text, old, EnterPressed, SelfBox)
+					if not Success then
+						error(Err)
+					end
+				end
 			end
+			data.text = TextBox.Text
 			old = TextBox.Text
 		end)
 		
@@ -356,373 +476,43 @@ function Library:CreateWindow(...)
 		end)
 		
 		Box.MouseEnter:Connect(function()
-			MouseOver = true
+			MouseOverB = true
 			if not TextBox:IsFocused() then
 				Hovering:Play()
 			end
 		end)
 		Box.MouseLeave:Connect(function()
-			MouseOver = false
+			MouseOverB = false
 			if not TextBox:IsFocused() then
 				Normal:Play()
 			end
 		end)
-		
-		return Box
+		table.insert(Window,#Window+1,SelfBox)
+		return SelfBox
 	end
-	
-	function Window:Searchbox(...)
-		local Args = {...}
-		local selfSearchbox = {}
-		local Name = Args[1] or "Searchbox"
-		local callback = Args[3] or function()end
-        local List = Args[2] and Args[2].list or {}
-        local old = tostring(List[1])
-		local Toggled = false
-		local Location = (Args[2] and Args[2].location) and Args[2].location or Window.flags
-		local flag = Args[2] and Args[2].flag or ""
-        if flag ~= "" then
-            Location[flag] = tostring(List[1])
-		end
-
-		local Searchbox = Instance.new("Frame")
-		local Textbox = Instance.new("TextBox")
-		local Image = Instance.new("ImageLabel")
-		local Outline = Instance.new("ImageLabel")
-
-		Searchbox.Name = "Searchbox"
-		Searchbox.Parent = self.parent
-		Searchbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Searchbox.BackgroundTransparency = 1.000
-		Searchbox.Size = UDim2.new(1, 0, 0, 30)
-		
-		Textbox.Name = "Textbox"
-		Textbox.Parent = Searchbox
-		Textbox.AnchorPoint = Vector2.new(0.5, 0.5)
-		Textbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Textbox.BackgroundTransparency = 1.000
-		Textbox.Position = UDim2.new(0.5, 0, 0.5, 0)
-		Textbox.Size = UDim2.new(1, -10, 0, 25)
-		Textbox.ZIndex = 3
-		Textbox.Font = Enum.Font.Gotham
-		Textbox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-		Textbox.PlaceholderText = Name
-		Textbox.Text = tostring(List[1])
-		Textbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Textbox.TextSize = 16.000
-		
-		Outline.Name = "Image"
-		Outline.Parent = Textbox
-		Outline.AnchorPoint = Vector2.new(0.5, 0.5)
-		Outline.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Outline.BackgroundTransparency = 1.000
-		Outline.Position = UDim2.new(0.5, 0, 0.5, 0)
-		Outline.Size = UDim2.new(1, 0, 1, 0)
-		Outline.ZIndex = 1
-		Outline.Image = "rbxassetid://3570695787"
-		Outline.ImageColor3 = Color3.fromRGB(60, 60, 60)
-		Outline.ScaleType = Enum.ScaleType.Slice
-		Outline.SliceCenter = Rect.new(100, 100, 100, 100)
-		Outline.SliceScale = 0.040
-		
-		Image.Name = "Image"
-		Image.Parent = Textbox
-		Image.AnchorPoint = Vector2.new(0.5, 0.5)
-		Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Image.BackgroundTransparency = 1.000
-		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
-		Image.Size = UDim2.new(1, -4, 1, -4)
-		Image.ZIndex = 2
-		Image.Image = "rbxassetid://3570695787"
-		Image.ImageColor3 = Color3.fromRGB(30, 30, 30)
-		Image.ScaleType = Enum.ScaleType.Slice
-		Image.SliceCenter = Rect.new(100, 100, 100, 100)
-		Image.SliceScale = 0.040
-		
-		local function CloseDropdown(ShouldTween)
-            if Textbox:FindFirstChild("Dropdown") then
-				Image.SliceCenter = Rect.new(100, 100, 100, 100)
-                Toggled = false
-				if ShouldTween then
-					Textbox.Text = old
-					Textbox:FindFirstChild("Dropdown"):TweenSize( UDim2.new(0, Textbox.AbsoluteSize.X, 0, 0), "Out", "Quad", 0.2, true, function()
-						Textbox.ZIndex = 3
-						Image.ZIndex = 2
-						Outline.ZIndex = 1
-	                    Textbox:FindFirstChild("Dropdown"):Destroy()
-					end)
-				else
-					Textbox:FindFirstChild("Dropdown").Size = UDim2.new(0, Textbox.AbsoluteSize.X, 0, 0)
-					Textbox.ZIndex = 3
-					Image.ZIndex = 2
-					Outline.ZIndex = 1
-	                Textbox:FindFirstChild("Dropdown"):Destroy()
-				end
-        	end
-        end
-		
-		local Normal = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(60,60,60)})
-		local Hovering = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(100,100,100)})
-		local Selected = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(255,75,75)})
-		
-		local function CreateDropDown(Array, Shouldtween)
-			Toggled = true
-			Textbox.ZIndex = 8
-			Image.ZIndex = 7
-			Outline.ZIndex = 6
-			self.parent.ClipsDescendants = false
-			Main.ClipsDescendants = false
-			local Dropdown1 = Instance.new("ImageLabel")
-			
-			Dropdown1.Name = "Dropdown"
- 			Dropdown1.Parent = Textbox
-			Dropdown1.AnchorPoint = Vector2.new(0.5, 0)
-			Dropdown1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			Dropdown1.BackgroundTransparency = 1
-			Dropdown1.Position = UDim2.new(0.5, 0, 0, 0)
-			Dropdown1.Size = UDim2.new(1, 0, 0, 0)
-			Dropdown1.Image = "rbxassetid://3570695787"
-			Dropdown1.ImageColor3 = Color3.fromRGB(42, 42, 42)
-			Dropdown1.ScaleType = Enum.ScaleType.Slice
-			Dropdown1.SliceCenter = Rect.new(100, 100, 100, 100)
-			Dropdown1.SliceScale = 0.040
-			Dropdown1.ClipsDescendants = true
-			Dropdown1.ZIndex = 5	
-			if #Array <= 5 then
-				local UIGridLayout = Instance.new("UIGridLayout")
-				local UIPadding = Instance.new("UIPadding")
-				UIGridLayout.Parent = Dropdown1
-				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
-				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
-				
-				UIPadding.Parent = Dropdown1
-				UIPadding.PaddingTop = UDim.new(0, 25)
-				
-				for	i,v in pairs(Array) do
-					local TextButton = Instance.new("TextButton")
-					local Image_3 = Instance.new("ImageLabel")
-					
-					TextButton.Parent = Dropdown1
-					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-					TextButton.BackgroundTransparency = 1
-					TextButton.BorderSizePixel = 0
-					TextButton.Size = UDim2.new(0, 200, 0, 50)
-					TextButton.ZIndex = 2
-					TextButton.Text = tostring(v)
-					TextButton.Font = Enum.Font.Gotham
-					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-					TextButton.TextSize = 18
-					TextButton.ZIndex = 7
-					
-					Image_3.Parent = TextButton
-					Image_3.Active = true
-					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
-					Image_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					Image_3.BackgroundTransparency = 1
-					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
-					Image_3.Selectable = true
-					Image_3.Size = UDim2.new(1, 0, 1, 0)
-					Image_3.Image = "rbxassetid://3570695787"
-					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
-					Image_3.ScaleType = Enum.ScaleType.Slice
-					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
-					Image_3.SliceScale = i == #Array and 0.040 or 0.01
-					Image_3.ZIndex = 6
-					
-					local Normal = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(50,50,50)})
-					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
-					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
-					
-					TextButton.MouseButton1Click:Connect(function()
-						Toggled = false
-						TextButton.Text = TextButton.Text
-						old = TextButton.Text
-				        if flag ~= "" then
-				            Location[flag] = TextButton.Text
-						end
-						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
-							Textbox.ZIndex = 3
-							Image.ZIndex = 2
-							Outline.ZIndex = 1
-							Dropdown1:Destroy()
-						end)
-						local Success, Err = pcall(callback, TextButton.Text, selfSearchbox)
-						if not Success then
-							error(Err)
-						end
-					end)
-					TextButton.MouseButton1Down:Connect(function()
-						Pressed:Play()
-					end)
-					TextButton.MouseEnter:Connect(function()
-						Hovering:Play()
-					end)
-					TextButton.MouseLeave:Connect(function()
-						Normal:Play()
-					end)
-				end
-				if Shouldtween then Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true) 
-				else UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25) end
-			else
-				local UIGridLayout = Instance.new("UIGridLayout")
-				local UIPadding = Instance.new("UIPadding")
-				local ScrollingFrame = Instance.new("ScrollingFrame")
-
-				ScrollingFrame.Parent = Dropdown1
-				ScrollingFrame.Active = true
-				ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				ScrollingFrame.BackgroundTransparency = 1
-				ScrollingFrame.BorderSizePixel = 0
-				ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100,100,100)
-				ScrollingFrame.Position = UDim2.new(0, 0, 0, 25)
-				ScrollingFrame.Size = UDim2.new(1, 0, 1, -25)
-				ScrollingFrame.ZIndex = 5
-				ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
-				ScrollingFrame.HorizontalScrollBarInset = Enum.ScrollBarInset.None
-				ScrollingFrame.ScrollBarThickness = 5
-				
-				UIGridLayout.Parent = ScrollingFrame
-				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
-				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
-				
-				for	i,v in pairs(Array) do
-					local TextButton = Instance.new("TextButton")
-					local Image_3 = Instance.new("ImageLabel")
-					
-					TextButton.Parent = ScrollingFrame
-					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-					TextButton.BackgroundTransparency = 1
-					TextButton.BorderSizePixel = 0
-					TextButton.Size = UDim2.new(0, 200, 0, 50)
-					TextButton.ZIndex = 2
-					TextButton.Text = tostring(v)
-					TextButton.Font = Enum.Font.Gotham
-					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-					TextButton.TextSize = 18
-					TextButton.ZIndex = 7
-					
-					Image_3.Parent = TextButton
-					Image_3.Active = true
-					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
-					Image_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					Image_3.BackgroundTransparency = 1
-					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
-					Image_3.Selectable = true
-					Image_3.Size = UDim2.new(1, 0, 1, 0)
-					Image_3.Image = "rbxassetid://3570695787"
-					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
-					Image_3.ScaleType = Enum.ScaleType.Slice
-					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
-					Image_3.SliceScale = i == #Array and 0.040 or 0.01
-					Image_3.ZIndex = 6
-					
-					local Normal = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(50,50,50)})
-					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
-					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
-					
-					TextButton.MouseButton1Click:Connect(function()
-						Toggled = false
-						Textbox.Text = TextButton.Text
-						old = TextButton.Text
-						Image.SliceCenter = Rect.new(100, 100, 100, 100)
-				        if flag ~= "" then
-				            Location[flag] = TextButton.Text
-						end
-						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
-							Textbox.ZIndex = 3
-							Image.ZIndex = 2
-							Outline.ZIndex = 1
-							Dropdown1:Destroy()
-						end)
-						local Success, Err = pcall(callback, TextButton.Text, selfSearchbox)
-						if not Success then
-							error(Err)
-						end
-					end)
-					TextButton.MouseButton1Down:Connect(function()
-						Pressed:Play()
-					end)
-					TextButton.MouseEnter:Connect(function()
-						Hovering:Play()
-					end)
-					TextButton.MouseLeave:Connect(function()
-						Normal:Play()
-					end)
-				end
-				if Shouldtween then Dropdown1:TweenSize(UDim2.new(1,0,0,149),nil,nil,0.2,true) else Dropdown1.Size = UDim2.new(1,0,0,149) end
-				ScrollingFrame.CanvasSize = UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y)
-			end
-		end
-		
-		Textbox.Focused:Connect(function()
-			old = Textbox.Text
-			CreateDropDown(List, true)
-			Selected:Play()
-		end)
-		
-		Textbox.FocusLost:Connect(function()
-			Toggled = false
-			if MouseOver(Outline) then
-				Hovering:Play()
-			else
-				Normal:Play()
-			end
-			if List[Textbox.Text] then
-				old = Textbox.Text
-			else
-				Textbox.Text = old
-			end
-			CloseDropdown(true)
-		end)
-		
-		Textbox.MouseEnter:Connect(function()
-			if not Textbox:IsFocused() then
-				Hovering:Play()
-			end
-		end)
-		
-		Textbox.MouseLeave:Connect(function()
-			if not Textbox:IsFocused() then
-				Normal:Play()
-			end
-		end)
-		
-		Textbox:GetPropertyChangedSignal("Text"):Connect(function()
-			if Toggled then
-				local Newlist = {}
-				for i,v in pairs(List) do
-					if string.find(string.lower(tostring(v)), string.lower(Textbox.Text)) then
-						table.insert(Newlist, #Newlist+1, v)
-					end
-				end
-				CloseDropdown(false)
-				CreateDropDown(Textbox.Text == "" and List or Newlist, false)
-			end
-		end)
-		
-	end
-	
+	-- Done
 	function Window:Dropdown(...)
 		local Args = {...}
+		local Options = Args[2] or {}
 		local selfDropdown = {}
-		local Name = Args[1] or "DropDown"
-		local callback = Args[3] or function()end
-        local List = Args[2] and Args[2].list or {}
-        local old = ""
-		local Toggled = false
-		local Location = (Args[2] and Args[2].location) and Args[2].location or Window.flags
-		local flag = Args[2] and Args[2].flag or ""
-        if flag ~= "" then
-            Location[flag] = tostring(List[1])
+		local data = {
+			name = (Args[1] or 'Dropdown');
+			callback = (Args[3] or function() end);
+			location = (Options.location and Options.location or Window.flags);
+			flag = (Options.flag or '');
+			list = (Args[2] and Args[2].list or {});
+		}
+        local old = ''
+		local toggled = false
+		if data.flag ~= '' then
+			data.location[data.flag] = tostring(data.list[1])
 		end
 		
-		local Dropdown = Instance.new("Frame")
-		local Button = Instance.new("TextButton")
-		local Image = Instance.new("ImageLabel")
-		local Toggle = Instance.new("TextLabel")
-		local Image_2 = Instance.new("ImageLabel")
+		local Dropdown = Instance.new('Frame')
+		local Button = Instance.new('TextButton')
+		local Image = Instance.new('ImageLabel')
+		local Toggle = Instance.new('TextLabel')
+		local Image_2 = Instance.new('ImageLabel')
 
 		Dropdown.Parent = self.parent
 		Dropdown.BackgroundTransparency = 1
@@ -735,7 +525,7 @@ function Library:CreateWindow(...)
 		Button.Size = UDim2.new(1, -10, 0, 25)
 		Button.ZIndex = 3
 		Button.Font = Enum.Font.Gotham
-		Button.Text = tostring(List[1])
+		Button.Text = tostring(data.list[1])
 		Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Button.TextSize = 18
 
@@ -745,7 +535,7 @@ function Library:CreateWindow(...)
 		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Image.Size = UDim2.new(1, 0, 1, 0)
 		Image.ZIndex = 2
-		Image.Image = "rbxassetid://3570695787"
+		Image.Image = 'rbxassetid://3570695787'
 		Image.ImageColor3 = Color3.fromRGB(45, 45, 45)
 		Image.ScaleType = Enum.ScaleType.Slice
 		Image.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -770,7 +560,7 @@ function Library:CreateWindow(...)
 		Image_2.Rotation = 180
 		Image_2.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
 		Image_2.ZIndex = 2
-		Image_2.Image = "rbxassetid://4918373417"
+		Image_2.Image = 'rbxassetid://4918373417'
 		Image_2.ImageColor3 = Color3.fromRGB(156, 156, 156)
 		
         old = Button.Text
@@ -779,47 +569,33 @@ function Library:CreateWindow(...)
 		local Hovering = TweenService:Create(Image, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(38,38,38)})
 		
 		local function CloseDropdown()
-            if Button:FindFirstChild("Dropdown") then
+            if Button:FindFirstChild('Dropdown') then
 				Image.SliceCenter = Rect.new(100, 100, 100, 100)
-                Toggled = false
+                toggled = false
 				Button.Text = old
 				Button.TextColor3 = Color3.fromRGB(255,255,255)
-				Button:FindFirstChild("Dropdown"):TweenSize( UDim2.new(0, 173, 0, 0), "Out", "Quad", 0.2, true, function()
+				Button:FindFirstChild('Dropdown'):TweenSize( UDim2.new(0, 173, 0, 0), 'Out', 'Quad', 0.2, true, function()
 					Image.ZIndex = 2
 					Image_2.ZIndex = 3
 					Button.ZIndex = 3
-                    Button:FindFirstChild("Dropdown"):Destroy()
+                    Button:FindFirstChild('Dropdown'):Destroy()
    	        	end)
         	end
-        end
-		
-		function selfDropdown:Refresh(val)
-			CloseDropdown()
-			Button.Text = tostring(val[1])
-			old = tostring(val[1])
-			List = val
-			if flag ~= "" then
-				Location[flag] = tostring(val[1])
-			end
-		end
-		
-		function selfDropdown:ChangeCallback(val)
-			callback = val
 		end
 		
 		local function CreateDropDown(Array)
 			self.parent.ClipsDescendants = false
 			Main.ClipsDescendants = false
-			local Dropdown1 = Instance.new("ImageLabel")
+			local Dropdown1 = Instance.new('ImageLabel')
 			
-			Dropdown1.Name = "Dropdown"
+			Dropdown1.Name = 'Dropdown'
  			Dropdown1.Parent = Button
 			Dropdown1.AnchorPoint = Vector2.new(0.5, 0)
 			Dropdown1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			Dropdown1.BackgroundTransparency = 1
 			Dropdown1.Position = UDim2.new(0.5, 0, 0, 0)
 			Dropdown1.Size = UDim2.new(1, 0, 0, 0)
-			Dropdown1.Image = "rbxassetid://3570695787"
+			Dropdown1.Image = 'rbxassetid://3570695787'
 			Dropdown1.ImageColor3 = Color3.fromRGB(42, 42, 42)
 			Dropdown1.ScaleType = Enum.ScaleType.Slice
 			Dropdown1.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -827,8 +603,8 @@ function Library:CreateWindow(...)
 			Dropdown1.ClipsDescendants = true
 			Dropdown1.ZIndex = 5	
 			if #Array <= 5 then
-				local UIGridLayout = Instance.new("UIGridLayout")
-				local UIPadding = Instance.new("UIPadding")
+				local UIGridLayout = Instance.new('UIGridLayout')
+				local UIPadding = Instance.new('UIPadding')
 				UIGridLayout.Parent = Dropdown1
 				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
@@ -837,12 +613,12 @@ function Library:CreateWindow(...)
 				UIPadding.Parent = Dropdown1
 				UIPadding.PaddingTop = UDim.new(0, 25)
 				
-				Button.Text = Name
+				Button.Text = data.name
 				Button.TextColor3 = Color3.fromRGB(120,120,120)
 				
 				for	i,v in pairs(Array) do
-					local TextButton = Instance.new("TextButton")
-					local Image_3 = Instance.new("ImageLabel")
+					local TextButton = Instance.new('TextButton')
+					local Image_3 = Instance.new('ImageLabel')
 					
 					TextButton.Parent = Dropdown1
 					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -864,7 +640,7 @@ function Library:CreateWindow(...)
 					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
 					Image_3.Selectable = true
 					Image_3.Size = UDim2.new(1, 0, 1, 0)
-					Image_3.Image = "rbxassetid://3570695787"
+					Image_3.Image = 'rbxassetid://3570695787'
 					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
 					Image_3.ScaleType = Enum.ScaleType.Slice
 					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -878,10 +654,10 @@ function Library:CreateWindow(...)
 					TextButton.MouseButton1Click:Connect(function()
 						Button.Text = TextButton.Text
 						old = TextButton.Text
-						Toggled = false
+						toggled = false
 						Image.SliceCenter = Rect.new(100, 100, 100, 100)
-				        if flag ~= "" then
-				            Location[flag] = TextButton.Text
+				        if data.flag ~= '' then
+				            data.location[data.flag] = TextButton.Text
 						end
 						Button.TextColor3 = Color3.fromRGB(255,255,255)
 						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
@@ -890,9 +666,11 @@ function Library:CreateWindow(...)
 							Button.ZIndex = 3
 							Dropdown1:Destroy()
 						end)
-						local Success, Err = pcall(callback, TextButton.Text, selfDropdown)
-						if not Success then
-							error(Err)
+						if type(data.callback) == 'function' then
+							local Success, Err = pcall(data.callback, TextButton.Text, selfDropdown)
+							if not Success then
+								error(Err)
+							end
 						end
 					end)
 					TextButton.MouseButton1Down:Connect(function()
@@ -907,9 +685,9 @@ function Library:CreateWindow(...)
 				end
 				Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true)
 			else
-				local UIGridLayout = Instance.new("UIGridLayout")
-				local UIPadding = Instance.new("UIPadding")
-				local ScrollingFrame = Instance.new("ScrollingFrame")
+				local UIGridLayout = Instance.new('UIGridLayout')
+				local UIPadding = Instance.new('UIPadding')
+				local ScrollingFrame = Instance.new('ScrollingFrame')
 
 				ScrollingFrame.Parent = Dropdown1
 				ScrollingFrame.Active = true
@@ -929,12 +707,12 @@ function Library:CreateWindow(...)
 				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
 				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
 				
-				Button.Text = Name
+				Button.Text = data.name
 				Button.TextColor3 = Color3.fromRGB(120,120,120)
 				
 				for	i,v in pairs(Array) do
-					local TextButton = Instance.new("TextButton")
-					local Image_3 = Instance.new("ImageLabel")
+					local TextButton = Instance.new('TextButton')
+					local Image_3 = Instance.new('ImageLabel')
 					
 					TextButton.Parent = ScrollingFrame
 					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -956,7 +734,7 @@ function Library:CreateWindow(...)
 					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
 					Image_3.Selectable = true
 					Image_3.Size = UDim2.new(1, 0, 1, 0)
-					Image_3.Image = "rbxassetid://3570695787"
+					Image_3.Image = 'rbxassetid://3570695787'
 					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
 					Image_3.ScaleType = Enum.ScaleType.Slice
 					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -970,10 +748,10 @@ function Library:CreateWindow(...)
 					TextButton.MouseButton1Click:Connect(function()
 						Button.Text = TextButton.Text
 						old = TextButton.Text
-						Toggled = false
+						toggled = false
 						Image.SliceCenter = Rect.new(100, 100, 100, 100)
-				        if flag ~= "" then
-				            Location[flag] = TextButton.Text
+				        if data.flag ~= '' then
+				            data.location[data.flag] = TextButton.Text
 						end
 						Button.TextColor3 = Color3.fromRGB(255,255,255)
 						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
@@ -982,9 +760,11 @@ function Library:CreateWindow(...)
 							Button.ZIndex = 3
 							Dropdown1:Destroy()
 						end)
-						local Success, Err = pcall(callback, TextButton.Text, selfDropdown)
-						if not Success then
-							error(Err)
+						if type(data.callback) == 'function' then
+							local Success, Err = pcall(data.callback, TextButton.Text, selfDropdown)
+							if not Success then
+								error(Err)
+							end
 						end
 					end)
 					TextButton.MouseButton1Down:Connect(function()
@@ -1002,28 +782,30 @@ function Library:CreateWindow(...)
 			end
 		end
 		
-		game:GetService("UserInputService").WindowFocusReleased:Connect(CloseDropdown)
+		game:GetService('UserInputService').WindowFocusReleased:Connect(CloseDropdown)
 		
 		Button.MouseButton2Click:Connect(function()
-			local Success, Err = pcall(callback, Button.Text, selfDropdown)
-			if not Success then
-				error(Err)
+			if type(data.callback) == 'function' then
+				local Success, Err = pcall(data.callback, Button.Text, selfDropdown)
+				if not Success then
+					error(Err)
+				end
 			end
 		end)
 		
 		Button.MouseButton1Click:Connect(function()
-			Toggled = not Toggled
-			if Toggled then 
+			toggled = not toggled
+			if toggled then 
 				Image.ZIndex = 8
 				Image_2.ZIndex = 9
 				Button.ZIndex = 9
 				Image.SliceCenter = Rect.new(100, 100, 100, 200)
-				CreateDropDown(List)
+				CreateDropDown(data.list)
 			else
 				Button.Text = old
 				Image.SliceCenter = Rect.new(100, 100, 100, 100)
 				for i,v in pairs(Button:GetChildren()) do
-					if v.Name == "Dropdown" then
+					if v.Name == 'Dropdown' then
 						Button.Text = old
 						Button.TextColor3 = Color3.fromRGB(255,255,255)
 						v:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
@@ -1043,23 +825,75 @@ function Library:CreateWindow(...)
 			Normal:Play()
 		end)
 		
+		setmetatable(selfDropdown, {
+			__newindex = function(Table, index, value)
+				if rawequal(Table, selfDropdown) then
+					if rawequal(index,'list') then
+						if type(value)=='table' then
+							CloseDropdown()
+							Button.Text = tostring(value[1])
+							old = tostring(value[1])
+							data.list = value
+							if data.flag ~= "" then
+								data.location[data.flag] = tostring(value[1])
+							end
+						else return end
+					elseif rawequal(index,'name') then
+						if type(value)=='string' then
+							if toggled then
+								Button.Text = value
+							end
+							data.name = value
+						else return end
+					elseif rawequal(index,'flag') then
+						if type(value)=='string' then
+							data.location[data.flag] = nil
+							data.flag = value
+							data.location[data.flag] = data.toggled
+						else return end
+					elseif rawequal(index,'location') then
+						if type(value)=='table' then
+							data.location[data.flag] = nil
+							data.location = value
+							data.location[data.flag] = data.toggled
+						else return end
+					end
+				end
+			end;
+			__index = function(Table, index)
+				if data[index] ~= nil then
+					return data[index]
+				end
+			end;
+			__tostring = function(Table)
+				return data.name
+			end;
+		})
+		table.insert(Window,#Window+1,selfDropdown)
 		return selfDropdown
 	end
-	
+	-- Done
 	function Window:Toggle(...)
 		local Args = {...}
-		local Name = Args[1] or "Toggle"
 		local Options = Args[2] or {}
-		local Location = Options.location and Options.location or Window.flags
-		local Toggled = Options.Default and true or false
-		local Callback = Args[3] or function() end
+		local data = {
+			name = (Args[1] or 'Toggle');
+			callback = (Args[3] or function() end);
+			toggled = (Options.default or false);
+			location = (Options.location and Options.location or Window.flags);
+			flag = (Options.flag or '');
+		}
 		local SelfToggle = {}
 		
-		local Toggle = Instance.new("Frame")
-		local Title = Instance.new("TextLabel")
-		local Outline = Instance.new("ImageLabel")
-		local Center = Instance.new("ImageLabel")
-		local Checkmark = Instance.new("ImageLabel")
+		if data.flag ~= "" then
+			data.location[data.flag] = data.toggled
+		end
+		
+		local Toggle = Instance.new('Frame')
+		local Title = Instance.new('TextLabel')
+		local Outline = Instance.new('ImageLabel')
+		local Center = Instance.new('ImageLabel')
+		local Checkmark = Instance.new('ImageLabel')
 
 		Toggle.Parent = self.parent
 		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1072,7 +906,7 @@ function Library:CreateWindow(...)
 		Title.Position = UDim2.new(0, 7, 0, 0)
 		Title.Size = UDim2.new(1, -7, 1, 0)
 		Title.Font = Enum.Font.Gotham
-		Title.Text = Name
+		Title.Text = data.name
 		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Title.TextSize = 16
 		Title.TextWrapped = true
@@ -1084,7 +918,7 @@ function Library:CreateWindow(...)
 		Outline.BackgroundTransparency = 1
 		Outline.Position = UDim2.new(1, -5, 0.5, 0)
 		Outline.Size = UDim2.new(0, 26, 0, 26)
-		Outline.Image = "rbxassetid://3570695787"
+		Outline.Image = 'rbxassetid://3570695787'
 		Outline.ImageColor3 = Color3.fromRGB(60, 60, 60)
 		Outline.ScaleType = Enum.ScaleType.Slice
 		Outline.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1097,7 +931,7 @@ function Library:CreateWindow(...)
 		Center.Position = UDim2.new(1, -7, 0.5, 0)
 		Center.ZIndex = 2
 		Center.Size = UDim2.new(0, 22, 0, 22)
-		Center.Image = "rbxassetid://3570695787"
+		Center.Image = 'rbxassetid://3570695787'
 		Center.ImageColor3 = Color3.fromRGB(30, 30, 30)
 		Center.ScaleType = Enum.ScaleType.Slice
 		Center.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1110,103 +944,151 @@ function Library:CreateWindow(...)
 		Checkmark.Position = UDim2.new(1, -10, 0.5, 0)
 		Checkmark.Size = UDim2.new(0, 16, 0, 16)
 		Checkmark.ImageColor3 = Color3.fromRGB(30,30,30)
-		Checkmark.Image = "rbxassetid://4919148038"
+		Checkmark.Image = 'rbxassetid://4919148038'
+		
+		if data.toggled then
+			Center.Size = UDim2.new(0,0,0,Center.Size.Y.Offset)
+			Outline.ImageColor3 = Color3.fromRGB(255,75,75)
+			Center.ImageColor3 = Color3.fromRGB(255,75,75)
+		end
 		
 		local Normal = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(60,60,60)})
 		local Hovering = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(100,100,100)})
-		local ToggledOn1 = TweenService:Create(Outline, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(255,75,75)})
-		local ToggledOn2 = TweenService:Create(Center, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(255,75,75)})
-		local ToggledOff1 = TweenService:Create(Outline, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(60,60,60)})
-		local ToggledOff2 = TweenService:Create(Center, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(30,30,30)})
+		local toggledOn1 = TweenService:Create(Outline, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(255,75,75)})
+		local toggledOn2 = TweenService:Create(Center, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(255,75,75)})
+		local toggledOff1 = TweenService:Create(Outline, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(60,60,60)})
+		local toggledOff2 = TweenService:Create(Center, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(30,30,30)})
 		
-		function SelfToggle:Set(value)
-			Toggled = value
-			if Toggled then
-				ToggledOn1:Play()
-				ToggledOn2:Play()
-				wait(0.15)
-				Center:TweenSize(UDim2.new(0,0,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
-			else
-				Center:TweenSize(UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
-				wait(0.15)
-				ToggledOff1:Play()
-				ToggledOff2:Play()
+		function SelfToggle:Destroy() 
+			if data then
+				data.location[data.flag] = nil
+				data = nil
 			end
-			if Options.flag and Options.flag ~= "" then
-				Location[Options.flag] = Toggled
+			if Toggle then
+				Toggle:Destroy()
+			end
+			if self then
+				for i,v in pairs(self) do
+					v = nil
+				end
+				self = nil
 			end
 		end
 		
-		function SelfToggle:ChangeCallback(value)
-			if type(value) == "function" then
-				Callback = value
-			end
-		end
+		setmetatable(SelfToggle, {
+			__newindex = function(Table, index, value)
+				if rawequal(Table, SelfToggle) then
+					if rawequal(index,'toggled') then
+						if type(value)=='boolean' or type(value)=='table' then
+							if type(value)=='table' and type(value[1])=='boolean' then
+								data.toggled = value[1]
+								if type(data.callback) == 'function' then
+									local Success, Err = pcall(data.callback, data.toggled, SelfToggle)
+									if not Success then
+										error(Err)
+									end
+								end
+							else
+								data.toggled = value
+							end
+							if data.toggled then
+								spawn(function()
+									toggledOn1:Play()
+									toggledOn2:Play()
+									wait(0.15)
+									Center:TweenSize(UDim2.new(0,0,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
+								end)
+							else
+								spawn(function()
+									Center:TweenSize(UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
+									wait(0.15)
+									toggledOff1:Play()
+									toggledOff2:Play()
+								end)
+							end
+							if data.flag ~= '' then
+								data.location[data.flag] = data.toggled
+							end
+						else return end
+					elseif rawequal(index,'name') then
+						if type(value)=='string' then
+							Title.Text = value
+							data.name = value
+						else return end
+					elseif rawequal(index,'flag') then
+						if type(value)=='string' then
+							data.location[data.flag] = nil
+							data.flag = value
+							data.location[data.flag] = data.toggled
+						else return end
+					elseif rawequal(index,'location') then
+						if type(value)=='table' then
+							data.location[data.flag] = nil
+							data.location = value
+							data.location[data.flag] = data.toggled
+						else return end
+					end
+				end
+			end;
+			__index = function(Table, index)
+				if data[index] ~= nil then
+					return data[index]
+				end
+			end;
+			__tostring = function(Table)
+				return data.name
+			end;
+		})
 		
 		Toggle.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				Toggled = not Toggled
-				if Toggled then
-					ToggledOn1:Play()
-					ToggledOn2:Play()
-					wait(0.15)
-					Center:TweenSize(UDim2.new(0,0,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
-				else
-					Center:TweenSize(UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
-					wait(0.15)
-					ToggledOff1:Play()
-					ToggledOff2:Play()
-				end
-				if Options.flag and Options.flag ~= "" then
-					Location[Options.flag] = Toggled
-				end
-				local Success, Err = pcall(Callback, Toggled, SelfToggle)
-				if not Success then
-					error(Err)
-				end
+				SelfToggle.toggled = {not data.toggled}
 			end
 		end)
 		
 		Toggle.MouseEnter:Connect(function()
-			MouseOver = true
-			if not Toggled then
+			MouseOverB = true
+			if not data.toggled then
 				Hovering:Play()
 				Center.Size = UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset)
 			end
 		end)
 		Toggle.MouseLeave:Connect(function()
-			MouseOver = false
-			if not Toggled then
+			MouseOverB = false
+			if not data.toggled then
 				Normal:Play()
 				Center.Size = UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset)
 			end
 		end)
-		
+		table.insert(Window,#Window+1,SelfToggle)
 		return SelfToggle
 	end
-	
+	-- Done
 	function Window:Slider(...)
 		local Args = {...}
-		local Name = Args[1] or "Slider"
-		local callback = Args[3] or function()end
-		local flag = Args[2] and Args[2].flag or ""
-		local Min = Args[2] and Args[2].min or 0
-		local Max = Args[2] and Args[2].max or 100
-		local Default = Args[2] and Args[2].default or Min
-		local step = Args[2] and Args[2].step or 1
-		local Location = Args[2] and Args[2].location or Window.flags
-        if flag ~= "" then
-            Location[flag] = Default
+		local SelfSlider = {}
+		local data = {
+			Name = Args[1] or 'Slider';
+			callback = Args[3] or function()end;
+			flag = Args[2] and Args[2].flag or '';
+			min = Args[2] and Args[2].min or 0;
+			max = Args[2] and Args[2].max or 100;
+			step = Args[2] and Args[2].step or 1;
+			location = Args[2] and Args[2].location or Window.flags;
+		}
+		data.value = Args[2] and Args[2].default or data.min;
+		if data.flag ~= '' then
+			data.location[data.flag] = data.value
 		end
 		
-		local Box = Instance.new("Frame")
-		local Title = Instance.new("TextLabel")
-		local Amount = Instance.new("TextBox")
-		local Image = Instance.new("ImageLabel")
-		local Background = Instance.new("Frame")
-		local BackgroundImage = Instance.new("ImageLabel")
-		local Fill = Instance.new("ImageLabel")
-		local Handle = Instance.new("ImageButton")
+		local Box = Instance.new('Frame')
+		local Title = Instance.new('TextLabel')
+		local Amount = Instance.new('TextBox')
+		local Image = Instance.new('ImageLabel')
+		local Background = Instance.new('Frame')
+		local BackgroundImage = Instance.new('ImageLabel')
+		local Fill = Instance.new('ImageLabel')
+		local Handle = Instance.new('ImageButton')
 
 		Box.Parent = self.parent
 		Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1220,7 +1102,7 @@ function Library:CreateWindow(...)
 		Title.Position = UDim2.new(0, 7, 0, 4)
 		Title.Size = UDim2.new(0, 213, 0, 15)
 		Title.Font = Enum.Font.Gotham
-		Title.Text = Name
+		Title.Text = data.Name
 		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Title.TextSize = 16.000
 		Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -1234,7 +1116,7 @@ function Library:CreateWindow(...)
 		Amount.ZIndex = 2
 		Amount.Font = Enum.Font.Gotham
 		Amount.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
-		Amount.Text = tostring(Default)
+		Amount.Text = tostring(data.value)
 		Amount.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Amount.TextSize = 14.000
 		
@@ -1246,7 +1128,7 @@ function Library:CreateWindow(...)
 		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Image.Selectable = true
 		Image.Size = UDim2.new(1, 0, 1, 0)
-		Image.Image = "rbxassetid://3570695787"
+		Image.Image = 'rbxassetid://3570695787'
 		Image.ImageColor3 = Color3.fromRGB(45, 45, 45)
 		Image.ScaleType = Enum.ScaleType.Slice
 		Image.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1264,7 +1146,7 @@ function Library:CreateWindow(...)
 		BackgroundImage.BackgroundTransparency = 1.000
 		BackgroundImage.Position = UDim2.new(0.5, 0, 0.5, 0)
 		BackgroundImage.Size = UDim2.new(1, 0, 0, 6)
-		BackgroundImage.Image = "rbxassetid://3570695787"
+		BackgroundImage.Image = 'rbxassetid://3570695787'
 		BackgroundImage.ImageColor3 = Color3.fromRGB(60, 60, 60)
 		BackgroundImage.ScaleType = Enum.ScaleType.Slice
 		BackgroundImage.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1274,9 +1156,9 @@ function Library:CreateWindow(...)
 		Fill.AnchorPoint = Vector2.new(0, 0.5)
 		Fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Fill.BackgroundTransparency = 1.000
-		Fill.Position = UDim2.new(math.clamp((((Max - 0) / (Max - Min))-1)*-1, 0, 1),0,0.5,0)
-		Fill.Size = UDim2.new((1 - (((Max - Default) / (Max - Min))+Fill.Position.X.Scale)), 0, 0, 6)
-		Fill.Image = "rbxassetid://3570695787"
+		Fill.Position = UDim2.new(math.clamp((((data.max - 0) / (data.max - data.min))-1)*-1, 0, 1),0,0.5,0)
+		Fill.Size = UDim2.new((1 - (((data.max - data.value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
+		Fill.Image = 'rbxassetid://3570695787'
 		Fill.ImageColor3 = Color3.fromRGB(100, 100, 100)
 		Fill.ScaleType = Enum.ScaleType.Slice
 		Fill.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1288,7 +1170,7 @@ function Library:CreateWindow(...)
 		Handle.BackgroundTransparency = 1.000
 		Handle.Position = UDim2.new(1, 0, 0.5, 0)
 		Handle.Size = UDim2.new(0, 0, 0, 0)
-		Handle.Image = "rbxassetid://3570695787"
+		Handle.Image = 'rbxassetid://3570695787'
 		Handle.ImageColor3 = Color3.fromRGB(100, 100, 100)
 		Handle.ScaleType = Enum.ScaleType.Fit
 		Handle.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1318,8 +1200,8 @@ function Library:CreateWindow(...)
 		end
         local function GetDecimalPlacesCount(num)
             num = tostring(num)
-            if string.match(num, ".") then
-                local dec = string.split(num, ".")
+            if string.match(num, '.') then
+                local dec = string.split(num, '.')
                 return #tostring(tonumber(dec[2]))
             else
                 return 0
@@ -1330,28 +1212,6 @@ function Library:CreateWindow(...)
 			Dragging1:Play()
 			Dragging2:Play()
 		end)
-		function selfslider:Set(value)
-			if tonumber(value) then
-				Amount.Text = math.clamp(tonumber(value), Min, Max)
-				value = math.clamp(tonumber(value), Min, Max)
-			else
-				Amount.Text = tostring(old)
-				value = old
-			end
-			Fill.Size = UDim2.new((1 - (((Max - value) / (Max - Min))+Fill.Position.X.Scale)), 0, 0, 6)
-			if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
-				Handle.Position = UDim2.new(0,0,0.5,0)
-			elseif Fill.Position.X.Scale > 0 then
-				Handle.Position = UDim2.new(1,0,0.5,0)
-			end
-	        if flag ~= "" then
-	            Location[flag] = value
-	        end
-			old = value
-		end
-		function selfslider:ChangeCallback(value)
-			callback = value
-		end
         Background.InputBegan:Connect(
             function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -1363,36 +1223,40 @@ function Library:CreateWindow(...)
 								Dragging2:Play()
                                 local Relpos = Library.MousePos - Fill.AbsolutePosition
                                 local precentage = Relpos.x / Background.AbsoluteSize.x
-								Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), step / (Max - Min)), 0, 0, 6)
+								Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), data.step / (
+									data.max - data.min)), 0, 0, 6)
 								if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
 									Handle.Position = UDim2.new(0,0,0.5,0)
 								elseif Fill.Position.X.Scale > 0 then
 									Handle.Position = UDim2.new(1,0,0.5,0)
 								end
-                                if step >= 1 then
+                                if data.step >= 1 then
                                     Amount.Text =
                                         string.format(
-                                        "%.0f",
-                                        round(((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min))
+                                        '%.0f',
+                                        round(((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (data.max - data.min) + data.min))
                                 else
-                                    local deccount = GetDecimalPlacesCount(step)
-                                    local decsize = (step >= 1 and 10 or 100)
+                                    local deccount = GetDecimalPlacesCount(data.step)
+                                    local decsize = (data.step >= 1 and 10 or 100)
 					                Amount.Text =
 					                    string.format(
-					                    "%." .. (decsize == 10 and "1" or "2") .. "f",
+					                    '%.' .. (decsize == 10 and '1' or '2') .. 'f',
 					                    round(
-					                        (((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min) *
-					                            (decsize / (step * decsize))
+					                        (((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (data.max - data.min) + data.min) *
+					                            (decsize / (data.step * decsize))
 					                    ) /
-					                        (decsize / (step * decsize))
+					                        (decsize / (data.step * decsize))
 					                                        )
-								 end
-						         if flag ~= "" then
-					                 Location[flag] = tonumber(Amount.Text)
-					             end
-								local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
-								if not Success then
-									error(Err)
+								end
+								data.value = tonumber(Amount.Text)
+						         if data.flag ~= '' then
+					                 data.location[data.flag] = tonumber(Amount.Text)
+								end
+								if type(data.callback) == 'function' then
+									local Success, Err = pcall(data.callback, tonumber(Amount.Text), selfslider)
+									if not Success then
+										error(Err)
+									end
 								end
 								old = tonumber(Amount.Text)
                             end
@@ -1401,7 +1265,7 @@ function Library:CreateWindow(...)
                 end
             end
         )
-        game:GetService("UserInputService").InputEnded:Connect(
+        game:GetService('UserInputService').InputEnded:Connect(
             function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				    Dragging = false
@@ -1413,54 +1277,60 @@ function Library:CreateWindow(...)
                 end
             end
         )
-		game:GetService("UserInputService").InputChanged:Connect(function(input, gameProcessed)
+		game:GetService('UserInputService').InputChanged:Connect(function(input, gameProcessed)
 		    if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
 		        spawn(function()
 		            local Relpos = Library.MousePos - Fill.AbsolutePosition
 		            local precentage = Relpos.x / Background.AbsoluteSize.x
-					Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), step / (Max - Min)), 0, 0, 6)
+					Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), data.step / 
+						(data.max - data.min)), 0, 0, 6)
 					if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
 						Handle.Position = UDim2.new(0,0,0.5,0)
 					elseif Fill.Position.X.Scale > 0 then
 						Handle.Position = UDim2.new(1,0,0.5,0)
 					end
-		            if step >= 1 then
+		            if data.step >= 1 then
 		                Amount.Text =
 		                    string.format(
-		                    "%.0f",
-		                    round(((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min))
-		                if flag ~= "" then
-		                    Location[flag] = tonumber(Amount.Text)
-		                end
-		                local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
-		                if not Success then
-		                    error(Err)
-		                end
+		                    '%.0f',
+		                    round(((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (data.max - data.min) + data.min))
+		                if data.flag ~= '' then
+		                    data.location[data.flag] = tonumber(Amount.Text)
+						end
+						if type(data.callback) == 'function' then
+			                local Success, Err = pcall(data.callback, tonumber(Amount.Text), selfslider)
+			                if not Success then
+			                    error(Err)
+							end
+						end
 		            else
-		                local deccount = GetDecimalPlacesCount(step)
-		                local decsize = (step >= 1 and 10 or 100)
+		                local deccount = GetDecimalPlacesCount(data.step)
+		                local decsize = (data.step >= 1 and 10 or 100)
 		                Amount.Text =
 		                    string.format(
-		                    "%." .. (decsize == 10 and "1" or "2") .. "f",
+		                    '%.' .. (decsize == 10 and '1' or '2') .. 'f',
 		                    round(
-		                        (((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (Max - Min) + Min) *
-		                            (decsize / (step * decsize))
+		                        (((Fill.AbsoluteSize.x / Background.AbsoluteSize.x)+Fill.Position.X.Scale) * (data.max - data.min) + data.min) *
+		                            (decsize / (data.step * decsize))
 		                    ) /
-		                        (decsize / (step * decsize))
+		                        (decsize / (data.step * decsize))
 		                                        )
-		            end
-		            if flag ~= "" then
-		                Location[flag] = tonumber(Amount.Text)
-		            end
-		            local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
-		            if not Success then
-		                error(Err)
-		            end
+					end
+					data.value = tonumber(Amount.Text)
+		            if data.flag ~= '' then
+		                data.location[data.flag] = tonumber(Amount.Text)
+					end
+					if type(data.callback) == 'function' then
+			            local Success, Err = pcall(data.callback, tonumber(Amount.Text), selfslider)
+			            if not Success then
+			                error(Err)
+						end
+					end
 		            old = tonumber(Amount.Text)
 		        end)
 		    end
 		end)
-		game:GetService("UserInputService").WindowFocusReleased:Connect(function()
+		game:GetService('UserInputService').WindowFocusReleased:Connect(function()
 			Dragging = false
 			Normal1:Play()
 			Normal2:Play()
@@ -1468,10 +1338,10 @@ function Library:CreateWindow(...)
         end)
 		
         function PositiveIntegerMask(text)
-            return text:gsub("[^%-%d]", "")
+            return text:gsub('[^%-%d]', '')
         end
-        Amount:GetPropertyChangedSignal("Text"):Connect(function()
-            if (type == "number") then
+        Amount:GetPropertyChangedSignal('Text'):Connect(function()
+            if (type == 'number') then
                 Amount.Text = PositiveIntegerMask(Amount.Text)
             end
         end)
@@ -1488,44 +1358,130 @@ function Library:CreateWindow(...)
 		
 		Amount.FocusLost:Connect(function()
 			if tonumber(Amount.Text) then
-				Amount.Text = math.clamp(tonumber(Amount.Text), Min, Max)
+				Amount.Text = math.clamp(tonumber(Amount.Text), data.min, data.max)
 			else
 				Amount.Text = tostring(old)
 			end
-			Fill.Size = UDim2.new((1 - (((Max - tonumber(Amount.Text)) / (Max - Min))+Fill.Position.X.Scale)), 0, 0, 6)
+			Fill.Size = UDim2.new((1 - (((data.max - tonumber(Amount.Text)) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
 			if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
 				Handle.Position = UDim2.new(0,0,0.5,0)
 			elseif Fill.Position.X.Scale > 0 then
 				Handle.Position = UDim2.new(1,0,0.5,0)
 			end
-	        if flag ~= "" then
-	            Location[flag] = tonumber(Amount.Text)
-	        end
-			local Success, Err = pcall(callback, tonumber(Amount.Text), selfslider)
-			if not Success then
-				error(Err)
+	        if data.flag ~= '' then
+	            data.location[data.flag] = tonumber(Amount.Text)
+			end
+			data.value = tonumber(Amount.Text)
+			if type(data.callback) == 'function' then
+				local Success, Err = pcall(data.callback, tonumber(Amount.Text), selfslider)
+				if not Success then
+					error(Err)
+				end
 			end
 			old = tonumber(Amount.Text)
-        end)
+		end)
+		
+		setmetatable(SelfSlider, {
+			__newindex = function(Table, index, value)
+				if rawequal(Table, SelfSlider) then
+					if rawequal(index,'value') then
+						if type(value)=='number' or type(value)=='table' then
+							if type(value)=='table' and type(value[1])=='number' then
+								data.value = value[1]
+								if type(data.callback) == 'function' then
+									local Success, Err = pcall(data.callback, data.value, SelfSlider)
+									if not Success then
+										error(Err)
+									end
+								end
+							else
+								data.value = value
+							end
+							if tonumber(value) then
+								Amount.Text = math.clamp(tonumber(value), data.min, data.max)
+								value = math.clamp(tonumber(value), data.min, data.max)
+							else
+								Amount.Text = tostring(old)
+								value = old
+							end
+							Fill.Size = UDim2.new((1 - (((data.max - value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
+							if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
+								Handle.Position = UDim2.new(0,0,0.5,0)
+							elseif Fill.Position.X.Scale > 0 then
+								Handle.Position = UDim2.new(1,0,0.5,0)
+							end
+							if data.flag ~= '' then
+								data.location[data.flag] = value
+							end
+							old = value
+						else return end
+					elseif rawequal(index,'name') then
+						if type(value)=='string' then
+							Title.Text = value
+							data.name = value
+						else return end
+					elseif rawequal(index,'flag') then
+						if type(value)=='string' then
+							data.location[data.flag] = nil
+							data.flag = value
+							data.location[data.flag] = data.toggled
+						else return end
+					elseif rawequal(index,'location') then
+						if type(value)=='table' then
+							data.location[data.flag] = nil
+							data.location = value
+							data.location[data.flag] = data.toggled
+						else return end
+					elseif rawequal(index,'min') or rawequal(index,'max') then
+						data[index] = value
+						if (index == 'min' and value+1 < data.max) or (index == 'max' and value-1 > data.min) then
+							data.value = math.clamp(data.value, data.min, data.max)
+							Amount.Text = tostring(data.value)
+							Fill.Position = UDim2.new(math.clamp((((data.max - 0) / (data.max - data.min))-1)*-1, 0, 1),0,0.5,0)
+							Fill.Size = UDim2.new((1 - (((data.max - data.value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
+						else
+							if index == 'min' then
+								warn("min can't be greater or equal to max")
+							elseif index == 'max' then
+								warn("max can't be less then or equal to min")
+							end
+						end
+					end
+				end
+			end;
+			__index = function(Table, index)
+				if data[index] ~= nil then
+					return data[index]
+				end
+			end;
+			__tostring = function(Table)
+				return data.name
+			end;
+		})
+		
+		return SelfSlider
 	end
-	
+	-- Done
 	function Window:Folder(...)
 		local Args = {...}
-		local Name = Args[1] or "Folder"
+		local data = {
+			name = Args[1] or 'Folder';
+			showing = false;
+		}
 		local Folder = deepcopy(Window)
 		Folder.toggled = false
 		
-		local Title = Instance.new("ImageLabel")
-		local Title_2 = Instance.new("TextLabel")
-		local Toggle = Instance.new("TextButton")
-		local Image = Instance.new("ImageLabel")
+		local Title = Instance.new('ImageLabel')
+		local Title_2 = Instance.new('TextLabel')
+		local Toggle = Instance.new('TextButton')
+		local Image = Instance.new('ImageLabel')
 
 		Title.Parent = self.parent
 		Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Title.BackgroundTransparency = 1
 		Title.Position = UDim2.new(0, 20, 0, 20)
 		Title.Size = UDim2.new(1, 0, 0, 30)
-		Title.Image = "rbxassetid://3570695787"
+		Title.Image = 'rbxassetid://3570695787'
 		Title.ImageColor3 = Color3.fromRGB(25,25,25)
 		Title.ScaleType = Enum.ScaleType.Slice
 		Title.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1536,7 +1492,7 @@ function Library:CreateWindow(...)
 		Title_2.BackgroundTransparency = 1
 		Title_2.Size = UDim2.new(1, 0, 1, 0)
 		Title_2.Font = Enum.Font.Gotham
-		Title_2.Text = Name
+		Title_2.Text = data.name
 		Title_2.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Title_2.TextSize = 18
 		Title_2.TextWrapped = true
@@ -1548,7 +1504,7 @@ function Library:CreateWindow(...)
 		Toggle.Position = UDim2.new(1, -5, 0.5, 0)
 		Toggle.Size = UDim2.new(0, 25, 0, 25)
 		Toggle.Font = Enum.Font.Gotham
-		Toggle.Text = ""
+		Toggle.Text = ''
 		Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.TextSize = 14
 		
@@ -1559,18 +1515,18 @@ function Library:CreateWindow(...)
 		Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 		Image.Rotation = 180
 		Image.Size = UDim2.new(0.4, 0, 0.4, 0)
-		Image.Image = "rbxassetid://4918373417"
+		Image.Image = 'rbxassetid://4918373417'
 		Image.ImageColor3 = Color3.fromRGB(80, 80, 80)
 		
-		local FolderContainer = Instance.new("ImageLabel")
-		local UIListLayout = Instance.new("UIListLayout")
+		local FolderContainer = Instance.new('ImageLabel')
+		local UIListLayout = Instance.new('UIListLayout')
 		Folder.parent = FolderContainer
 
 		FolderContainer.Parent = self.parent
 		FolderContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		FolderContainer.BackgroundTransparency = 1
 		FolderContainer.Size = UDim2.new(1, 0, 0, 0)
-		FolderContainer.Image = "rbxassetid://3570695787"
+		FolderContainer.Image = 'rbxassetid://3570695787'
 		FolderContainer.ImageColor3 = Color3.fromRGB(30, 30, 30)
 		FolderContainer.ScaleType = Enum.ScaleType.Slice
 		FolderContainer.SliceCenter = Rect.new(100, 100, 100, 100)
@@ -1580,8 +1536,8 @@ function Library:CreateWindow(...)
 		UIListLayout.Parent = FolderContainer
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		
-		UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-			if Folder.toggled then
+		UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
+			if Folder.toggled or data.showing then
 				FolderContainer.Size = UDim2.new(1,0,0, UIListLayout.AbsoluteContentSize.Y)
 			end
 		end)
@@ -1598,15 +1554,71 @@ function Library:CreateWindow(...)
 				up:Play()
 			end
 		end)
-		
+		setmetatable(Folder, {
+			__newindex = function(Table, index, value)
+				if rawequal(Table, Folder) then
+					if rawequal(index,'name') then
+						if type(value)=='string' then
+							Title.Text = value
+							data.name = value
+						else return end
+					elseif rawequal(index,'showing') then
+						if type(value)=='boolean' then
+							data.showing = value
+							Folder.toggled = value
+							if value then
+								Image.Rotation = 90
+								FolderContainer.Size = UDim2.new(1,0,0,UIListLayout.AbsoluteContentSize.Y)
+							else
+								Image.Rotation = 180
+								FolderContainer.Size = UDim2.new(1,0,0,0)
+							end
+						else return end
+					else return end
+				end
+			end;
+			__index = function(Table, index)
+				if data[index] ~= nil then
+					return data[index]
+				end
+			end;
+			__tostring = function(Table)
+				return data.name
+			end;
+		})
 		return Folder
 	end
 	
+	setmetatable(Window, {
+		__newindex = function(Table, index, value)
+			if rawequal(Table, Window) then
+				if rawequal(index,'name') then
+					if type(value)=='string' then
+						Title.Text = value
+						data.name = value
+					else return end
+				end
+			end
+		end;
+		__index = function(Table, index)
+			if data[index] ~= nil then
+				return data[index]
+			end
+		end;
+		__tostring = function(Table)
+			return data.name
+		end;
+	})
 	return Window
 end
-game:GetService("UserInputService").InputChanged:Connect(function(input, gameProcessed)
+game:GetService('UserInputService').InputChanged:Connect(function(input, gameProcessed)
 	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		Library.MousePos = game:GetService("UserInputService"):GetMouseLocation() - Vector2.new(0, 36)
+		Library.MousePos = game:GetService('UserInputService'):GetMouseLocation() - Vector2.new(0, 36)
 	end
 end)
+
+function Library:Destroy()
+	
+end
+
 return Library
