@@ -372,78 +372,80 @@ function Library:CreateWindow(...)
 		
 		setmetatable(SelfBox, {
 			__newindex = function(Table, index, value)
-				if rawequal(Table, SelfBox) then
-					if rawequal(index,'text') then
-						if type(value)=='string' or type(value)=='number' or type(value)=='table' then
-							if type(value)=='table' and (type(value[1])=='string' or type(value[1])=='number') then
-								if data.type == 'number' then
-									data.text = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
-									if type(data.callback) == 'function' then
-										local Success, Err = pcall(data.callback, tonumber(data.text), tonumber(old), false, SelfBox)
-										if not Success then
-											error(Err)
+				spawn(function()
+					if rawequal(Table, SelfBox) then
+						if rawequal(index,'text') then
+							if type(value)=='string' or type(value)=='number' or type(value)=='table' then
+								if type(value)=='table' and (type(value[1])=='string' or type(value[1])=='number') then
+									if data.type == 'number' then
+										data.text = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
+										if type(data.callback) == 'function' then
+											local Success, Err = pcall(data.callback, tonumber(data.text), tonumber(old), false, SelfBox)
+											if not Success then
+												error(Err)
+											end
+										end
+									else
+										data.text = value[1]
+										if type(data.callback) == 'function' then
+											local Success, Err = pcall(data.callback, data.text, old, false, SelfBox)
+											if not Success then
+												error(Err)
+											end
 										end
 									end
 								else
-									data.text = value[1]
-									if type(data.callback) == 'function' then
-										local Success, Err = pcall(data.callback, data.text, old, false, SelfBox)
-										if not Success then
-											error(Err)
-										end
+									if type(value)=='number' then
+										data.text = tostring(value)
+									else
+										data.text = value
+									end
+									if data.type == 'number' then
+										data.text = tostring(math.clamp(tonumber(data.text), data.min, data.max))
 									end
 								end
-							else
-								if type(value)=='number' then
-									data.text = tostring(value)
-								else
-									data.text = value
+								TextBox.Text = tostring(data.text)
+							else return end
+						elseif rawequal(index,'name') then
+							if type(value)=='string' then
+								Title.Text = value
+								Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
+								data.name = value
+							else return end
+						elseif rawequal(index,'placeholder') then
+							if type(value)=='string' then
+								TextBox.PlaceholderText = value
+								data.placeholder = value
+							end
+						elseif rawequal(index,'flag') then
+							if type(value)=='string' then
+								data.location[data.flag] = nil
+								data.flag = value
+								data.location[data.flag] = data.toggled
+							else return end
+						elseif rawequal(index,'location') then
+							if type(value)=='table' then
+								data.location[data.flag] = nil
+								data.location = value
+								data.location[data.flag] = data.toggled
+							else return end
+						elseif rawequal(index,'type') then
+							if type(value)=="string" then
+								local temptype = string.lower(value)
+								if temptype == 'string' or temptype == 'number' then 
+									data.type = value
 								end
+							end
+						elseif rawequal(index,'min') or rawequal(index,'max') then
+							if type(value)=="number" then
+								data[index] = value
 								if data.type == 'number' then
-									data.text = tostring(math.clamp(tonumber(data.text), data.min, data.max))
+									data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
 								end
-							end
-							TextBox.Text = tostring(data.text)
-						else return end
-					elseif rawequal(index,'name') then
-						if type(value)=='string' then
-							Title.Text = value
-							Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
-							data.name = value
-						else return end
-					elseif rawequal(index,'placeholder') then
-						if type(value)=='string' then
-							TextBox.PlaceholderText = value
-							data.placeholder = value
-						end
-					elseif rawequal(index,'flag') then
-						if type(value)=='string' then
-							data.location[data.flag] = nil
-							data.flag = value
-							data.location[data.flag] = data.toggled
-						else return end
-					elseif rawequal(index,'location') then
-						if type(value)=='table' then
-							data.location[data.flag] = nil
-							data.location = value
-							data.location[data.flag] = data.toggled
-						else return end
-					elseif rawequal(index,'type') then
-						if type(value)=="string" then
-							local temptype = string.lower(value)
-							if temptype == 'string' or temptype == 'number' then 
-								data.type = value
-							end
-						end
-					elseif rawequal(index,'min') or rawequal(index,'max') then
-						if type(value)=="number" then
-							data[index] = value
-							if data.type == 'number' then
-								data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
 							end
 						end
 					end
-				end
+				end)
 			end;
 			__index = function(Table, index)
 				if data[index] ~= nil then
@@ -1052,58 +1054,56 @@ function Library:CreateWindow(...)
 		
 		setmetatable(SelfToggle, {
 			__newindex = function(Table, index, value)
-				if rawequal(Table, SelfToggle) then
-					if rawequal(index,'toggled') then
-						if type(value)=='boolean' or type(value)=='table' then
-							if type(value)=='table' and type(value[1])=='boolean' then
-								data.toggled = value[1]
-								if type(data.callback) == 'function' then
-									local Success, Err = pcall(data.callback, data.toggled, SelfToggle)
-									if not Success then
-										error(Err)
+				spawn(function()
+					if rawequal(Table, SelfToggle) then
+						if rawequal(index,'toggled') then
+							if type(value)=='boolean' or type(value)=='table' then
+								if type(value)=='table' and type(value[1])=='boolean' then
+									data.toggled = value[1]
+									if type(data.callback) == 'function' then
+										local Success, Err = pcall(data.callback, data.toggled, SelfToggle)
+										if not Success then
+											error(Err)
+										end
 									end
+								else
+									data.toggled = value
 								end
-							else
-								data.toggled = value
-							end
-							if data.toggled then
-								spawn(function()
+								if data.toggled then
 									toggledOn1:Play()
 									toggledOn2:Play()
 									wait(0.15)
 									Center:TweenSize(UDim2.new(0,0,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
-								end)
-							else
-								spawn(function()
+								else
 									Center:TweenSize(UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
 									wait(0.15)
 									toggledOff1:Play()
 									toggledOff2:Play()
-								end)
-							end
-							if data.flag ~= '' then
+								end
+								if data.flag ~= '' then
+									data.location[data.flag] = data.toggled
+								end
+							else return end
+						elseif rawequal(index,'name') then
+							if type(value)=='string' then
+								Title.Text = value
+								data.name = value
+							else return end
+						elseif rawequal(index,'flag') then
+							if type(value)=='string' then
+								data.location[data.flag] = nil
+								data.flag = value
 								data.location[data.flag] = data.toggled
-							end
-						else return end
-					elseif rawequal(index,'name') then
-						if type(value)=='string' then
-							Title.Text = value
-							data.name = value
-						else return end
-					elseif rawequal(index,'flag') then
-						if type(value)=='string' then
-							data.location[data.flag] = nil
-							data.flag = value
-							data.location[data.flag] = data.toggled
-						else return end
-					elseif rawequal(index,'location') then
-						if type(value)=='table' then
-							data.location[data.flag] = nil
-							data.location = value
-							data.location[data.flag] = data.toggled
-						else return end
+							else return end
+						elseif rawequal(index,'location') then
+							if type(value)=='table' then
+								data.location[data.flag] = nil
+								data.location = value
+								data.location[data.flag] = data.toggled
+							else return end
+						end
 					end
-				end
+				end)
 			end;
 			__index = function(Table, index)
 				if data[index] ~= nil then
@@ -1475,71 +1475,73 @@ function Library:CreateWindow(...)
 		
 		setmetatable(SelfSlider, {
 			__newindex = function(Table, index, value)
-				if rawequal(Table, SelfSlider) then
-					if rawequal(index,'value') then
-						if type(value)=='number' or type(value)=='table' then
-							if type(value)=='table' and type(value[1])=='number' then
-								data.value = value[1]
-								if type(data.callback) == 'function' then
-									local Success, Err = pcall(data.callback, data.value, SelfSlider)
-									if not Success then
-										error(Err)
+				spawn(function()
+					if rawequal(Table, SelfSlider) then
+						if rawequal(index,'value') then
+							if type(value)=='number' or type(value)=='table' then
+								if type(value)=='table' and type(value[1])=='number' then
+									data.value = value[1]
+									if type(data.callback) == 'function' then
+										local Success, Err = pcall(data.callback, data.value, SelfSlider)
+										if not Success then
+											error(Err)
+										end
 									end
+								else
+									data.value = value
 								end
+								if tonumber(value) then
+									Amount.Text = math.clamp(tonumber(value), data.min, data.max)
+									value = math.clamp(tonumber(value), data.min, data.max)
+								else
+									Amount.Text = tostring(old)
+									value = old
+								end
+								Fill.Size = UDim2.new((1 - (((data.max - value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
+								if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
+									Handle.Position = UDim2.new(0,0,0.5,0)
+								elseif Fill.Position.X.Scale > 0 then
+									Handle.Position = UDim2.new(1,0,0.5,0)
+								end
+								if data.flag ~= '' then
+									data.location[data.flag] = value
+								end
+								old = value
+							else return end
+						elseif rawequal(index,'name') then
+							if type(value)=='string' then
+								Title.Text = value
+								data.name = value
+							else return end
+						elseif rawequal(index,'flag') then
+							if type(value)=='string' then
+								data.location[data.flag] = nil
+								data.flag = value
+								data.location[data.flag] = data.toggled
+							else return end
+						elseif rawequal(index,'location') then
+							if type(value)=='table' then
+								data.location[data.flag] = nil
+								data.location = value
+								data.location[data.flag] = data.toggled
+							else return end
+						elseif rawequal(index,'min') or rawequal(index,'max') then
+							data[index] = value
+							if (index == 'min' and value+1 < data.max) or (index == 'max' and value-1 > data.min) then
+								data.value = math.clamp(data.value, data.min, data.max)
+								Amount.Text = tostring(data.value)
+								Fill.Position = UDim2.new(math.clamp((((data.max - 0) / (data.max - data.min))-1)*-1, 0, 1),0,0.5,0)
+								Fill.Size = UDim2.new((1 - (((data.max - data.value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
 							else
-								data.value = value
-							end
-							if tonumber(value) then
-								Amount.Text = math.clamp(tonumber(value), data.min, data.max)
-								value = math.clamp(tonumber(value), data.min, data.max)
-							else
-								Amount.Text = tostring(old)
-								value = old
-							end
-							Fill.Size = UDim2.new((1 - (((data.max - value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
-							if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
-								Handle.Position = UDim2.new(0,0,0.5,0)
-							elseif Fill.Position.X.Scale > 0 then
-								Handle.Position = UDim2.new(1,0,0.5,0)
-							end
-							if data.flag ~= '' then
-								data.location[data.flag] = value
-							end
-							old = value
-						else return end
-					elseif rawequal(index,'name') then
-						if type(value)=='string' then
-							Title.Text = value
-							data.name = value
-						else return end
-					elseif rawequal(index,'flag') then
-						if type(value)=='string' then
-							data.location[data.flag] = nil
-							data.flag = value
-							data.location[data.flag] = data.toggled
-						else return end
-					elseif rawequal(index,'location') then
-						if type(value)=='table' then
-							data.location[data.flag] = nil
-							data.location = value
-							data.location[data.flag] = data.toggled
-						else return end
-					elseif rawequal(index,'min') or rawequal(index,'max') then
-						data[index] = value
-						if (index == 'min' and value+1 < data.max) or (index == 'max' and value-1 > data.min) then
-							data.value = math.clamp(data.value, data.min, data.max)
-							Amount.Text = tostring(data.value)
-							Fill.Position = UDim2.new(math.clamp((((data.max - 0) / (data.max - data.min))-1)*-1, 0, 1),0,0.5,0)
-							Fill.Size = UDim2.new((1 - (((data.max - data.value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
-						else
-							if index == 'min' then
-								warn("min can't be greater or equal to max")
-							elseif index == 'max' then
-								warn("max can't be less then or equal to min")
+								if index == 'min' then
+									warn("min can't be greater or equal to max")
+								elseif index == 'max' then
+									warn("max can't be less then or equal to min")
+								end
 							end
 						end
 					end
-				end
+				end)
 			end;
 			__index = function(Table, index)
 				if data[index] ~= nil then
