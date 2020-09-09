@@ -430,8 +430,10 @@ function Library:CreateWindow(...)
 									end
 								end
 								TextBox.Text = tostring(data.text)
-								TextBox.Size = UDim2.new(0, 200, 0, 18)
-								Holder.Size = UDim2.new(1,-8,1,-8)
+								if not TextBox:IsFocused() then
+									TextBox.Size = UDim2.new(0, 200, 0, 18)
+									Holder.Size = UDim2.new(1,-8,1,-8)
+								end
 							else return end
 						elseif rawequal(index,'name') then
 							if type(value)=='string' then
