@@ -75,6 +75,7 @@ function Library:CreateWindow(...)
 	local Window = {toggled = true, flags = {}, parent = nil, Objects={}}
 	local data = {
 		name = Args[1] or 'Window';
+		showing = true;
 	}
 	Library.count = Library.count + 1
 	local Main = Instance.new('ImageLabel')
@@ -287,58 +288,69 @@ function Library:CreateWindow(...)
 		if data.flag ~= '' then
 			data.location[data.flag] = data.default
 		end
-		
 		local Name = Args[1] or 'Box'
-		local Box = Instance.new('Frame')
-		local Outline = Instance.new('ImageLabel')
-		local Center = Instance.new('ImageLabel')
-		local Title = Instance.new('TextLabel')
-		local TextBox = Instance.new('TextBox')
+		local Box = Instance.new("Frame")
+		local Holder = Instance.new("Frame")
+		local Center = Instance.new("ImageLabel")
+		local Outline = Instance.new("ImageLabel")
+		local Title = Instance.new("TextLabel")
+		local TextBox = Instance.new("TextBox")
 
 		Box.Parent = self.parent
 		Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Box.BackgroundTransparency = 1
+		Box.BackgroundTransparency = 1.000
 		Box.ClipsDescendants = true
 		Box.Size = UDim2.new(1, 0, 0, 40)
 		
-		Outline.Parent = Box
-		Outline.AnchorPoint = Vector2.new(0.5, 0.5)
-		Outline.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Outline.BackgroundTransparency = 1
-		Outline.Position = UDim2.new(0.5, 0, 0.5, 0)
-		Outline.Size = UDim2.new(1, -8, 1, -8)
-		Outline.Image = 'rbxassetid://3570695787'
-		Outline.ImageColor3 = Color3.fromRGB(60, 60, 60)
-		Outline.ScaleType = Enum.ScaleType.Slice
-		Outline.SliceCenter = Rect.new(100, 100, 100, 100)
-		Outline.SliceScale = 0.040
+		Holder.Parent = Box
+		Holder.AnchorPoint = Vector2.new(0, 0.5)
+		Holder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Holder.BackgroundTransparency = 1.000
+		Holder.Position = UDim2.new(0,4,0.5,0)
+		Holder.Size = UDim2.new(1, -8, 1, -8)
 		
-		Center.Parent = Box
+		Center.Parent = Holder
 		Center.AnchorPoint = Vector2.new(0.5, 0.5)
 		Center.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Center.BackgroundTransparency = 1
+		Center.BackgroundTransparency = 1.000
 		Center.Position = UDim2.new(0.5, 0, 0.5, 0)
-		Center.Size = UDim2.new(1, -12, 1, -12)
-		Center.Image = 'rbxassetid://3570695787'
+		Center.Size = UDim2.new(1, -4, 1, -4)
+		Center.ZIndex = 2
+		Center.Image = "rbxassetid://3570695787"
 		Center.ImageColor3 = Color3.fromRGB(30, 30, 30)
 		Center.ScaleType = Enum.ScaleType.Slice
 		Center.SliceCenter = Rect.new(100, 100, 100, 100)
 		Center.SliceScale = 0.040
 		
-		Title.Parent = Box
+		Outline.Parent = Holder
+		Outline.AnchorPoint = Vector2.new(0.5, 0.5)
+		Outline.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Outline.BackgroundTransparency = 1.000
+		Outline.Position = UDim2.new(0.5, 0, 0.5, 0)
+		Outline.Size = UDim2.new(1, 0, 1, 0)
+		Outline.Image = "rbxassetid://3570695787"
+		Outline.ImageColor3 = Color3.fromRGB(60, 60, 60)
+		Outline.ScaleType = Enum.ScaleType.Slice
+		Outline.SliceCenter = Rect.new(100, 100, 100, 100)
+		Outline.SliceScale = 0.040
+		
+		Title.Parent = Holder
+		Title.AnchorPoint = Vector2.new(0, 0.5)
 		Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 		Title.BorderSizePixel = 0
-		Title.Position = UDim2.new(0, 10, 0, 0)
+		Title.Position = UDim2.new(0, 6, 0, 3)
+		Title.Size = UDim2.new(0, 32, 0, 15)
+		Title.ZIndex = 3
 		Title.Font = Enum.Font.GothamBold
 		Title.Text = data.name
 		Title.TextColor3 = Color3.fromRGB(100, 100, 100)
-		Title.TextSize = 14
+		Title.TextSize = 14.000
 		Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
 		
-		TextBox.Parent = Box
+		TextBox.Parent = Holder
 		TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		TextBox.BackgroundTransparency = 1
-		TextBox.Position = UDim2.new(0, 12, 0, 13)
+		TextBox.Position = UDim2.new(0, 7, 0, 8)
 		TextBox.Size = UDim2.new(0, 200, 0, 18)
 		TextBox.ClearTextOnFocus = false
 		TextBox.ClipsDescendants = true
@@ -347,6 +359,7 @@ function Library:CreateWindow(...)
 		TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 		TextBox.PlaceholderText = data.placeholder
 		TextBox.TextSize = 16
+		TextBox.ZIndex = 3
 		TextBox.TextXAlignment = Enum.TextXAlignment.Left
 		
 		local Normal = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(60,60,60)})
@@ -476,14 +489,39 @@ function Library:CreateWindow(...)
         TextBox:GetPropertyChangedSignal('Text'):Connect(function()
             if data.type == 'number' then
                 TextBox.Text = PositiveIntegerMask(TextBox.Text)
-            end
+			end
+			if TextBox.TextBounds.X > 200 then
+				Holder.Size = UDim2.new(0,TextBox.TextBounds.X+15,0,32)
+				Box.ClipsDescendants = false
+				self.parent.ClipsDescendants = false
+				Main.ClipsDescendants = false
+				TextBox.Size = UDim2.new(0, TextBox.TextBounds.X+5, 0, 18)
+			else
+				TextBox.Size = UDim2.new(0, 200, 0, 18)
+				Holder.Size = UDim2.new(1,-8,1,-8)
+			end
 		end)
 		
 		TextBox.Focused:Connect(function()
 			Selected:Play()
+			if TextBox.TextBounds.X > 200 then
+				Holder.Size = UDim2.new(0,TextBox.TextBounds.X+15,0,32)
+				Box.ClipsDescendants = false
+				self.parent.ClipsDescendants = false
+				Main.ClipsDescendants = false
+				TextBox.Size = UDim2.new(0, TextBox.TextBounds.X+5, 0, 18)
+			else
+				TextBox.Size = UDim2.new(0, 200, 0, 18)
+				Holder.Size = UDim2.new(1,-8,1,-8)
+			end
 		end)
 		
 		TextBox.FocusLost:Connect(function(EnterPressed)
+			Holder.Size = UDim2.new(1,-8,1,-8)
+			TextBox.Size = UDim2.new(0, 200, 0, 18)
+			Box.ClipsDescendants = true
+			self.parent.ClipsDescendants = true
+			Main.ClipsDescendants = true
 			if MouseOverB then
 				Hovering:Play()
 			else
@@ -517,6 +555,10 @@ function Library:CreateWindow(...)
 			end
 			data.text = TextBox.Text
 			old = TextBox.Text
+		end)
+		
+		Main:GetPropertyChangedSignal("Size"):Connect(function()
+			
 		end)
 		
 		Box.InputBegan:Connect(function(input)
@@ -1721,6 +1763,7 @@ function Library:CreateWindow(...)
 						else return end
 					elseif rawequal(index,'showing') then
 						if type(value)=='boolean' then
+							FolderContainer.ClipsDescendants = true
 							data.showing = value
 							Folder.toggled = value
 							if value then
@@ -1772,6 +1815,14 @@ function Library:CreateWindow(...)
 					if type(value)=='string' then
 						Title.Text = value
 						data.name = value
+					else return end
+				elseif rawequal(index,'showing') then
+					if type(value)=='boolean' then
+						Main.ClipsDescendants = true
+						data.showing = value
+						Window.toggled = value
+						Image.Rotation =  value or 90 and 180
+						Main.Size = (Window.toggled and UDim2.new(0,Main.Size.X.Offset,0, UIListLayout.AbsoluteContentSize.Y+2) or UDim2.new(0,Main.Size.X.Offset,0, 35))
 					else return end
 				elseif rawequal(index,'visible') then
 					data.visible = value
