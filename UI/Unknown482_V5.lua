@@ -249,6 +249,9 @@ function Library:CreateWindow(...)
 					end
 				elseif rawequal(index,'callback') then
 					data.callback = value
+				elseif rawequal(index,'visible') then
+					data.visible = value
+					Button.Visible = data.visible
 				end
 			end;
 			__index = function(Table, index)
@@ -277,6 +280,7 @@ function Library:CreateWindow(...)
 			location = Options.location or Window.flags;
 			callback = Args[3] or function() end;
 			placeholder = Options.placeholder or '';
+			visible = Options.visible or true;
 		}
 		data.default = Options.default or (data.type == 'number' and 0 or '')
 		data.text = data.default
@@ -453,6 +457,9 @@ function Library:CreateWindow(...)
 									data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
 								end
 							end
+						elseif rawequal(index,'visible') then
+							data.visible = value
+							Box.Visible = data.visible
 						end
 					end
 				end)
@@ -544,6 +551,7 @@ function Library:CreateWindow(...)
 			location = (Options.location and Options.location or Window.flags);
 			flag = (Options.flag or '');
 			list = (Args[2] and Args[2].list or {});
+			visible = (Args[2] and Args[2].visible or true);
 		}
         local old = ''
 		local toggled = false
@@ -560,6 +568,7 @@ function Library:CreateWindow(...)
 		Dropdown.Parent = self.parent
 		Dropdown.BackgroundTransparency = 1
 		Dropdown.Size = UDim2.new(1, 0, 0, 30)
+		Dropdown.Visible = data.visible
 		
 		Button.Parent = Dropdown
 		Button.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -939,6 +948,9 @@ function Library:CreateWindow(...)
 						else return end
 					elseif rawequal(index,'callback') then
 						data.callback = value
+					elseif rawequal(index,'visible') then
+						data.visible = value
+						Dropdown.Visible = data.visible
 					end
 				end
 			end;
@@ -964,6 +976,7 @@ function Library:CreateWindow(...)
 			toggled = (Options.default or false);
 			location = (Options.location and Options.location or Window.flags);
 			flag = (Options.flag or '');
+			visible = (Options.visible or true);
 		}
 		local SelfToggle = {}
 		
@@ -981,6 +994,7 @@ function Library:CreateWindow(...)
 		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Toggle.BackgroundTransparency = 1
 		Toggle.Size = UDim2.new(1, 0, 0, 30)
+		Toggle.Visible = data.visible
 		
 		Title.Parent = Toggle
 		Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1118,6 +1132,9 @@ function Library:CreateWindow(...)
 							else return end
 						elseif rawequal(index,'callback') then
 							data.callback = value
+						elseif rawequal(index,'visible') then
+							data.visible = value
+							Toggle.Visible = data.visible
 						end
 					end
 				end)
@@ -1167,6 +1184,7 @@ function Library:CreateWindow(...)
 			max = Args[2] and Args[2].max or 100;
 			step = Args[2] and Args[2].step or 1;
 			location = Args[2] and Args[2].location or Window.flags;
+			visible = Args[2] and Args[2].visible or true
 		}
 		data.value = Args[2] and Args[2].default or data.min;
 		if data.flag ~= '' then
@@ -1186,6 +1204,7 @@ function Library:CreateWindow(...)
 		Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Box.BackgroundTransparency = 1.000
 		Box.ClipsDescendants = true
+		Box.Visible = data.visible
 		Box.Size = UDim2.new(1, 0, 0, 40)
 		
 		Title.Parent = Box
@@ -1561,6 +1580,9 @@ function Library:CreateWindow(...)
 									warn("max can't be less then or equal to min")
 								end
 							end
+						elseif rawequal(index,'visible') then
+							data.visible = value
+							Box.Visible = data.visible
 						end
 					end
 				end)
@@ -1583,6 +1605,7 @@ function Library:CreateWindow(...)
 		local data = {
 			name = Args[1] or 'Folder';
 			showing = false;
+			visible = true
 		}
 		local Folder = deepcopy(Window)
 		Folder.toggled = false
@@ -1602,6 +1625,7 @@ function Library:CreateWindow(...)
 		Title.ScaleType = Enum.ScaleType.Slice
 		Title.SliceCenter = Rect.new(100, 100, 100, 100)
 		Title.SliceScale = 0.040
+		Title.Visible = data.visible
 		
 		Title_2.Parent = Title
 		Title_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1648,6 +1672,7 @@ function Library:CreateWindow(...)
 		FolderContainer.SliceCenter = Rect.new(100, 100, 100, 100)
 		FolderContainer.SliceScale = 0.040
 		FolderContainer.ClipsDescendants = true
+		FolderContainer.Visible = data.visible
 		
 		UIListLayout.Parent = FolderContainer
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -1706,6 +1731,10 @@ function Library:CreateWindow(...)
 								FolderContainer.Size = UDim2.new(1,0,0,0)
 							end
 						else return end
+					elseif rawequal(index,'visible') then
+						data.visible = value
+						Title.Visible = data.visible
+						FolderContainer.Visible = data.visible
 					else return end
 				end
 			end;
@@ -1744,6 +1773,9 @@ function Library:CreateWindow(...)
 						Title.Text = value
 						data.name = value
 					else return end
+				elseif rawequal(index,'visible') then
+					data.visible = value
+					Main.Visible = data.visible
 				end
 			end
 		end;
