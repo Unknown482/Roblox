@@ -367,8 +367,8 @@ function Library:CreateWindow(...)
 		local Selected = TweenService:Create(Outline, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(255,75,75)})
 		local MouseOverB = false
 		local old = data.default
-		function PositiveIntegerMask(text)
-			return text:gsub('[^%-%d]', '')
+		function NumberMask(text)
+			return text:gsub('[^%-%.?%d+]', '')
 		end
 		
 		function SelfBox:Destroy()
@@ -377,7 +377,7 @@ function Library:CreateWindow(...)
 			Normal:Destroy()
 			Hovering:Destroy()
 			Selected:Destroy()
-			PositiveIntegerMask=nil
+			NumberMask=nil
 			old=nil
 			MouseOverB=nil
 			for i,v in pairs(SelfBox) do
@@ -492,7 +492,7 @@ function Library:CreateWindow(...)
 		})
         TextBox:GetPropertyChangedSignal('Text'):Connect(function()
             if data.type == 'number' then
-                TextBox.Text = PositiveIntegerMask(TextBox.Text)
+				TextBox.Text = NumberMask(TextBox.Text)
 			end
 			if TextBox.TextBounds.X > 200 then
 				Holder.Size = UDim2.new(0,TextBox.TextBounds.X+15,0,32)
@@ -1511,12 +1511,12 @@ function Library:CreateWindow(...)
 			Handle:TweenSize(UDim2.new(0, 0, 0, 0), nil, nil, 0.1, true)
         end)
 		
-        function PositiveIntegerMask(text)
-            return text:gsub('[^%-%d]', '')
-        end
+		function NumberMask(text)
+			return text:gsub('[^%-%.?%d+]', '')
+		end
         Amount:GetPropertyChangedSignal('Text'):Connect(function()
             if (type == 'number') then
-                Amount.Text = PositiveIntegerMask(Amount.Text)
+				Amount.Text = NumberMask(Amount.Text)
             end
         end)
 		
