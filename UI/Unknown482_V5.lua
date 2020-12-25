@@ -115,9 +115,10 @@ function Library:CreateWindow(...)
 	Top.SliceCenter = Rect.new(100, 100, 100, 100)
 	Top.SliceScale = 0.040
 	
-	Accent.Parent = Title
+	Accent.Parent = Top
+	Accent.BorderSizePixel = 0
 	Accent.BackgroundColor3 = Library.color
-	Accent.Position = UDim2.new(1, -2, 0, 0)
+	Accent.Position = UDim2.new(0, 0, 1, -2)
 	Accent.Size = UDim2.new(1, 0, 0, 2)
 	Accent.ZIndex = 5
 
