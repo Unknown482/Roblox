@@ -1,4 +1,4 @@
-local Library = {toggled = true; color = Color3.fromRGB(78, 255, 75);count = 0; MousePos = game:GetService('UserInputService'):GetMouseLocation() - Vector2.new(0, 36); Windows = {}}
+local Library = {toggled = true; color = Color3.fromRGB(61, 148, 255);count = 0; MousePos = game:GetService('UserInputService'):GetMouseLocation() - Vector2.new(0, 36); Windows = {}}
 local TweenService = game:GetService('TweenService')
 local ScreenGui = Instance.new('ScreenGui')
 function Drag(GuiObject)
@@ -81,6 +81,7 @@ function Library:CreateWindow(...)
 	local Main = Instance.new('ImageLabel')
 	local UIListLayout = Instance.new('UIListLayout')
 	local Top = Instance.new('ImageLabel')
+	local Accent = Instance.new('Frame')
 	local Title = Instance.new('TextLabel')
 	local Toggle = Instance.new('TextButton')
 	local Image = Instance.new('ImageLabel')
@@ -113,6 +114,12 @@ function Library:CreateWindow(...)
 	Top.ScaleType = Enum.ScaleType.Slice
 	Top.SliceCenter = Rect.new(100, 100, 100, 100)
 	Top.SliceScale = 0.040
+	
+	Accent.Parent = Title
+	Accent.BackgroundColor3 = Library.color
+	Accent.Position = UDim2.new(1, -2, 0, 0)
+	Accent.Size = UDim2.new(1, 0, 0, 2)
+	Accent.ZIndex = 5
 
 	Title.Parent = Top
 	Title.BackgroundTransparency = 1
