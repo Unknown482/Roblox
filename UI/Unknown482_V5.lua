@@ -6,25 +6,26 @@ function Drag(GuiObject)
 	GuiObject.Active=true
 	GuiObject.Selectable=true
 	local RelitivePos=Vector2.new(0,0)
-	GuiObject.InputBegan:Connect(function(input)
+	local relativePos; relativePos = GuiObject.InputBegan:Connect(function(input)
+        if Library == nil then
+            relativePos:Disconnect()
+        end
 		if input.UserInputType==Enum.UserInputType.MouseButton1 then
-			RelitivePos=Vector2.new(Library.MousePos.X,Library.MousePos.Y)-GuiObject.AbsolutePosition
+			RelitivePos=Vector2.new(Library.MousePos.X, Library.MousePos.Y)-GuiObject.AbsolutePosition
 			Dragging=true
 		end
 	end)
-	local a
-	a = game:GetService('UserInputService').InputChanged:Connect(function(input,gameProcessed)
+	local changed; changed = game:GetService('UserInputService').InputChanged:Connect(function(input,gameProcessed)
 		if GuiObject == nil then
-			a:Disconnect()
+			changed:Disconnect()
 		end
 		if input.UserInputType==Enum.UserInputType.MouseMovement and Dragging then
 			GuiObject.Parent:TweenPosition(UDim2.new(0,Library.MousePos.X-RelitivePos.X,0,Library.MousePos.Y-RelitivePos.Y),'Out','Quad',0.2,true)
 		end
 	end)
-	local b
-	b = game:GetService('UserInputService').InputEnded:Connect(function(input)
+	local ended; ended = game:GetService('UserInputService').InputEnded:Connect(function(input)
 		if GuiObject == nil then
-			b:Disconnect()
+			ended:Disconnect()
 		end
 		if input.UserInputType==Enum.UserInputType.MouseButton1 then
 			Dragging=false
@@ -54,7 +55,7 @@ ScreenGui.Parent = get_hidden_gui and get_hidden_gui() or game:GetService('CoreG
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 2147483647
 
-game:GetService('UserInputService').InputBegan:Connect(function(input)
+local ToggleWindows = game:GetService('UserInputService').InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.RightControl then
 		Library.toggled = not Library.toggled
 		for i, v in ipairs(ScreenGui:GetChildren()) do
@@ -246,33 +247,42 @@ function Library:CreateWindow(...)
 		TextButton.MouseLeave:Connect(function()
 			Normal:Play()
 		end)
+        
+        function selfButton.SetName(newName)
+            if type(newName)=='string' then
+                TextButton.Text = newName
+                data.name = newName
+            else return end
+        end
+
+        function selfButton.SetCallback(value)
+            data.callback = value
+        end
+
+        function selfButton.SetVisible(value)
+            data.visible = value
+            Button.Visible = data.visible
+        end
 
 		setmetatable(selfButton, {
 			__newindex = function(Table, index, value)
-				if rawequal(Table, selfButton) then
-					if rawequal(index,'name') then
-						if type(value)=='string' then
-							TextButton.Text = value
-							data.name = value
-						else return end
-					end
-				elseif rawequal(index,'callback') then
-					data.callback = value
-				elseif rawequal(index,'visible') then
-					data.visible = value
-					Button.Visible = data.visible
-				end
-			end;
+				if rawequal(Table, selfButton) then selfButton.SetName(value)
+				elseif rawequal(index,'callback') then selfButton.SetCallback(value)
+				elseif rawequal(index,'visible') then selfButton.SetVisible(value) end
+			end,
 			__index = function(Table, index)
 				if data[index] ~= nil then
 					return data[index]
 				end
-			end;
+			end,
 			__tostring = function(Table)
-				return data.name
-			end;
+                if typeof(Table.name) == "string" then
+                    return Table.name
+                end
+			end
 		})
-		table.insert(self.Objects,#self.Objects+1,selfButton)
+
+		table.insert(self.Objects, #self.Objects+1, selfButton)
 		return selfButton
 	end
 	-- Done
@@ -379,7 +389,7 @@ function Library:CreateWindow(...)
 			return text:gsub('[^%-%.?%d+]', '')
 		end
 
-		function SelfBox:Destroy()
+		function SelfBox.Destroy()
 			data.location[data.flag] = nil
 			Box:Destroy()
 			Normal:Destroy()
@@ -397,97 +407,134 @@ function Library:CreateWindow(...)
 			SelfBox=nil
 		end
 
+        function SelfBox.SetValue(value)
+            if type(value)=='string' or type(value)=='number' or type(value)=='table' then
+                if type(value)=='table' and (type(value[1])=='string' or type(value[1])=='number') then
+                    if data.type == 'number' then
+                        data.text = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
+                        if type(data.callback) == 'function' then
+                            if data.flag ~= '' then
+                                data.location[data.flag] = tonumber(TextBox.Text)
+                            end
+                            local Success, Err = pcall(data.callback, tonumber(data.text), tonumber(old), false, SelfBox)
+                            if not Success then
+                                error(Err)
+                            end
+                        end
+                    else
+                        if data.flag ~= '' then
+                            data.location[data.flag] = tonumber(TextBox.Text)
+                        end
+                        data.text = value[1]
+                        if type(data.callback) == 'function' then
+                            local Success, Err = pcall(data.callback, data.text, old, false, SelfBox)
+                            if not Success then
+                                error(Err)
+                            end
+                        end
+                    end
+                else
+                    if type(value)=='number' then
+                        data.text = tostring(value)
+                    else
+                        data.text = value
+                    end
+                    if data.type == 'number' then
+                        data.text = tostring(math.clamp(tonumber(data.text), data.min, data.max))
+                    end
+                end
+                TextBox.Text = tostring(data.text)
+                if not TextBox:IsFocused() then
+                    TextBox.Size = UDim2.new(0, 200, 0, 18)
+                    Holder.Size = UDim2.new(1,-8,1,-8)
+                end
+            else return end
+        end
+
+        function SelfBox.SetName(value)
+            if type(value)=='string' then
+                Title.Text = value
+                Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
+                data.name = value
+            else return end
+        end
+
+        function SelfBox.SetPlaceholder(value)
+            if type(value)=='string' then
+                Title.Text = value
+                Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
+                data.name = value
+            else return end
+        end
+
+        function SelfBox.SetFlag(value)
+            if type(value)=='string' then
+                data.location[data.flag] = nil
+                data.flag = value
+                data.location[data.flag] = data.toggled
+            else return end
+        end
+
+        function SelfBox.SetLocation(value)
+            if type(value)=='table' then
+                data.location[data.flag] = nil
+                data.location = value
+                data.location[data.flag] = data.toggled
+            else return end
+        end
+
+        function SelfBox.SetType(value)
+            if type(value)=="string" then
+                local temptype = string.lower(value)
+                if temptype == 'string' or temptype == 'number' then 
+                    data.type = value
+                end
+            end
+        end
+
+        function SelfBox.SetCallback(value)
+            data.callback = value
+        end
+
+        function SelfBox.SetMin(value)
+            if type(value)=="number" then
+                data.min = value
+                if data.type == 'number' then
+                    data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
+                end
+            end
+        end
+
+        function SelfBox.SetMax(value)
+            if type(value)=="number" then
+                data.max = value
+                if data.type == 'number' then
+                    data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
+                end
+            end
+        end
+
+        function SelfBox.SetVisible(value)
+            data.visible = value
+            Box.Visible = data.visible
+        end
+
 		setmetatable(SelfBox, {
 			__newindex = function(Table, index, value)
-				spawn(function()
+				coroutine.wrap(function()
 					if rawequal(Table, SelfBox) then
-						if rawequal(index,'text') then
-							if type(value)=='string' or type(value)=='number' or type(value)=='table' then
-								if type(value)=='table' and (type(value[1])=='string' or type(value[1])=='number') then
-									if data.type == 'number' then
-										data.text = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
-										if type(data.callback) == 'function' then
-											if data.flag ~= '' then
-												data.location[data.flag] = tonumber(TextBox.Text)
-											end
-											local Success, Err = pcall(data.callback, tonumber(data.text), tonumber(old), false, SelfBox)
-											if not Success then
-												error(Err)
-											end
-										end
-									else
-										if data.flag ~= '' then
-											data.location[data.flag] = tonumber(TextBox.Text)
-										end
-										data.text = value[1]
-										if type(data.callback) == 'function' then
-											local Success, Err = pcall(data.callback, data.text, old, false, SelfBox)
-											if not Success then
-												error(Err)
-											end
-										end
-									end
-								else
-									if type(value)=='number' then
-										data.text = tostring(value)
-									else
-										data.text = value
-									end
-									if data.type == 'number' then
-										data.text = tostring(math.clamp(tonumber(data.text), data.min, data.max))
-									end
-								end
-								TextBox.Text = tostring(data.text)
-								if not TextBox:IsFocused() then
-									TextBox.Size = UDim2.new(0, 200, 0, 18)
-									Holder.Size = UDim2.new(1,-8,1,-8)
-								end
-							else return end
-						elseif rawequal(index,'name') then
-							if type(value)=='string' then
-								Title.Text = value
-								Title.Size = UDim2.new(0, Title.TextBounds.X + 7, 0, 15)
-								data.name = value
-							else return end
-						elseif rawequal(index,'placeholder') then
-							if type(value)=='string' then
-								TextBox.PlaceholderText = value
-								data.placeholder = value
-							end
-						elseif rawequal(index,'flag') then
-							if type(value)=='string' then
-								data.location[data.flag] = nil
-								data.flag = value
-								data.location[data.flag] = data.toggled
-							else return end
-						elseif rawequal(index,'location') then
-							if type(value)=='table' then
-								data.location[data.flag] = nil
-								data.location = value
-								data.location[data.flag] = data.toggled
-							else return end
-						elseif rawequal(index,'type') then
-							if type(value)=="string" then
-								local temptype = string.lower(value)
-								if temptype == 'string' or temptype == 'number' then 
-									data.type = value
-								end
-							end
-						elseif rawequal(index,'callback') then
-							data.callback = value
-						elseif rawequal(index,'min') or rawequal(index,'max') then
-							if type(value)=="number" then
-								data[index] = value
-								if data.type == 'number' then
-									data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
-								end
-							end
-						elseif rawequal(index,'visible') then
-							data.visible = value
-							Box.Visible = data.visible
-						end
+						if rawequal(index, 'text') then SelfBox.SetValue()
+						elseif rawequal(index, 'name') then	SelfBox.SetName(value)
+						elseif rawequal(index, 'placeholder') then SelfBox.SetPlaceholder(value)
+						elseif rawequal(index,'flag') then SelfBox.SetFlag(value)
+						elseif rawequal(index,'location') then SelfBox.SetLocation(value)
+						elseif rawequal(index,'type') then SelfBox.SetType(value)
+						elseif rawequal(index,'callback') then SelfBox.SetCallback(value)
+						elseif rawequal(index,'min') then SelfBox.SetMin(value)
+                        elseif rawequal(index,'min') then SelfBox.SetMax(value)
+						elseif rawequal(index,'visible') then SelfBox.SetVisible(value) end
 					end
-				end)
+				end)()
 			end;
 			__index = function(Table, index)
 				if data[index] ~= nil then
@@ -594,23 +641,26 @@ function Library:CreateWindow(...)
 		table.insert(self.Objects,#self.Objects+1,SelfBox)
 		return SelfBox
 	end
-	-- Done
+    
 	function Window:Dropdown(...)
 		local Args = {...}
 		local Options = Args[2] or {}
 		local selfDropdown = {}
 		local data = {
-			name = (Args[1] or 'Dropdown');
-			callback = (Args[3] or function() end);
-			location = (Options.location and Options.location or Window.flags);
-			flag = (Options.flag or '');
-			list = (Args[2] and Args[2].list or {});
-			visible = (Args[2] and Args[2].visible or true);
+			name = Args[1] or 'Dropdown';
+			callback = Args[3] or function() end;
+			location = Options.location or Window.flags;
+			flag = Options.flag or '';
+			list = Options.list or {};
+			visible = Options.visible or true;
+            keys = Options.keys or false;
+            value = nil
 		}
 		local old = ''
 		local toggled = false
+        data.value = data.keys and data.list[1][2] or tostring(data.list[1])
 		if data.flag ~= '' then
-			data.location[data.flag] = tostring(data.list[1])
+			data.location[data.flag] = data.value
 		end
 
 		local Dropdown = Instance.new('Frame')
@@ -631,7 +681,7 @@ function Library:CreateWindow(...)
 		Button.Size = UDim2.new(1, -10, 0, 25)
 		Button.ZIndex = 3
 		Button.Font = Enum.Font.Gotham
-		Button.Text = tostring(data.list[1])
+		Button.Text = data.keys and data.list[1][1] or tostring(data.list[1])
 		Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Button.TextSize = 18
 
@@ -709,206 +759,126 @@ function Library:CreateWindow(...)
 			Dropdown1.SliceCenter = Rect.new(100, 100, 100, 100)
 			Dropdown1.SliceScale = 0.040
 			Dropdown1.ClipsDescendants = true
-			Dropdown1.ZIndex = 5	
-			if #Array <= 5 then
-				local UIGridLayout = Instance.new('UIGridLayout')
-				local UIPadding = Instance.new('UIPadding')
-				UIGridLayout.Parent = Dropdown1
-				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
-				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
+			Dropdown1.ZIndex = 5
 
-				UIPadding.Parent = Dropdown1
-				UIPadding.PaddingTop = UDim.new(0, 25)
+            Button.Text = data.name
+            Button.TextColor3 = Color3.fromRGB(120,120,120)
 
-				Button.Text = data.name
-				Button.TextColor3 = Color3.fromRGB(120,120,120)
+            local UIGridLayout = Instance.new('UIGridLayout')
+            local UIPadding = Instance.new('UIPadding')
+            local ScrollingFrame = Instance.new('ScrollingFrame')
 
-				for	i,v in pairs(Array) do
-					local TextButton = Instance.new('TextButton')
-					local Image_3 = Instance.new('ImageLabel')
+            ScrollingFrame.Parent = Dropdown1
+            ScrollingFrame.Active = true
+            ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ScrollingFrame.BackgroundTransparency = 1
+            ScrollingFrame.BorderSizePixel = 0
+            ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100,100,100)
+            ScrollingFrame.Position = UDim2.new(0, 0, 0, 25)
+            ScrollingFrame.Size = UDim2.new(1, 0, 1, -25)
+            ScrollingFrame.ZIndex = 5
+            ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+            ScrollingFrame.HorizontalScrollBarInset = Enum.ScrollBarInset.None
+            ScrollingFrame.ScrollBarThickness = 5
 
-					TextButton.Parent = Dropdown1
-					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-					TextButton.BackgroundTransparency = 1
-					TextButton.BorderSizePixel = 0
-					TextButton.Size = UDim2.new(0, 200, 0, 50)
-					TextButton.ZIndex = 2
-					TextButton.Text = tostring(v)
-					TextButton.Font = Enum.Font.Gotham
-					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-					TextButton.TextSize = 18
-					TextButton.ZIndex = 7
+            UIGridLayout.Parent = ScrollingFrame
+            UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+            UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
+            UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
 
-					Image_3.Parent = TextButton
-					Image_3.Active = true
-					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
-					Image_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					Image_3.BackgroundTransparency = 1
-					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
-					Image_3.Selectable = true
-					Image_3.Size = UDim2.new(1, 0, 1, 0)
-					Image_3.Image = 'rbxassetid://3570695787'
-					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
-					Image_3.ScaleType = Enum.ScaleType.Slice
-					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
-					Image_3.SliceScale = i == #Array and 0.040 or 0.01
-					Image_3.ZIndex = 6
+            Button.Text = data.name
+            Button.TextColor3 = Color3.fromRGB(120,120,120)
 
-					local Normal = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(50,50,50)})
-					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
-					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
+            local count = 0
+            for	i,v in pairs(Array) do
+                count = count + 1
+                local key = data.keys and v[1] or tostring(v)
+                local value = data.keys and v[2] or tostring(v)
 
-					table.insert(ToBeDeleted,#ToBeDeleted+1,Normal)
-					table.insert(ToBeDeleted,#ToBeDeleted+1,Hovering)
-					table.insert(ToBeDeleted,#ToBeDeleted+1,Pressed)
+                local TextButton = Instance.new('TextButton')
+                local Image_3 = Instance.new('ImageLabel')
 
-					TextButton.MouseButton1Click:Connect(function()
-						Button.Text = TextButton.Text
-						old = TextButton.Text
-						toggled = false
-						Image.SliceCenter = Rect.new(100, 100, 100, 100)
-						if data.flag ~= '' then
-							data.location[data.flag] = TextButton.Text
-						end
-						Button.TextColor3 = Color3.fromRGB(255,255,255)
-						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
-							Image.ZIndex = 2
-							Image_2.ZIndex = 3
-							Button.ZIndex = 3
-							Dropdown1:Destroy()
-						end)
-						if type(data.callback) == 'function' then
-							local Success, Err = pcall(data.callback, TextButton.Text, selfDropdown)
-							if not Success then
-								error(Err)
-							end
-						end
-						for i,v in pairs(ToBeDeleted) do
-							v:Destroy()
-						end
-					end)
-					TextButton.MouseButton1Down:Connect(function()
-						Pressed:Play()
-					end)
-					TextButton.MouseEnter:Connect(function()
-						Hovering:Play()
-					end)
-					TextButton.MouseLeave:Connect(function()
-						Normal:Play()
-					end)
-				end
-				Dropdown1:TweenSize(UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y + 25),nil,nil,0.2,true)
-			else
-				local UIGridLayout = Instance.new('UIGridLayout')
-				local UIPadding = Instance.new('UIPadding')
-				local ScrollingFrame = Instance.new('ScrollingFrame')
+                TextButton.Parent = ScrollingFrame
+                TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                TextButton.BackgroundTransparency = 1
+                TextButton.BorderSizePixel = 0
+                TextButton.Size = UDim2.new(0, 200, 0, 50)
+                TextButton.ZIndex = 2
+                TextButton.Text = key
+                TextButton.Font = Enum.Font.Gotham
+                TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextButton.TextSize = 18
+                TextButton.ZIndex = 7
 
-				ScrollingFrame.Parent = Dropdown1
-				ScrollingFrame.Active = true
-				ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				ScrollingFrame.BackgroundTransparency = 1
-				ScrollingFrame.BorderSizePixel = 0
-				ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100,100,100)
-				ScrollingFrame.Position = UDim2.new(0, 0, 0, 25)
-				ScrollingFrame.Size = UDim2.new(1, 0, 1, -25)
-				ScrollingFrame.ZIndex = 5
-				ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
-				ScrollingFrame.HorizontalScrollBarInset = Enum.ScrollBarInset.None
-				ScrollingFrame.ScrollBarThickness = 5
+                Image_3.Parent = TextButton
+                Image_3.Active = true
+                Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
+                Image_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                Image_3.BackgroundTransparency = 1
+                Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
+                Image_3.Selectable = true
+                Image_3.Size = UDim2.new(1, 0, 1, 0)
+                Image_3.Image = 'rbxassetid://3570695787'
+                Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
+                Image_3.ScaleType = Enum.ScaleType.Slice
+                Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
+                Image_3.SliceScale = i == #Array and 0.040 or 0.01
+                Image_3.ZIndex = 6
 
-				UIGridLayout.Parent = ScrollingFrame
-				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-				UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
-				UIGridLayout.CellSize = UDim2.new(1, 0, 0, 24)
+                local Normal = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(50,50,50)})
+                local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
+                local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
 
-				Button.Text = data.name
-				Button.TextColor3 = Color3.fromRGB(120,120,120)
+                table.insert(ToBeDeleted,#ToBeDeleted+1,Normal)
+                table.insert(ToBeDeleted,#ToBeDeleted+1,Hovering)
+                table.insert(ToBeDeleted,#ToBeDeleted+1,Pressed)
 
-				for	i,v in pairs(Array) do
-					local TextButton = Instance.new('TextButton')
-					local Image_3 = Instance.new('ImageLabel')
+                TextButton.MouseButton1Click:Connect(function()
+                    Button.Text = key
+                    old = key
+                    toggled = false
+                    Image.SliceCenter = Rect.new(100, 100, 100, 100)
+                    data.value = value
+                    if data.flag ~= '' then
+                        data.location[data.flag] = value
+                    end
+                    Button.TextColor3 = Color3.fromRGB(255,255,255)
+                    Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
+                        Image.ZIndex = 2
+                        Image_2.ZIndex = 3
+                        Button.ZIndex = 3
+                        Dropdown1:Destroy()
+                    end)
+                    if type(data.callback) == 'function' then
+                        local Success, Err = pcall(data.callback, value, selfDropdown)
+                        if not Success then
+                            error(Err)
+                        end
+                    end
+                    for i,v in pairs(ToBeDeleted) do
+                        v:Destroy()
+                    end
+                end)
 
-					TextButton.Parent = ScrollingFrame
-					TextButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-					TextButton.BackgroundTransparency = 1
-					TextButton.BorderSizePixel = 0
-					TextButton.Size = UDim2.new(0, 200, 0, 50)
-					TextButton.ZIndex = 2
-					TextButton.Text = tostring(v)
-					TextButton.Font = Enum.Font.Gotham
-					TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-					TextButton.TextSize = 18
-					TextButton.ZIndex = 7
-
-					Image_3.Parent = TextButton
-					Image_3.Active = true
-					Image_3.AnchorPoint = Vector2.new(0.5, 0.5)
-					Image_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					Image_3.BackgroundTransparency = 1
-					Image_3.Position = UDim2.new(0.5, 0, 0.5, 0)
-					Image_3.Selectable = true
-					Image_3.Size = UDim2.new(1, 0, 1, 0)
-					Image_3.Image = 'rbxassetid://3570695787'
-					Image_3.ImageColor3 = Color3.fromRGB(50, 50, 50)
-					Image_3.ScaleType = Enum.ScaleType.Slice
-					Image_3.SliceCenter = Rect.new(100, 100, 100, 100)
-					Image_3.SliceScale = i == #Array and 0.040 or 0.01
-					Image_3.ZIndex = 6
-
-					local Normal = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(50,50,50)})
-					local Hovering = TweenService:Create(Image_3, TweenInfo.new(0.2), {ImageColor3 = Color3.fromRGB(40,40,40)})
-					local Pressed = TweenService:Create(Image_3, TweenInfo.new(0.1), {ImageColor3 = Color3.fromRGB(30,30,30)})
-
-					table.insert(ToBeDeleted,#ToBeDeleted+1,Normal)
-					table.insert(ToBeDeleted,#ToBeDeleted+1,Hovering)
-					table.insert(ToBeDeleted,#ToBeDeleted+1,Pressed)
-
-					TextButton.MouseButton1Click:Connect(function()
-						Button.Text = TextButton.Text
-						old = TextButton.Text
-						toggled = false
-						Image.SliceCenter = Rect.new(100, 100, 100, 100)
-						if data.flag ~= '' then
-							data.location[data.flag] = TextButton.Text
-						end
-						Button.TextColor3 = Color3.fromRGB(255,255,255)
-						Dropdown1:TweenSize(UDim2.new(1,0,0,0),nil,nil,0.2,true,function()
-							Image.ZIndex = 2
-							Image_2.ZIndex = 3
-							Button.ZIndex = 3
-							Dropdown1:Destroy()
-						end)
-						if type(data.callback) == 'function' then
-							local Success, Err = pcall(data.callback, TextButton.Text, selfDropdown)
-							if not Success then
-								error(Err)
-							end
-						end
-						for i,v in pairs(ToBeDeleted) do
-							v:Destroy()
-						end
-					end)
-					TextButton.MouseButton1Down:Connect(function()
-						Pressed:Play()
-					end)
-					TextButton.MouseEnter:Connect(function()
-						Hovering:Play()
-					end)
-					TextButton.MouseLeave:Connect(function()
-						Normal:Play()
-					end)
-				end
-				Dropdown1:TweenSize(UDim2.new(1,0,0,149),nil,nil,0.2,true)
-				ScrollingFrame.CanvasSize = UDim2.new(1,0,0,UIGridLayout.AbsoluteContentSize.Y)
-			end
+                TextButton.MouseButton1Down:Connect(function()
+                    Pressed:Play()
+                end)
+                TextButton.MouseEnter:Connect(function()
+                    Hovering:Play()
+                end)
+                TextButton.MouseLeave:Connect(function()
+                    Normal:Play()
+                end)
+            end
+            Dropdown1:TweenSize(UDim2.new(1,0,0, count > 6 and (6 * 25 + 19) or (UIGridLayout.AbsoluteContentSize.Y + 25)),nil,nil,0.2,true)
+            ScrollingFrame.CanvasSize = UDim2.new(1,0,0, UIGridLayout.AbsoluteContentSize.Y)
 		end
 
 		game:GetService('UserInputService').WindowFocusReleased:Connect(CloseDropdown)
 
 		Button.MouseButton2Click:Connect(function()
 			if type(data.callback) == 'function' then
-				local Success, Err = pcall(data.callback, Button.Text, selfDropdown)
+				local Success, Err = pcall(data.callback, data.value, selfDropdown)
 				if not Success then
 					error(Err)
 				end
@@ -940,14 +910,16 @@ function Library:CreateWindow(...)
 				end
 			end
 		end)
+
 		Button.MouseEnter:Connect(function()
 			Hovering:Play()
 		end)
+        
 		Button.MouseLeave:Connect(function()
 			Normal:Play()
 		end)
 
-		function selfDropdown:Destroy()
+		function selfDropdown.Destroy()
 			for i,v in pairs(ToBeDeleted) do
 				local s,e = pcall(function() v:Destroy() end)
 				if not s then
@@ -968,43 +940,81 @@ function Library:CreateWindow(...)
 			selfDropdown=nil
 		end
 
+        function selfDropdown.SetValue(value, first)
+            CloseDropdown()
+            local valueIndex = first and 1 or nil
+            if value ~= nil then
+                for index, v in pairs(data.list) do
+                    if (data.keys and v[2] or tostring(v)) == value then
+                        valueIndex = index
+                        break
+                    end
+                end
+            end
+            if valueIndex then
+                local key    = data.keys and data.list[valueIndex][1] or tostring(data.list[valueIndex])
+                local value = data.keys and data.list[valueIndex][2] or tostring(data.list[valueIndex])
+                Button.Text = key
+                old = key
+                data.value = value
+                if data.flag ~= "" then
+                    data.location[data.flag] = value
+                end
+            end
+        end
+
+        function selfDropdown.SetList(list, value)
+            if type(list)=='table' then
+                data.list = list
+                selfDropdown.SetValue(value, true)
+            end
+        end
+
+        function selfDropdown.SetName(name)
+            if type(value)=='string' then
+                if toggled then
+                    Button.Text = name
+                end
+                data.name = name
+            end
+        end
+
+        function selfDropdown.SetFlag(value)
+            if type(value)=='string' then
+                data.location[data.flag] = nil
+                data.flag = value
+                data.location[data.flag] = data.value
+            end
+        end
+
+        function selfDropdown.SetLocation(value)
+            if type(value)=='table' then
+                data.location[data.flag] = nil
+                data.location = value
+                data.location[data.flag] = data.value
+            end
+        end
+
+        function selfDropdown.SetCallback(value)
+            data.callback = value
+        end
+        
+        function selfDropdown.SetVisible(value)
+            if typeof(value) =="boolean" then
+                data.visible = value
+                Dropdown.Visible = data.visible
+            end
+        end
+
 		setmetatable(selfDropdown, {
 			__newindex = function(Table, index, value)
 				if rawequal(Table, selfDropdown) then
-					if rawequal(index,'list') then
-						if type(value)=='table' then
-							CloseDropdown()
-							Button.Text = tostring(value[1])
-							old = tostring(value[1])
-							data.list = value
-							if data.flag ~= "" then
-								data.location[data.flag] = tostring(value[1])
-							end
-						else return end
-					elseif rawequal(index,'name') then
-						if type(value)=='string' then
-							if toggled then
-								Button.Text = value
-							end
-							data.name = value
-						else return end
-					elseif rawequal(index,'flag') then
-						if type(value)=='string' then
-							data.location[data.flag] = nil
-							data.flag = value
-							data.location[data.flag] = data.toggled
-						else return end
-					elseif rawequal(index,'location') then
-						if type(value)=='table' then
-							data.location[data.flag] = nil
-							data.location = value
-							data.location[data.flag] = data.toggled
-						else return end
-					elseif rawequal(index,'callback') then
-						data.callback = value
-					elseif rawequal(index,'visible') then
-						data.visible = value
-						Dropdown.Visible = data.visible
+					if rawequal(index,'list') then selfDropdown.SetList(value)
+					elseif rawequal(index,'name') then selfDropdown.SetName(value)
+					elseif rawequal(index,'flag') then selfDropdown.SetFlag(value)
+					elseif rawequal(index,'location') then selfDropdown.SetLocation(value)
+					elseif rawequal(index,'callback') then selfDropdown.SetCallback(value)
+					elseif rawequal(index,'visible') then selfDropdown.SetVisible(value)
 					end
 				end
 			end;
@@ -1132,66 +1142,86 @@ function Library:CreateWindow(...)
 			end
 		end
 
+        function SelfToggle.SetValue(value)
+            coroutine.wrap(function()
+                if type(value)=='boolean' or type(value)=='table' then
+                    if type(value)=='table' and type(value[1])=='boolean' then
+                        data.toggled = value[1]
+                        if data.flag ~= '' then
+                            data.location[data.flag] = data.toggled
+                        end
+                        if type(data.callback) == 'function' then
+                            local Success, Err = pcall(data.callback, data.toggled, SelfToggle)
+                            if not Success then
+                                error(Err)
+                            end
+                        end
+                    else
+                        data.toggled = value
+                        if data.flag ~= '' then
+                            data.location[data.flag] = data.toggled
+                        end
+                    end
+                    if data.toggled then
+                        toggledOn1:Play()
+                        toggledOn2:Play()
+                        wait(0.15)
+                        Center:TweenSize(UDim2.new(0,0,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
+                    else
+                        Center:TweenSize(UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
+                        wait(0.15)
+                        toggledOff1:Play()
+                        toggledOff2:Play()
+                    end
+                end
+            end)()
+        end
+
+        function SelfToggle.SetName(value)
+            if type(value)=='string' then
+                Title.Text = value
+                data.name = value
+            end
+        end
+
+        function SelfToggle.SetFlag(value)
+            if type(value)=='string' then
+                data.location[data.flag] = nil
+                data.flag = value
+                data.location[data.flag] = data.toggled
+            end
+        end
+
+        function SelfToggle.SetLocation(value)
+            if type(value)=='table' then
+                data.location[data.flag] = nil
+                data.location = value
+                data.location[data.flag] = data.toggled
+            end
+        end
+
+        function SelfToggle.SetCallback(value)
+            data.callback = value
+        end
+
+        function SelfToggle.SetVisible(value)
+            if type(value) == "boolean" then
+                data.visible = value
+                Toggle.Visible = data.visible
+            end
+        end
+
 		setmetatable(SelfToggle, {
 			__newindex = function(Table, index, value)
-				spawn(function()
 					if rawequal(Table, SelfToggle) then
-						if rawequal(index,'toggled') then
-							if type(value)=='boolean' or type(value)=='table' then
-								if type(value)=='table' and type(value[1])=='boolean' then
-									data.toggled = value[1]
-									if data.flag ~= '' then
-										data.location[data.flag] = data.toggled
-									end
-									if type(data.callback) == 'function' then
-										local Success, Err = pcall(data.callback, data.toggled, SelfToggle)
-										if not Success then
-											error(Err)
-										end
-									end
-								else
-									data.toggled = value
-									if data.flag ~= '' then
-										data.location[data.flag] = data.toggled
-									end
-								end
-								if data.toggled then
-									toggledOn1:Play()
-									toggledOn2:Play()
-									wait(0.15)
-									Center:TweenSize(UDim2.new(0,0,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
-								else
-									Center:TweenSize(UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset), nil, nil, 0.1, true)
-									wait(0.15)
-									toggledOff1:Play()
-									toggledOff2:Play()
-								end
-							else return end
-						elseif rawequal(index,'name') then
-							if type(value)=='string' then
-								Title.Text = value
-								data.name = value
-							else return end
-						elseif rawequal(index,'flag') then
-							if type(value)=='string' then
-								data.location[data.flag] = nil
-								data.flag = value
-								data.location[data.flag] = data.toggled
-							else return end
-						elseif rawequal(index,'location') then
-							if type(value)=='table' then
-								data.location[data.flag] = nil
-								data.location = value
-								data.location[data.flag] = data.toggled
-							else return end
-						elseif rawequal(index,'callback') then
-							data.callback = value
-						elseif rawequal(index,'visible') then
-							data.visible = value
-							Toggle.Visible = data.visible
+						if rawequal(index,'toggled') then SelfToggle.SetValue(value)
+						elseif rawequal(index,'name') then SelfToggle.SetName(value)
+						elseif rawequal(index,'flag') then SelfToggle.SetFlag(value)
+						elseif rawequal(index,'location') then SelfToggle.SetLocation(value)
+						elseif rawequal(index,'callback') then SelfToggle.SetCallback(value)
+						elseif rawequal(index,'visible') then SelfToggle.SetVisible(value)
 						end
 					end
-				end)
 			end;
 			__index = function(Table, index)
 				if data[index] ~= nil then
@@ -1461,7 +1491,7 @@ function Library:CreateWindow(...)
 		)
 		game:GetService('UserInputService').InputChanged:Connect(function(input, gameProcessed)
 			if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
-				spawn(function()
+				coroutine.wrap(function()
 					local Relpos = Library.MousePos - Fill.AbsolutePosition
 					local precentage = Relpos.x / Background.AbsoluteSize.x
 					Fill.Size = UDim2.new(Snap(math.clamp(precentage, (0-Fill.Position.X.Scale), (1-Fill.Position.X.Scale)), data.step / 
@@ -1509,7 +1539,7 @@ function Library:CreateWindow(...)
 						end
 					end
 					old = tonumber(Amount.Text)
-				end)
+				end)()
 			end
 		end)
 		game:GetService('UserInputService').WindowFocusReleased:Connect(function()
@@ -1562,84 +1592,111 @@ function Library:CreateWindow(...)
 			end
 			old = tonumber(Amount.Text)
 		end)
+        
+        function SelfSlider.SetValue(value)
+            if type(value)=='number' or type(value)=='table' then
+                if type(value)=='table' and type(value[1])=='number' then
+                    if data.flag ~= '' then
+                        data.location[data.flag] = value
+                    end
+                    data.value = value[1]
+                    if type(data.callback) == 'function' then
+                        local Success, Err = pcall(data.callback, data.value, SelfSlider)
+                        if not Success then
+                            error(Err)
+                        end
+                    end
+                else
+                    if data.flag ~= '' then
+                        data.location[data.flag] = value
+                    end
+                    data.value = value
+                end
+                if tonumber(value) then
+                    Amount.Text = math.clamp(tonumber(value), data.min, data.max)
+                    value = math.clamp(tonumber(value), data.min, data.max)
+                else
+                    Amount.Text = tostring(old)
+                    value = old
+                end
+                Fill.Size = UDim2.new((1 - (((data.max - value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
+                if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
+                    Handle.Position = UDim2.new(0,0,0.5,0)
+                elseif Fill.Position.X.Scale > 0 then
+                    Handle.Position = UDim2.new(1,0,0.5,0)
+                end
+                old = value
+            end
+        end
+
+        function SelfSlider.SetName(value)
+            if type(value)=='string' then
+                Title.Text = value
+                data.name = value
+            end
+        end
+        
+        function SelfSlider.SetFlag(value)
+            if type(value)=='string' then
+                data.location[data.flag] = nil
+                data.flag = value
+                data.location[data.flag] = data.toggled
+            end
+        end
+
+        function SelfSlider.SetLocation(value)
+            if type(value)=='table' then
+                data.location[data.flag] = nil
+                data.location = value
+                data.location[data.flag] = data.toggled
+            end
+        end
+
+        function SelfSlider.SetCallback(value)
+            data.callback = value
+        end
+
+        function SetMinMax(index, value)
+            data[index] = value
+            if (index == 'min' and value+1 < data.max) or (index == 'max' and value-1 > data.min) then
+                data.value = math.clamp(data.value, data.min, data.max)
+                Amount.Text = tostring(data.value)
+                Fill.Position = UDim2.new(math.clamp((((data.max - 0) / (data.max - data.min))-1)*-1, 0, 1),0,0.5,0)
+                Fill.Size = UDim2.new((1 - (((data.max - data.value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
+            else
+                if index == 'min' then
+                    warn("min can't be greater or equal to max")
+                elseif index == 'max' then
+                    warn("max can't be less then or equal to min")
+                end
+            end
+        end
+
+        function SelfSlider.SetMin(value)
+            SetMinMax("min", value)
+        end
+
+        function SelfSlider.SetMax(value)
+            SetMinMax("max", value)
+        end
+
+        function SelfSlider.SetVisible(value)
+            data.visible = value
+            Box.Visible = data.visible
+        end
 
 		setmetatable(SelfSlider, {
 			__newindex = function(Table, index, value)
-				spawn(function()
-					if rawequal(Table, SelfSlider) then
-						if rawequal(index,'value') then
-							if type(value)=='number' or type(value)=='table' then
-								if type(value)=='table' and type(value[1])=='number' then
-									if data.flag ~= '' then
-										data.location[data.flag] = value
-									end
-									data.value = value[1]
-									if type(data.callback) == 'function' then
-										local Success, Err = pcall(data.callback, data.value, SelfSlider)
-										if not Success then
-											error(Err)
-										end
-									end
-								else
-									if data.flag ~= '' then
-										data.location[data.flag] = value
-									end
-									data.value = value
-								end
-								if tonumber(value) then
-									Amount.Text = math.clamp(tonumber(value), data.min, data.max)
-									value = math.clamp(tonumber(value), data.min, data.max)
-								else
-									Amount.Text = tostring(old)
-									value = old
-								end
-								Fill.Size = UDim2.new((1 - (((data.max - value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
-								if Fill.Position.X.Scale > 0 and Fill.Size.X.Scale <= 0 then
-									Handle.Position = UDim2.new(0,0,0.5,0)
-								elseif Fill.Position.X.Scale > 0 then
-									Handle.Position = UDim2.new(1,0,0.5,0)
-								end
-								old = value
-							else return end
-						elseif rawequal(index,'name') then
-							if type(value)=='string' then
-								Title.Text = value
-								data.name = value
-							else return end
-						elseif rawequal(index,'flag') then
-							if type(value)=='string' then
-								data.location[data.flag] = nil
-								data.flag = value
-								data.location[data.flag] = data.toggled
-							else return end
-						elseif rawequal(index,'location') then
-							if type(value)=='table' then
-								data.location[data.flag] = nil
-								data.location = value
-								data.location[data.flag] = data.toggled
-							else return end
-						elseif rawequal(index,'callback') then
-							data.callback = value
-						elseif rawequal(index,'min') or rawequal(index,'max') then
-							data[index] = value
-							if (index == 'min' and value+1 < data.max) or (index == 'max' and value-1 > data.min) then
-								data.value = math.clamp(data.value, data.min, data.max)
-								Amount.Text = tostring(data.value)
-								Fill.Position = UDim2.new(math.clamp((((data.max - 0) / (data.max - data.min))-1)*-1, 0, 1),0,0.5,0)
-								Fill.Size = UDim2.new((1 - (((data.max - data.value) / (data.max - data.min))+Fill.Position.X.Scale)), 0, 0, 6)
-							else
-								if index == 'min' then
-									warn("min can't be greater or equal to max")
-								elseif index == 'max' then
-									warn("max can't be less then or equal to min")
-								end
-							end
-						elseif rawequal(index,'visible') then
-							data.visible = value
-							Box.Visible = data.visible
-						end
-					end
-				end)
+                if rawequal(Table, SelfSlider) then
+                    if rawequal(index,'value') then SelfSlider.SetValue(value)
+                    elseif rawequal(index,'name') then SelfSlider.SetName(value)
+                    elseif rawequal(index,'flag') then SelfSlider.SetFlag(value)
+                    elseif rawequal(index,'location') then SelfSlider.SetLocation(value)
+                    elseif rawequal(index,'callback') then SelfSlider.SetCallback(value)
+                    elseif rawequal(index,'min') or rawequal(index,'max') then SetMinMax(index, value)
+                    elseif rawequal(index,'visible') then SelfSlider.SetVisible(value)
+                    end
+                end
 			end;
 			__index = function(Table, index)
 				if data[index] ~= nil then
@@ -1863,12 +1920,14 @@ end)
 
 function Library:Destroy()
 	for i,v in pairs(Library.Windows) do
-		print(v)
 		v:Destroy()
 	end
 	CursorConnection:Disconnect()
+    ToggleWindows:Disconnect()
 	ScreenGui:Destroy()
-	Library = nil
+	for i, v in pairs(Library) do
+        Library[i] = nil
+    end
 end
 
 return Library
