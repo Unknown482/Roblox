@@ -471,7 +471,7 @@ function Library:CreateWindow(...)
             if type(value)=='string' then
                 data.location[data.flag] = nil
                 data.flag = value
-                data.location[data.flag] = data.toggled
+                data.location[data.flag] = data.value
             else return end
         end
 
@@ -479,7 +479,7 @@ function Library:CreateWindow(...)
             if type(value)=='table' then
                 data.location[data.flag] = nil
                 data.location = value
-                data.location[data.flag] = data.toggled
+                data.location[data.flag] = data.value
             else return end
         end
 
@@ -1037,7 +1037,7 @@ function Library:CreateWindow(...)
 		local data = {
 			name = (Args[1] or 'Toggle');
 			callback = (Args[3] or function() end);
-			toggled = (Options.default or false);
+			value = (Options.default or false);
 			location = (Options.location and Options.location or Window.flags);
 			flag = (Options.flag or '');
 			visible = (Options.visible or true);
@@ -1045,7 +1045,7 @@ function Library:CreateWindow(...)
 		local SelfToggle = {}
 
 		if data.flag ~= "" then
-			data.location[data.flag] = data.toggled
+			data.location[data.flag] = data.value
 		end
 
 		local Toggle = Instance.new('Frame')
@@ -1106,7 +1106,7 @@ function Library:CreateWindow(...)
 		Checkmark.ImageColor3 = Color3.fromRGB(30,30,30)
 		Checkmark.Image = 'rbxassetid://4919148038'
 
-		if data.toggled then
+		if data.value then
 			Center.Size = UDim2.new(0,0,0,Center.Size.Y.Offset)
 			Outline.ImageColor3 = Library.color
 			Center.ImageColor3 = Library.color
@@ -1146,23 +1146,23 @@ function Library:CreateWindow(...)
             coroutine.wrap(function()
                 if type(value)=='boolean' or type(value)=='table' then
                     if type(value)=='table' and type(value[1])=='boolean' then
-                        data.toggled = value[1]
+                        data.value = value[1]
                         if data.flag ~= '' then
-                            data.location[data.flag] = data.toggled
+                            data.location[data.flag] = data.value
                         end
                         if type(data.callback) == 'function' then
-                            local Success, Err = pcall(data.callback, data.toggled, SelfToggle)
+                            local Success, Err = pcall(data.callback, data.value, SelfToggle)
                             if not Success then
                                 error(Err)
                             end
                         end
                     else
-                        data.toggled = value
+                        data.value = value
                         if data.flag ~= '' then
-                            data.location[data.flag] = data.toggled
+                            data.location[data.flag] = data.value
                         end
                     end
-                    if data.toggled then
+                    if data.value then
                         toggledOn1:Play()
                         toggledOn2:Play()
                         wait(0.15)
@@ -1188,7 +1188,7 @@ function Library:CreateWindow(...)
             if type(value)=='string' then
                 data.location[data.flag] = nil
                 data.flag = value
-                data.location[data.flag] = data.toggled
+                data.location[data.flag] = data.value
             end
         end
 
@@ -1196,7 +1196,7 @@ function Library:CreateWindow(...)
             if type(value)=='table' then
                 data.location[data.flag] = nil
                 data.location = value
-                data.location[data.flag] = data.toggled
+                data.location[data.flag] = data.value
             end
         end
 
@@ -1235,20 +1235,20 @@ function Library:CreateWindow(...)
 
 		Toggle.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				SelfToggle.toggled = {not data.toggled}
+				SelfToggle.toggled = {not data.value}
 			end
 		end)
 
 		Toggle.MouseEnter:Connect(function()
 			MouseOverB = true
-			if not data.toggled then
+			if not data.value then
 				Hovering:Play()
 				Center.Size = UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset)
 			end
 		end)
 		Toggle.MouseLeave:Connect(function()
 			MouseOverB = false
-			if not data.toggled then
+			if not data.value then
 				Normal:Play()
 				Center.Size = UDim2.new(0,Center.Size.Y.Offset,0,Center.Size.Y.Offset)
 			end
@@ -1260,17 +1260,18 @@ function Library:CreateWindow(...)
 	function Window:Slider(...)
 		local Args = {...}
 		local SelfSlider = {}
+		local Options = Args[2] or {}
 		local data = {
 			Name = Args[1] or 'Slider';
 			callback = Args[3] or function()end;
-			flag = Args[2] and Args[2].flag or '';
-			min = Args[2] and Args[2].min or 0;
-			max = Args[2] and Args[2].max or 100;
-			step = Args[2] and Args[2].step or 1;
-			location = Args[2] and Args[2].location or Window.flags;
-			visible = Args[2] and Args[2].visible or true
+			flag = Options.flag or '';
+			min = Options.min or 0;
+			max = Options.max or 100;
+			step = Options.step or 1;
+			location = Options.location or Window.flags;
+			visible = Options.visible or true
 		}
-		data.value = Args[2] and Args[2].default or data.min;
+		data.value = Options.default or data.min;
 		if data.flag ~= '' then
 			data.location[data.flag] = data.value
 		end
@@ -1640,7 +1641,7 @@ function Library:CreateWindow(...)
             if type(value)=='string' then
                 data.location[data.flag] = nil
                 data.flag = value
-                data.location[data.flag] = data.toggled
+                data.location[data.flag] = data.value
             end
         end
 
@@ -1648,7 +1649,7 @@ function Library:CreateWindow(...)
             if type(value)=='table' then
                 data.location[data.flag] = nil
                 data.location = value
-                data.location[data.flag] = data.toggled
+                data.location[data.flag] = data.value
             end
         end
 
