@@ -73,6 +73,7 @@ end
 -- Done
 function Library:CreateWindow(...)
 	local Args = {...}
+	local IsMouseInside = false
 	local Window = {toggled = true, flags = {}, parent = nil, Objects={}}
 	local data = {
 		name = Args[1] or 'Window';
@@ -149,6 +150,13 @@ function Library:CreateWindow(...)
 	Image.Size = UDim2.new(0.4, 0, 0.4, 0)
 	Image.Image = 'rbxassetid://4918373417'
 	Image.ImageColor3 = Color3.fromRGB(80, 80, 80)
+
+	Main.MouseWheelForward:Connect(function()
+		Main.Position = Main.Position  - UDim2.new(0, 0, 0, 15)
+	end)
+	Main.MouseWheelBackward:Connect(function()
+		Main.Position = Main.Position + UDim2.new(0, 0, 0, 15)
+	end)
 
 	local down = TweenService:Create( Image, TweenInfo.new(0.2),{ Rotation = 90 })
 	local up = TweenService:Create( Image, TweenInfo.new(0.2),{ Rotation = 180 })
