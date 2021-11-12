@@ -318,7 +318,7 @@ function Library:CreateWindow(...)
 			visible = Options.visible or true;
 		}
 		data.default = Options.default or (data.type == 'number' and 0 or '')
-		data.text = data.default
+		data.value = data.default
 		if data.flag ~= '' then
 			data.location[data.flag] = data.default
 		end
@@ -427,12 +427,12 @@ function Library:CreateWindow(...)
             if type(value)=='string' or type(value)=='number' or type(value)=='table' then
                 if type(value)=='table' and (type(value[1])=='string' or type(value[1])=='number') then
                     if data.type == 'number' then
-                        data.text = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
+                        data.value = tostring(math.clamp(tonumber(value[1]), data.min, data.max))
                         if type(data.callback) == 'function' then
                             if data.flag ~= '' then
                                 data.location[data.flag] = tonumber(TextBox.Text)
                             end
-                            local Success, Err = pcall(data.callback, tonumber(data.text), tonumber(old), false, SelfBox)
+                            local Success, Err = pcall(data.callback, tonumber(data.value), tonumber(old), false, SelfBox)
                             if not Success then
                                 error(Err)
                             end
@@ -441,9 +441,9 @@ function Library:CreateWindow(...)
                         if data.flag ~= '' then
                             data.location[data.flag] = tonumber(TextBox.Text)
                         end
-                        data.text = value[1]
+                        data.value = value[1]
                         if type(data.callback) == 'function' then
-                            local Success, Err = pcall(data.callback, data.text, old, false, SelfBox)
+                            local Success, Err = pcall(data.callback, data.value, old, false, SelfBox)
                             if not Success then
                                 error(Err)
                             end
@@ -451,15 +451,15 @@ function Library:CreateWindow(...)
                     end
                 else
                     if type(value)=='number' then
-                        data.text = tostring(value)
+                        data.value = tostring(value)
                     else
-                        data.text = value
+                        data.value = value
                     end
                     if data.type == 'number' then
-                        data.text = tostring(math.clamp(tonumber(data.text), data.min, data.max))
+                        data.value = tostring(math.clamp(tonumber(data.value), data.min, data.max))
                     end
                 end
-                TextBox.Text = tostring(data.text)
+                TextBox.Text = tostring(data.value)
                 if not TextBox:IsFocused() then
                     TextBox.Size = UDim2.new(0, 200, 0, 18)
                     Holder.Size = UDim2.new(1,-8,1,-8)
@@ -516,7 +516,7 @@ function Library:CreateWindow(...)
             if type(value)=="number" then
                 data.min = value
                 if data.type == 'number' then
-                    data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
+                    data.value = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
                 end
             end
         end
@@ -525,7 +525,7 @@ function Library:CreateWindow(...)
             if type(value)=="number" then
                 data.max = value
                 if data.type == 'number' then
-                    data.text = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
+                    data.value = tostring(math.clamp(tonumber(TextBox.Text), data.min, data.min))
                 end
             end
         end
@@ -539,7 +539,7 @@ function Library:CreateWindow(...)
 			__newindex = function(Table, index, value)
 				coroutine.wrap(function()
 					if rawequal(Table, SelfBox) then
-						if rawequal(index, 'text') then SelfBox.SetValue()
+						if rawequal(index, 'value') then SelfBox.SetValue(value)
 						elseif rawequal(index, 'name') then	SelfBox.SetName(value)
 						elseif rawequal(index, 'placeholder') then SelfBox.SetPlaceholder(value)
 						elseif rawequal(index,'flag') then SelfBox.SetFlag(value)
@@ -628,7 +628,7 @@ function Library:CreateWindow(...)
 					end
 				end
 			end
-			data.text = TextBox.Text
+			data.value = TextBox.Text
 			old = TextBox.Text
 		end)
 
