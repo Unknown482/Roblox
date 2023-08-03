@@ -1790,7 +1790,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end)
 
 			local function CreateDropdownList()
-				for _, element in pairs(Dropdown.List) do
+				for _, element in pairs(Dropdown.List:GetChildren()) do
 					element:Destroy()
 				end
 
