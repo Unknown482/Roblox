@@ -1975,11 +1975,28 @@ function RayfieldLibrary:CreateWindow(Settings)
 				--SaveConfiguration()
 			end
 
-			function DropdownSettings:Refresh(NewOptions, CurrentOption)
+			function DropdownSettings:Refresh(NewOptions, NewCurrentOptions)
 				DropdownSettings.Options = NewOptions
                 closeDropdown()
 				CreateDropdownList()
-				DropdownSettings:Set(CurrentOption)
+				if NewOption ~= nil then
+					DropdownSettings:Set(NewOption)
+				else
+					if DropdownSettings.MultipleOptions then
+						local i = 1
+						while i <= #DropdownSettings.CurrentOption do
+							if table.find(NewOptions, DropdownSettings.CurrentOption[i]) then
+								i = i + 1
+							else
+								table.remove(DropdownSettings.CurrentOption, i)
+							end
+						end
+					else
+						if not table.find(NewOptions, DropdownSettings.CurrentOption[1]) then
+							DropdownSettings.CurrentOption[1] = NewOptions[1]
+						end
+					end
+				end
 			end
 
 			if Settings.ConfigurationSaving then
